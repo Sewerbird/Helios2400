@@ -6,22 +6,14 @@ local Transform = class('Transform', {
 	children = nil
 })
 
-function Transform:init ()
-
+function Transform:init ( x,y )
+	self.x = x
+	self.y = y
 end
 
 function Transform:translate (dx, dy)
-	self.x += dx
-	self.y += dy
+	self.x = self.x + dx
+	self.y = self.y + dy
 end
-
-function Transform:addChild(transform)
-	if children == nil then
-		children = {}
-	end
-	table.insert(children, transform)
-end
-
-function Transform:
 
 return Transform

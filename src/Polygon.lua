@@ -1,12 +1,12 @@
 --Clickspace Polygon
 local Polygon = class('Polygon', {
-	transform = Transform:new(0,0),
 	vertices = { 0,0 , 10,0 , 5,10 },
+	w = 10,
+	h = 5,
 	num_vertices = 3
 })
 
-function Polygon:init (transform, vertices)
-	self.transform = spec.transform
+function Polygon:init (vertices)
 	--polygon initialization with a vertex list
 	if vertices and #vertices > 2 then
 		self.vertices = vertices
@@ -19,6 +19,33 @@ function Polygon:init (transform, vertices)
 			0,vertices.h
 		}
 	end
+	local isX = true
+	local minX = 0
+	local maxX = 0
+	local minY = 0
+	local maxY = 0
+	for i = 1, #self.vertices do
+		local v = self.vertices[i]
+		if isX then
+			if v < minX then
+				minX = v
+			end
+			if v > maxX then
+				maxX = v
+			end
+		else
+			if v < minY then
+				minY = v
+			end
+			if v > maxY then
+				maxY = v
+			end
+		end
+		isX = not isX
+	end
+
+	self.w = maxX - minX
+	self.h = maxY - minY
 	self.num_vertices = #self.vertices/2
 end
 
