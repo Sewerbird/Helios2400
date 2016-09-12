@@ -2,7 +2,6 @@
 local Component = require 'src/Component'
 local Interfaceable = Component:extend("Interfaceable", {
 	name = "Interfaceable",
-	children = {},
 	delegate = nil,
 	transform = nil,
 	polygon = nil,
@@ -13,16 +12,6 @@ function Interfaceable:init ( transform, polygon, delegate)
 	self.transform = transform
 	self.polygon = polygon
 	self.delegate = delegate
-end
-
-function Interfaceable:push ( interfaceable )
-	table.insert(self.children, interfaceable)
-	current = self.children[#self.children]
-end
-
-function Interfaceable:pop ()
-	table.remove(self.children)
-	current = self.children[#self.children]
 end
 
 function Interfaceable:receivesTouch ( x, y )

@@ -5,7 +5,7 @@ local GameObject = class("GameObject", {
 
 function GameObject:init ( array_components )
 	if array_components ~= nil then
-		for i = 1, #array_components then
+		for i = 1, #array_components do
 			self:addComponent(array_components[i])
 		end
 	end
