@@ -1,6 +1,9 @@
 --GameObject.lua
 local GameObject = class("GameObject", {
-	components = {}
+	uid = nil,
+	components = {},
+	children = {},
+	parent = nil
 })
 
 function GameObject:init ( array_components )
@@ -9,6 +12,37 @@ function GameObject:init ( array_components )
 			self:addComponent(array_components[i])
 		end
 	end
+end
+
+function GameObject:setParent ( newParent )
+	if self.parent ~= nil then
+		self.parent:removeChild(self)
+	end
+	self.parent = newParent
+	newParent.addChild(self)
+end
+
+function GameObject:addChild ( child )
+	child.parent = self
+	table.insert(self.children, child)
+end
+
+function GameObject:addChildren ( children )
+	for i, child in ipairs(children) do
+		self:addChild(child)
+	end
+end
+
+function GameObject:removeChild ( child )
+	table.remove(children, child)
+end
+
+function GameObject:getChildren ()
+	return self.children
+end
+
+function GameObject:hasComponent ( type )
+	return self.components[type] ~= nil
 end
 
 function GameObject:addComponent ( component )
