@@ -4,7 +4,9 @@ ProFi = require 'lib/ProFi'
 
 GameObject = require 'src/GameObject'
 Interfaceable = require 'src/Interfaceable'
+InterfaceableSystem = require 'src/Interfaceable'
 Renderable = require 'src/Renderable'
+RenderableSystem = require 'src/RenderableSystem'
 Transform = require 'src/Transform'
 Polygon = require 'src/Polygon'
 TouchDelegate = require 'src/TouchDelegate'
@@ -156,7 +158,7 @@ end
 function love.touchreleased(id, x, y, pressure)
   local function func(gob)
     if gob:hasComponent('Interfaceable') then
-      gob:getComponent('Interfaceable'):onUnouch(x, y)
+      gob:getComponent('Interfaceable'):onUntouch(x, y)
     end
   end
   naive_fullscene_recurse(func)
