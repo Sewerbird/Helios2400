@@ -1,9 +1,10 @@
 --TouchDelegate.lua
 local TouchDelegate = class("TouchDelegate", {
-	
+	absorbsClicks = false
 })
 
-function TouchDelegate:init ()
+function TouchDelegate:init ( absorbsClicks )
+	
 end
 
 function TouchDelegate:onTouch ( x, y )

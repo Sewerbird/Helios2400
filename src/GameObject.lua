@@ -46,7 +46,7 @@ function GameObject:hasComponent ( type )
 end
 
 function GameObject:addComponent ( component )
-	component.gid = self
+	component.gid = self.uid
 	self.components[component.name] = component
 end
 
