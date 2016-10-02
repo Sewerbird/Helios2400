@@ -3,10 +3,14 @@ local GameObject = class("GameObject", {
 	uid = nil,
 	components = {},
 	children = {},
-	parent = nil
+	parent = nil,
+	description = ''
 })
 
-function GameObject:init ( array_components )
+function GameObject:init ( description, array_components )
+	if array_components == nil then array_components = description end
+
+	self.description = description
 	if array_components ~= nil then
 		for i = 1, #array_components do
 			self:addComponent(array_components[i])
@@ -41,6 +45,10 @@ function GameObject:getChildren ()
 	return self.children
 end
 
+function GameObject:hasChildren ()
+	return #self.children > 0
+end
+
 function GameObject:hasComponent ( type )
 	return self.components[type] ~= nil
 end
@@ -56,6 +64,10 @@ end
 
 function GameObject:getComponent ( type )
 	return self.components[type]
+end
+
+function GameObject:getComponents ()
+	return self.components
 end
 
 return GameObject

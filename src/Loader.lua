@@ -7,6 +7,7 @@ GameObject = require 'src/GameObject'
 Transform = require 'src/Transform'
 Polygon = require 'src/Polygon'
 Sprite = require 'src/Sprite'
+require 'lib/my_utils'
 
 local Loader = class("Loader", {
 	
@@ -20,13 +21,16 @@ function Loader:debugLoad ()
   local Debug_Unit_Quad = love.graphics.newQuad(168, 0, 50, 50, Debug_Spritesheet:getDimensions())
 
 
+  --[[ Instantiate Tilemap View ]]--
+
+  --Make Tiles
   local Debug_Hexes = {}
   local joffset = 0
   for i = 1 , 20 do
   	for j = 1 , 10 do
   		if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
   		ioffset = (i-1) * -21
-	  	local debug_hex = GameObject:new({
+	  	local debug_hex = GameObject:new('Tile',{
 	  		Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
 		    Interfaceable:new(
 		      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
@@ -40,7 +44,8 @@ function Loader:debugLoad ()
 	end
   end
 
-  local Debug_Unit = GameObject:new({
+  --Make Units
+  local Debug_Unit = GameObject:new('Unit', {
     Transform:new(100 + 42 - 25,100 + 37 - 25),
     Interfaceable:new(
       Polygon:new({ w = 50, h = 50 }),
@@ -50,24 +55,30 @@ function Loader:debugLoad ()
       Sprite:new(Debug_Spritesheet, Debug_Unit_Quad))
     })
 
-
-  local Scene = GameObject:new()
-  local Tile_Layer = GameObject:new({
+  --Compose & Populate the layers
+  local Map_Layer = GameObject:new('Map Layer', {
 	  Transform:new(0,0),
   	Interfaceable:new(
   		Polygon:new({w=1200, h = 800}),
   		TouchDelegate:new())
   	})
+  local Tile_Layer = GameObject:new('Tile_Layer',{})
+  local Unit_Layer = GameObject:new('Unit_Layer',{})
 
-  local Unit_Layer = GameObject:new()
-  local UI_Layer = GameObject:new()
-
-  Scene:addChildren({Tile_Layer, Unit_Layer, UI_Layer})
-
+  Map_Layer:addChildren({Tile_Layer, Unit_Layer})
   Tile_Layer:addChildren(Debug_Hexes)
   Unit_Layer:addChildren({Debug_Unit})
 
-  return Scene
+  local UI_Layer = GameObject:new('UI_Layer',{})
+
+  local MapView = GameObject:new('Map_View',{})
+
+  MapView:addChildren({Map_Layer, UI_Layer})
+
+  print(printHeirarchy(MapView, '', ''))
+
+
+  return MapView
 
 end
 
