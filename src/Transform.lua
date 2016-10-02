@@ -1,5 +1,6 @@
 --Transform.lua
-local Transform = class('Transform', {
+local Component = require 'src/Component'
+local Transform = Component:extend('Transform', {
 	x = 0,
 	y = 0
 })

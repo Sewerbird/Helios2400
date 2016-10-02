@@ -8,24 +8,30 @@ local Renderable = Component:extend("Renderable", {
 	
 })
 
-function Renderable:init ( transform, polygon, sprite, backgroundcolor )
-	self.transform = transform
+function Renderable:init ( polygon, sprite, backgroundcolor )
 	self.polygon = polygon
 	self.sprite = sprite or nil
-	self.backgroundcolor = backgroundcolor or {100,100,100}
+	self.backgroundcolor = backgroundcolor or {math.floor(math.random() * 255),100,100}
+end
+
+function Renderable:onAdd ( parent )
+	Renderable.super.onAdd(self,parent)
+	self.transform = self:getSiblingComponent('Transform')
 end
 
 function Renderable:draw ()
 	love.graphics.translate(self.transform.x, self.transform.y)
 
-	local r, g, b, a = love.graphics.getColor()
-	love.graphics.setColor(self.backgroundcolor)
-	love.graphics.polygon('fill', self.polygon.vertices)
-	love.graphics.setColor({r,g,b,a})
-
 	if self.sprite ~= nil then
 		love.graphics.draw(self.sprite.img, self.sprite.quad)
 	end
+
+	local r, g, b, a = love.graphics.getColor()
+	love.graphics.setColor(self.backgroundcolor)
+	love.graphics.setLineWidth(3)
+	love.graphics.polygon('line', self.polygon.vertices)
+	love.graphics.setColor({r,g,b,a})
+
 
 	love.graphics.translate(-self.transform.x, -self.transform.y)
 end

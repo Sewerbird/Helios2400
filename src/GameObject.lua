@@ -47,7 +47,11 @@ end
 
 function GameObject:addComponent ( component )
 	component.gid = self.uid
+	component.gob = self
 	self.components[component.name] = component
+	if component.onAdd ~= nil then
+		component:onAdd(self)
+	end
 end
 
 function GameObject:getComponent ( type )

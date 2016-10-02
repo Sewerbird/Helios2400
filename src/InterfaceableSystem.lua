@@ -21,6 +21,7 @@ function InterfaceableSystem:onHover(x, y)
 			obj:getComponent('Interfaceable'):onDrag(x, y, dx, dy)
 		end
 	end
+	print('on hovering at ' .. x .. ',' .. y)
 	self:depthFirstEvalLeavesFirst( actEle, self.rootGameObject)
 end
 
@@ -45,7 +46,7 @@ end
 function InterfaceableSystem:onKeypress(key)
 	local function actEle( obj )
 		if obj:hasComponent('Interfaceable') then
-			obj:getComponent('Interfaceable'):keypressed(key)
+			obj:getComponent('Interfaceable'):onKeypress(key)
 		end
 	end
 	self:depthFirstEvalLeavesFirst( actEle, self.rootGameObject)

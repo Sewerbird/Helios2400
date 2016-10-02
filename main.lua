@@ -12,7 +12,7 @@ function love.load()
 
   ProFi:start()
 
-  local debugScene = Loader:new():debugLoad()
+  debugScene = Loader:new():debugLoad()
 
   Sys_Renderable = RenderableSystem:new()
   Sys_Renderable:addScene('earth_view', debugScene)

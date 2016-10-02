@@ -8,10 +8,14 @@ local Interfaceable = Component:extend("Interfaceable", {
 	current = nil
 })
 
-function Interfaceable:init ( transform, polygon, delegate)
-	self.transform = transform
+function Interfaceable:init ( polygon, delegate )
 	self.polygon = polygon
 	self.delegate = delegate
+end
+
+function Interfaceable:onAdd ( parent )
+	Interfaceable.super.onAdd(self, parent)
+	self.transform = self:getSiblingComponent('Transform')
 end
 
 function Interfaceable:receivesTouch ( x, y )

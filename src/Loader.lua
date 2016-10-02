@@ -27,33 +27,38 @@ function Loader:debugLoad ()
   		if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
   		ioffset = (i-1) * -21
 	  	local debug_hex = GameObject:new({
+	  		Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
 		    Interfaceable:new(
-		      Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
 		      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 		      TouchDelegate:new()),
 		    Renderable:new(
-		      Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
 		      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-		      Sprite:new(Debug_Spritesheet, Debug_Hex_Quad))
+		      Sprite:new(Debug_Spritesheet, Debug_Hex_Quad)
+		      )
 		})
 		table.insert(Debug_Hexes, debug_hex)
 	end
   end
 
   local Debug_Unit = GameObject:new({
+    Transform:new(100 + 42 - 25,100 + 37 - 25),
     Interfaceable:new(
-      Transform:new(100 + 42 - 25,100 + 37 - 25),
       Polygon:new({ w = 50, h = 50 }),
       TouchDelegate:new()),
     Renderable:new(
-      Transform:new(100 + 42 - 25, 100 + 37 - 25),
       Polygon:new({ w = 50, h = 50 }),
       Sprite:new(Debug_Spritesheet, Debug_Unit_Quad))
     })
 
 
   local Scene = GameObject:new()
-  local Tile_Layer = GameObject:new()
+  local Tile_Layer = GameObject:new({
+	  Transform:new(0,0),
+  	Interfaceable:new(
+  		Polygon:new({w=1200, h = 800}),
+  		TouchDelegate:new())
+  	})
+
   local Unit_Layer = GameObject:new()
   local UI_Layer = GameObject:new()
 
