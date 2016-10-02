@@ -6,7 +6,7 @@ local Polygon = class('Polygon', {
 	num_vertices = 3
 })
 
-function Polygon:init (vertices)
+function Polygon:init ( vertices )
 	--polygon initialization with a vertex list
 	if vertices and #vertices > 2 then
 		self.vertices = vertices
@@ -49,15 +49,15 @@ function Polygon:init (vertices)
 	self.num_vertices = #self.vertices/2
 end
 
-function Polygon:containsPoint (q_x, q_y)
+function Polygon:containsPoint ( q_x, q_y )
 	return self:coordInAABB(q_x, q_y) and self:coordInPoly(q_x, q_y)
 end
 
-function Polygon:coordInAABB (q_x, q_y)
+function Polygon:coordInAABB ( q_x, q_y )
 	return q_x > 0 and q_x < self.w and q_y > 0 and q_y < self.h
 end
 
-function Polygon:coordInPoly (q_x, q_y)
+function Polygon:coordInPoly ( q_x, q_y )
 	if not self:coordInAABB(q_x, q_y) then return false end
 
 	local a = self.num_vertices
@@ -76,7 +76,7 @@ function Polygon:coordInPoly (q_x, q_y)
 	return result
 end
 
-function Polygon:getVertex (idx)
+function Polygon:getVertex ( idx )
 	return {
 		x = self.vertices[((idx - 1) * 2) + 1],
 		y = self.vertices[((idx - 1) * 2) + 2]

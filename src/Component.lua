@@ -16,7 +16,7 @@ function Component:getObject ()
 	return gid
 end
 
-function Component:getSiblingComponent (type)
+function Component:getSiblingComponent ( type )
 	if self.gob:hasComponent(type) then
 		return self.gob:getComponent(type)
 	else

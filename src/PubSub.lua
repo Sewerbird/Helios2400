@@ -4,7 +4,7 @@ local PubSub = class('PubSub', {
 	topics = {}
 })
 
-function PubSub:subscribe(topic, callback)
+function PubSub:subscribe( topic, callback )
 	if self.topics[topic] == nil then
 	  self.topics[topic] = {}
 	end
@@ -23,7 +23,7 @@ function PubSub:subscribe(topic, callback)
 	end
 end
 
-function PubSub:publish(topic, message)
+function PubSub:publish( topic, message )
 	if self.topics[topic] == nil then return end
 
 	for i, v in ipairs(self.topics[topic]) do

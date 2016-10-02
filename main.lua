@@ -24,7 +24,7 @@ function love.load()
 
 end
 
-function love.update(dt)
+function love.update( dt )
   --Debug mouse-to-hex output
   if not GLOBAL_PAUSE then
   end
@@ -40,12 +40,12 @@ function love.draw()
   end
 end
 
-function love.mousepressed(x, y, button)
+function love.mousepressed( x, y, button )
   GLOBAL_DRAGBEGUN = true
   Sys_Interfaceable:onTouch(x,y)
 end
 
-function love.mousemoved(x, y, dx, dy, istouch)
+function love.mousemoved( x, y, dx, dy, istouch )
   if GLOBAL_DRAGBEGUN then
     Sys_Interfaceable:onDrag(x,y,dx,dy)
   else
@@ -53,29 +53,29 @@ function love.mousemoved(x, y, dx, dy, istouch)
   end
 end
 
-function love.mousereleased(x, y, button)
+function love.mousereleased( x, y, button )
   GLOBAL_DRAGBEGUN = false
   Sys_Interfaceable:onUntouch(x,y)
 end
 
-function love.touchpressed(id, x, y, pressure)
+function love.touchpressed( id, x, y, pressure )
   Sys_Interfaceable:onTouch(x,y)
 end
 
-function love.touchmoved(id, x, y, dx, dy, pressure)
+function love.touchmoved( id, x, y, dx, dy, pressure )
   Sys_Interfaceable:onDrag(x,y,dx,dy)
 end
 
-function love.touchreleased(id, x, y, pressure)
+function love.touchreleased( id, x, y, pressure )
   Sys_Interfaceable:onUntouch(x,y)
 end
 
-function love.keypressed(key)
+function love.keypressed( key )
   Sys_Interfaceable:onKeypress(key)
 end
 
 
-function love.focus(f)
+function love.focus( f )
   if not f then
     print("LOST FOCUS")
     GLOBAL_PAUSE = true

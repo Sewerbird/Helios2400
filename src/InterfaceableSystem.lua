@@ -6,7 +6,7 @@ local InterfaceableSystem = System:extend("InterfaceableSystem",{
 		
 })
 
-function InterfaceableSystem:onTouch(x, y)
+function InterfaceableSystem:onTouch( x, y )
 	local function actEle( obj )
 		if obj:hasComponent('Interfaceable') then
 			obj:getComponent('Interfaceable'):onTouch(x, y)
@@ -15,7 +15,7 @@ function InterfaceableSystem:onTouch(x, y)
 	self:depthFirstEvalLeavesFirst( actEle, self.rootGameObject)
 end
 
-function InterfaceableSystem:onHover(x, y)
+function InterfaceableSystem:onHover( x, y )
 	local function actEle( obj )
 		if obj:hasComponent('Interfaceable') then
 			obj:getComponent('Interfaceable'):onDrag(x, y, dx, dy)
@@ -25,7 +25,7 @@ function InterfaceableSystem:onHover(x, y)
 	self:depthFirstEvalLeavesFirst( actEle, self.rootGameObject)
 end
 
-function InterfaceableSystem:onDrag(x, y, dx, dy)
+function InterfaceableSystem:onDrag( x, y, dx, dy )
 	local function actEle( obj )
 		if obj:hasComponent('Interfaceable') then
 			obj:getComponent('Interfaceable'):onDrag(x, y, dx, dy)
@@ -34,7 +34,7 @@ function InterfaceableSystem:onDrag(x, y, dx, dy)
 	self:depthFirstEvalLeavesFirst( actEle, self.rootGameObject)
 end
 
-function InterfaceableSystem:onUntouch(x, y)
+function InterfaceableSystem:onUntouch( x, y )
 	local function actEle( obj )
 		if obj:hasComponent('Interfaceable') then
 			obj:getComponent('Interfaceable'):onUntouch(x, y)
@@ -43,7 +43,7 @@ function InterfaceableSystem:onUntouch(x, y)
 	self:depthFirstEvalLeavesFirst( actEle, self.rootGameObject)
 end
 
-function InterfaceableSystem:onKeypress(key)
+function InterfaceableSystem:onKeypress( key )
 	local function actEle( obj )
 		if obj:hasComponent('Interfaceable') then
 			obj:getComponent('Interfaceable'):onKeypress(key)
