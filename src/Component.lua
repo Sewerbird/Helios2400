@@ -7,13 +7,14 @@ local Component = class('Component', {
 function Component:init ()
 end
 
+--Called by the parent GameObject when the component is successfully added to the gameobject
 function Component:onAdd ( parent )
 	self.gob = parent
 	self.gid = parent.uid
 end
 
 function Component:getObject ()
-	return gid
+	return self.gob
 end
 
 function Component:getSiblingComponent ( type )

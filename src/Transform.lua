@@ -11,8 +11,23 @@ function Transform:init ( x, y )
 end
 
 function Transform:translate ( dx, dy )
-	self.x = self.x + dx
-	self.y = self.y + dy
+	if type(dx) == 'table' then
+		self.x = self.x + dx.x
+		self.y = self.y + dx.y
+	else
+		self.x = self.x + dx
+		self.y = self.y + dy
+	end
+end
+
+function Transform:untranslate ( dx, dy )
+	if type(dx) == 'table' then
+		self.x = self.x + dx.x
+		self.y = self.y - dx.y
+	else
+		self.x = self.x - dx
+		self.y = self.y - dy
+	end
 end
 
 return Transform

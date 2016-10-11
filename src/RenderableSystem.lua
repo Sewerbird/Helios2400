@@ -24,12 +24,43 @@ function RenderableSystem:setScene ( tag )
 end
 
 function RenderableSystem:draw ()
-	local function drawEle( obj )
-		if obj:hasComponent('Renderable') then
-			obj:getComponent('Renderable'):draw()
+	
+	local function drawHeirarchy ( root )
+
+		--Pop the coordinate system
+		local delta
+		if root:hasComponent('Transform') then
+			delta = root:getComponent('Transform')
+			love.graphics.translate(delta.x, delta.y)
+		end
+
+		--Do draw
+		if root:hasComponent('Renderable') then
+			local renderable = root:getComponent('Renderable')
+			if renderable.sprite ~= nil then
+				love.graphics.draw(renderable.sprite.img, renderable.sprite.quad)
+		--else
+				local r, g, b, a = love.graphics.getColor()
+				love.graphics.setColor(renderable.backgroundcolor)
+				love.graphics.setLineWidth(3)
+				love.graphics.polygon('line', renderable.polygon.vertices)
+				love.graphics.setColor({r,g,b,a})
+			end
+		end
+
+		--Draw children
+		for i, ele in ipairs(root:getChildren()) do
+			drawHeirarchy(ele)
+		end
+
+		--Unpop the coordinate system
+		if delta ~= nil and root:hasComponent('Transform') then
+			love.graphics.translate(-delta.x, -delta.y)
 		end
 	end
-	self:depthFirstEvalRootFirst( drawEle, self.rootGameObject)
+
+	drawHeirarchy(self.rootGameObject,Transform:new(0,0))
+
 end
 
 return RenderableSystem

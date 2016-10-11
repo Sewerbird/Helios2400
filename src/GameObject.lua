@@ -27,7 +27,6 @@ function GameObject:setParent ( newParent )
 end
 
 function GameObject:addChild ( child )
-	child.parent = self
 	table.insert(self.children, child)
 end
 

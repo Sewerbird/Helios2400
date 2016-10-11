@@ -57,7 +57,7 @@ function Loader:debugLoad ()
 
   --Compose & Populate the layers
   local Map_Layer = GameObject:new('Map Layer', {
-	  Transform:new(0,0),
+	  Transform:new(500,100),
   	Interfaceable:new(
   		Polygon:new({w=1200, h = 800}),
   		TouchDelegate:new())
