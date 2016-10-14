@@ -56,11 +56,19 @@ function Loader:debugLoad ()
     })
 
   --Compose & Populate the layers
+  local Map_Layer_Touch_Delegate = TouchDelegate:new();
+  Map_Layer_Touch_Delegate:setHandler('onDrag', function(this, x,y,dx,dy)
+      if this.component.gob:hasComponent('Transform') then
+        print(x,y,dx,dy)
+        local t = this.component.gob:getComponent('Transform')
+        t:translate(dx,dy)
+      end
+    end)
   local Map_Layer = GameObject:new('Map Layer', {
 	  Transform:new(500,100),
   	Interfaceable:new(
   		Polygon:new({w=1200, h = 800}),
-  		TouchDelegate:new())
+  		Map_Layer_Touch_Delegate)
   	})
   local Tile_Layer = GameObject:new('Tile_Layer',{})
   local Unit_Layer = GameObject:new('Unit_Layer',{})

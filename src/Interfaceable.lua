@@ -11,6 +11,7 @@ local Interfaceable = Component:extend("Interfaceable", {
 function Interfaceable:init ( polygon, delegate )
 	self.polygon = polygon
 	self.delegate = delegate
+	self.delegate.component = self
 end
 
 function Interfaceable:onAdd ( parent )

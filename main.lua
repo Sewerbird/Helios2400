@@ -48,8 +48,6 @@ end
 function love.mousemoved( x, y, dx, dy, istouch )
   if GLOBAL_DRAGBEGUN then
     Sys_Interfaceable:onDrag(x,y,dx,dy)
-  else
-    Sys_Interfaceable:onHover(x,y)
   end
 end
 
@@ -63,7 +61,9 @@ function love.touchpressed( id, x, y, pressure )
 end
 
 function love.touchmoved( id, x, y, dx, dy, pressure )
-  Sys_Interfaceable:onDrag(x,y,dx,dy)
+  if GLOBAL_DRAGBEGUN then
+    Sys_Interfaceable:onDrag(x,y,dx,dy)
+  end
 end
 
 function love.touchreleased( id, x, y, pressure )
