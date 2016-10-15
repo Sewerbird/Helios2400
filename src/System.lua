@@ -17,11 +17,11 @@ function System:depthFirstEvalLeavesFirst ( func, obj )
 		self:depthFirstEvalLeavesFirst(func, ele)
 		func(ele)
 	end
-	func(obj)
+	--func(obj)
 end
 
 function System:depthFirstEvalRootFirst ( func, obj )
-	func(obj)
+	--func(obj)
 	for i, ele in ipairs(obj:getChildren()) do
 		func(ele)
 		self:depthFirstEvalRootFirst(func, ele)

@@ -18,32 +18,37 @@ end
 
 function TouchDelegate:onTouch ( x, y )
 	if self:hasHandler('onTouch') then
-		self.handlers['onTouch'](self,x, y )
+		return self.handlers['onTouch'](self,x, y )
 	end
+	return false;
 end
 
 function TouchDelegate:onDrag ( x, y, dx, dy)
 	if self:hasHandler('onDrag') then
-		self.handlers['onDrag'](self,x,y,dx,dy)
+		return self.handlers['onDrag'](self,x,y,dx,dy)
 	end
+	return false;
 end
 
 function TouchDelegate:onHover ( x, y)
 	if self:hasHandler('onHover') then
-		self.handlers['onHover'](self,x,y)
+		return self.handlers['onHover'](self,x,y)
 	end
+	return false;
 end
 
 function TouchDelegate:onUntouch ( x, y )
 	if self:hasHandler('onUntouch') then
-		self.handlers['onUntouch'](self,x,y)
+		return self.handlers['onUntouch'](self,x,y)
 	end
+	return false;
 end
 
 function TouchDelegate:onKeypress ( key )
 	if self:hasHandler('onKeypress') then
-		self.handlers['onKeypress'](self,key)
+		return self.handlers['onKeypress'](self,key)
 	end
+	return false;
 end
 
 return TouchDelegate
