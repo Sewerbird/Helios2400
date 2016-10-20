@@ -16,8 +16,10 @@ local Loader = class("Loader", {
 function Loader:debugLoad ()
 
   local Debug_Spritesheet = love.graphics.newImage('assets/debug_tileset.png')
-  local Debug_Hex_Quad = love.graphics.newQuad(0, 0, 84, 73, Debug_Spritesheet:getDimensions())
-  local Debug_Hex2_Quad = love.graphics.newQuad(84, 0, 84, 73, Debug_Spritesheet:getDimensions())
+  local Grass_Hex_Quad = love.graphics.newQuad(0, 0, 84, 73, Debug_Spritesheet:getDimensions())
+  local Water_Hex_Quad = love.graphics.newQuad(84, 0, 84, 73, Debug_Spritesheet:getDimensions())
+  local Arctic_Hex_Quad = love.graphics.newQuad(84, 73, 84, 73, Debug_Spritesheet:getDimensions())
+  local City_Quad = love.graphics.newQuad(0, 73, 84, 73, Debug_Spritesheet:getDimensions())
   local Debug_Unit_Quad = love.graphics.newQuad(168, 0, 50, 50, Debug_Spritesheet:getDimensions())
 
 
@@ -30,6 +32,13 @@ function Loader:debugLoad ()
   	for j = 1 , 10 do
   		if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
   		ioffset = (i-1) * -21
+
+      local hex = nil
+      local r = math.random()
+      if j == 1 or j == 10 then hex = Arctic_Hex_Quad
+      elseif r < 0.30 then hex = Grass_Hex_Quad
+      else hex = Water_Hex_Quad end
+
 	  	local debug_hex = GameObject:new('Tile',{
 	  		Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
 		    Interfaceable:new(
@@ -37,7 +46,7 @@ function Loader:debugLoad ()
 		      TouchDelegate:new()),
 		    Renderable:new(
 		      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-		      Sprite:new(Debug_Spritesheet, Debug_Hex_Quad)
+		      Sprite:new(Debug_Spritesheet, hex)
 		      )
 		})
 		table.insert(Debug_Hexes, debug_hex)
