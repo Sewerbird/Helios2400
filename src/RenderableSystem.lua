@@ -39,7 +39,7 @@ function RenderableSystem:draw ()
 			local renderable = root:getComponent('Renderable')
 			if renderable.sprite ~= nil then
 				love.graphics.draw(renderable.sprite.img, renderable.sprite.quad)
-		--else
+			else
 				local r, g, b, a = love.graphics.getColor()
 				love.graphics.setColor(renderable.backgroundcolor)
 				love.graphics.setLineWidth(3)
