@@ -1,6 +1,8 @@
 --Loader.lua
 
 Renderable = require 'src/Renderable'
+Addressable = require 'src/Addressable'
+Placeable = require 'src/Placeable'
 Interfaceable = require 'src/Interfaceable'
 TouchDelegate = require 'src/TouchDelegate'
 GameObject = require 'src/GameObject'
@@ -51,8 +53,9 @@ function Loader:debugLoad ()
             Renderable:new(
               Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
               Sprite:new(Debug_Spritesheet, City_Quad)
-              )
-            })
+              ),
+            Placeable:new()
+          })
           table.insert(Debug_Citys, debug_city)
         end
         if math.random() < 0.1 then
@@ -63,8 +66,9 @@ function Loader:debugLoad ()
               TouchDelegate:new()),
             Renderable:new(
               Polygon:new({ w = 50, h = 50 }),
-              Sprite:new(Debug_Spritesheet, Debug_Troop_Quad))
-            })
+              Sprite:new(Debug_Spritesheet, Debug_Troop_Quad)),
+            Placeable:new()
+          })
           table.insert(Debug_Units, debug_unit)
         end
       else 
@@ -77,8 +81,9 @@ function Loader:debugLoad ()
               TouchDelegate:new()),
             Renderable:new(
               Polygon:new({ w = 50, h = 50 }),
-              Sprite:new(Debug_Spritesheet, Debug_Ship_Quad))
-            })
+              Sprite:new(Debug_Spritesheet, Debug_Ship_Quad)),
+            Placeable:new()
+          })
           table.insert(Debug_Units, debug_unit)
         end
       end
@@ -91,7 +96,8 @@ function Loader:debugLoad ()
 		    Renderable:new(
 		      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 		      Sprite:new(Debug_Spritesheet, hex)
-		      )
+		      ),
+        Addressable:new()
   		})
   		table.insert(Debug_Hexes, debug_hex)
 	  end
