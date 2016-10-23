@@ -9,6 +9,7 @@ GameObject = require 'src/GameObject'
 Transform = require 'src/Transform'
 Polygon = require 'src/Polygon'
 Sprite = require 'src/Sprite'
+HexCoord = require 'src/HexCoord'
 require 'lib/my_utils'
 
 local Loader = class("Loader", {
@@ -34,40 +35,81 @@ function Loader:debugLoad ()
   local Debug_Units = {}
 
   local joffset = 0
-  for i = 1 , 20 do
-  	for j = 1 , 10 do
+  local num_rows = 10
+  local num_cols = 20
+  local idx = 1
+
+  for i = 1 , num_cols do --x
+  	for j = 1 , num_rows do --y
   		if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
   		ioffset = (i-1) * -21
 
+      local neighbors   
+      if j % 2 == 1 then
+        neighbors = {
+          HexCoord:new(i,j-1):toString(),
+          HexCoord:new(i,j+1):toString(),
+          HexCoord:new(i-1,j+1):toString(),
+          HexCoord:new(i+1,j+1):toString(),
+          HexCoord:new(i-1,j):toString(),
+          HexCoord:new(i+1,j):toString()
+          }
+      else
+        neighbors = {
+          HexCoord:new(i,j-1):toString(),
+          HexCoord:new(i,j+1):toString(),
+          HexCoord:new(i-1,j-1):toString(),
+          HexCoord:new(i+1,j-1):toString(),
+          HexCoord:new(i-1,j):toString(),
+          HexCoord:new(i+1,j):toString()
+          }
+      end
+
+      local address = 'Earth' .. HexCoord:new(i,j):toString()
+      local addressable = Addressable:new(address, neighbors)
+
+      local Unit_Touch_Delegate = TouchDelegate:new()
+      Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
+        if this.component.gob:hasComponent('Placeable') then
+          print('Clicked on a unit!')
+        end
+      end)
+      local City_Touch_Delegate = TouchDelegate:new()
+      City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
+        if this.component.gob:hasComponent('Placeable') then
+          print('Clicked on a city!')
+        end
+      end)
+
       local hex = nil
       local r = math.random()
-      if j == 1 or j == 10 then hex = Arctic_Hex_Quad
+      if j == 1 or j == num_rows then hex = Arctic_Hex_Quad
       elseif r < 0.30 then 
         hex = Grass_Hex_Quad
-        if math.random() < 0.1 then
+        if math.random() < 0.3 then
           local debug_city = GameObject:new('City', {
             Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
             Interfaceable:new(
               Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37}),
-              TouchDelegate:new()),
+              City_Touch_Delegate),
             Renderable:new(
               Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
               Sprite:new(Debug_Spritesheet, City_Quad)
               ),
-            Placeable:new()
+            Placeable:new(address)
           })
           table.insert(Debug_Citys, debug_city)
         end
-        if math.random() < 0.1 then
+        if math.random() < 0.3 then
           local debug_unit = GameObject:new('Troop', {
             Transform:new((i-1) * 84 + ioffset + 17, (j-1) * 73 + joffset + 13),
             Interfaceable:new(
               Polygon:new({ w = 50, h = 50 }),
-              TouchDelegate:new()),
+              Unit_Touch_Delegate),
             Renderable:new(
               Polygon:new({ w = 50, h = 50 }),
               Sprite:new(Debug_Spritesheet, Debug_Troop_Quad)),
-            Placeable:new()
+            Placeable:new(address)
           })
           table.insert(Debug_Units, debug_unit)
         end
@@ -78,28 +120,37 @@ function Loader:debugLoad ()
             Transform:new((i-1) * 84 + ioffset + 17, (j-1) * 73 + joffset + 13),
             Interfaceable:new(
               Polygon:new({ w = 50, h = 50 }),
-              TouchDelegate:new()),
+              Unit_Touch_Delegate),
             Renderable:new(
               Polygon:new({ w = 50, h = 50 }),
               Sprite:new(Debug_Spritesheet, Debug_Ship_Quad)),
-            Placeable:new()
+            Placeable:new(address)
           })
           table.insert(Debug_Units, debug_unit)
         end
       end
 
+      local Hex_Touch_Delegate = TouchDelegate:new();
+      Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
+          if this.component.gob:hasComponent('Addressable') then
+            local addr = this.component.gob:getComponent('Addressable')
+            print(inspect(addr.neighbors))
+          end
+        end)
 	  	local debug_hex = GameObject:new('Tile',{
 	  		Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
 		    Interfaceable:new(
 		      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-		      TouchDelegate:new()),
+		      Hex_Touch_Delegate),
 		    Renderable:new(
 		      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 		      Sprite:new(Debug_Spritesheet, hex)
 		      ),
-        Addressable:new()
+        addressable
   		})
   		table.insert(Debug_Hexes, debug_hex)
+
+      idx = idx + 1
 	  end
   end
 
@@ -107,7 +158,6 @@ function Loader:debugLoad ()
   local Map_Layer_Touch_Delegate = TouchDelegate:new();
   Map_Layer_Touch_Delegate:setHandler('onDrag', function(this, x,y,dx,dy)
       if this.component.gob:hasComponent('Transform') then
-        print(x,y,dx,dy)
         local t = this.component.gob:getComponent('Transform')
         t:translate(dx,dy)
       end

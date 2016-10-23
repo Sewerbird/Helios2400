@@ -48,6 +48,13 @@ function RenderableSystem:draw ()
 			end
 		end
 
+		if root:hasComponent('Addressable') then
+			local addressable = root:getComponent('Addressable')
+			if addressable.idx ~= nil then
+				love.graphics.print(addressable.idx, 0 , 0)
+			end
+		end
+
 		--Draw children
 		for i, ele in ipairs(root:getChildren()) do
 			drawHeirarchy(ele)
