@@ -15,18 +15,15 @@ local RenderableSystem = System:extend("RenderableSystem",{
 })
 
 function RenderableSystem:addScene ( tag, scene )
-	self.scenes[tag] = scene
 end
 
 function RenderableSystem:setScene ( tag )
-	self.active_scene = tag
-	self.rootGameObject = self.scenes[self.active_scene]
+
 end
 
-function RenderableSystem:draw ()
-	
-	local function drawHeirarchy ( root )
 
+function RenderableSystem:draw ()
+	local function drawHeirarchy ( root )
 		--Pop the coordinate system
 		local delta
 		if root:hasComponent('Transform') then
@@ -47,17 +44,17 @@ function RenderableSystem:draw ()
 				love.graphics.setColor({r,g,b,a})
 			end
 		end
-
+		--[[Draw debug addressable idx
 		if root:hasComponent('Addressable') then
 			local addressable = root:getComponent('Addressable')
 			if addressable.idx ~= nil then
 				love.graphics.print(addressable.idx, 0 , 0)
 			end
-		end
+		end]]
 
 		--Draw children
-		for i, ele in ipairs(root:getChildren()) do
-			drawHeirarchy(ele)
+		for i, gid in ipairs(self.targetCollection:getChildren(root.uid)) do
+			drawHeirarchy(Global.Registry:get(gid))
 		end
 
 		--Unpop the coordinate system
@@ -66,7 +63,7 @@ function RenderableSystem:draw ()
 		end
 	end
 
-	drawHeirarchy(self.rootGameObject,Transform:new(0,0))
+	drawHeirarchy(Global.Registry:get(self.targetCollection:getRoot()))
 
 end
 

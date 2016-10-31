@@ -27,27 +27,27 @@ function Interfaceable:receivesTouch ( x, y )
 end
 
 function Interfaceable:onTouch ( x, y )
-	if not self:receivesTouch(x,y) then return end
-	self.delegate:onTouch(x - self.transform.x, y - self.transform.y)
+	if not self:receivesTouch(x,y) then return false end
+	return self.delegate:onTouch(x - self.transform.x, y - self.transform.y)
 end
 
 function Interfaceable:onDrag ( x, y, dx, dy )
-	if not self:receivesTouch(x,y) then return end
-	self.delegate:onDrag(x - self.transform.x, y - self.transform.y, dx, dy)
+	if not self:receivesTouch(x,y) then return false end
+	return self.delegate:onDrag(x - self.transform.x, y - self.transform.y, dx, dy)
 end
 
 function Interfaceable:onHover ( x, y )
-	if not self:receivesTouch(x,y) then return end
-	self.delegate:onHover(x - self.transform.x, y - self.transform.y)
+	if not self:receivesTouch(x,y) then return false end
+	return self.delegate:onHover(x - self.transform.x, y - self.transform.y)
 end
 
 function Interfaceable:onUntouch ( x, y )
-	if not self:receivesTouch(x,y) then return end
-	self.delegate:onUntouch(x - self.transform.x, y - self.transform.y)
+	if not self:receivesTouch(x,y) then return false end
+	return self.delegate:onUntouch(x - self.transform.x, y - self.transform.y)
 end
 
 function Interfaceable:onKeypress ( key )
-	self.delegate:onKeypress(key)
+	return self.delegate:onKeypress(key)
 end
 
 return Interfaceable

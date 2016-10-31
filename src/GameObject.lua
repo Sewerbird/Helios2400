@@ -2,50 +2,16 @@
 local GameObject = class("GameObject", {
 	uid = nil,
 	components = {},
-	children = {},
-	parent = nil,
 	description = ''
 })
 
-function GameObject:init ( description, array_components )
-	if array_components == nil then array_components = description end
-
+function GameObject:init ( description, array_components, systems_to_register )
 	self.description = description
 	if array_components ~= nil then
 		for i = 1, #array_components do
 			self:addComponent(array_components[i])
 		end
 	end
-end
-
-function GameObject:setParent ( newParent )
-	if self.parent ~= nil then
-		self.parent:removeChild(self)
-	end
-	self.parent = newParent
-	newParent.addChild(self)
-end
-
-function GameObject:addChild ( child )
-	table.insert(self.children, child)
-end
-
-function GameObject:addChildren ( children )
-	for i, child in ipairs(children) do
-		self:addChild(child)
-	end
-end
-
-function GameObject:removeChild ( child )
-	table.remove(children, child)
-end
-
-function GameObject:getChildren ()
-	return self.children
-end
-
-function GameObject:hasChildren ()
-	return #self.children > 0
 end
 
 function GameObject:hasComponent ( type )

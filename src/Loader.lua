@@ -26,7 +26,6 @@ function Loader:debugLoad ()
   local Debug_Ship_Quad = love.graphics.newQuad(168, 0, 50, 50, Debug_Spritesheet:getDimensions())
   local Debug_Troop_Quad = love.graphics.newQuad(218, 0, 50, 50, Debug_Spritesheet:getDimensions())
 
-
   --[[ Instantiate Tilemap View ]]--
 
   --Make Tiles
@@ -87,7 +86,7 @@ function Loader:debugLoad ()
       elseif r < 0.30 then 
         hex = Grass_Hex_Quad
         if math.random() < 0.3 then
-          local debug_city = GameObject:new('City', {
+          local debug_city = Global.Registry:add(GameObject:new('City', {
             Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
             Interfaceable:new(
               Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37}),
@@ -97,11 +96,11 @@ function Loader:debugLoad ()
               Sprite:new(Debug_Spritesheet, City_Quad)
               ),
             Placeable:new(address)
-          })
+          }))
           table.insert(Debug_Citys, debug_city)
         end
         if math.random() < 0.3 then
-          local debug_unit = GameObject:new('Troop', {
+          local debug_unit = Global.Registry:add(GameObject:new('Troop', {
             Transform:new((i-1) * 84 + ioffset + 17, (j-1) * 73 + joffset + 13),
             Interfaceable:new(
               Polygon:new({ w = 50, h = 50 }),
@@ -110,13 +109,13 @@ function Loader:debugLoad ()
               Polygon:new({ w = 50, h = 50 }),
               Sprite:new(Debug_Spritesheet, Debug_Troop_Quad)),
             Placeable:new(address)
-          })
+          }))
           table.insert(Debug_Units, debug_unit)
         end
       else 
         hex = Water_Hex_Quad 
         if math.random() < 0.1 then
-          local debug_unit = GameObject:new('Ship', {
+          local debug_unit = Global.Registry:add(GameObject:new('Ship', {
             Transform:new((i-1) * 84 + ioffset + 17, (j-1) * 73 + joffset + 13),
             Interfaceable:new(
               Polygon:new({ w = 50, h = 50 }),
@@ -125,7 +124,7 @@ function Loader:debugLoad ()
               Polygon:new({ w = 50, h = 50 }),
               Sprite:new(Debug_Spritesheet, Debug_Ship_Quad)),
             Placeable:new(address)
-          })
+          }))
           table.insert(Debug_Units, debug_unit)
         end
       end
@@ -137,7 +136,7 @@ function Loader:debugLoad ()
             print(inspect(addr.neighbors))
           end
         end)
-	  	local debug_hex = GameObject:new('Tile',{
+	  	local debug_hex = Global.Registry:add(GameObject:new('Tile',{
 	  		Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
 		    Interfaceable:new(
 		      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
@@ -147,7 +146,7 @@ function Loader:debugLoad ()
 		      Sprite:new(Debug_Spritesheet, hex)
 		      ),
         addressable
-  		})
+  		}))
   		table.insert(Debug_Hexes, debug_hex)
 
       idx = idx + 1
@@ -162,31 +161,30 @@ function Loader:debugLoad ()
         t:translate(dx,dy)
       end
     end)
-  local Map_Layer = GameObject:new('Map Layer', {
+  local Map_Layer = Global.Registry:add(GameObject:new('Map Layer', {
 	  Transform:new(500,100),
   	Interfaceable:new(
   		Polygon:new({w=1200, h = 800}),
   		Map_Layer_Touch_Delegate)
-  	})
-  local Tile_Layer = GameObject:new('Tile_Layer',{})
-  local City_Layer = GameObject:new('City_Layer',{})
-  local Unit_Layer = GameObject:new('Unit_Layer',{})
-
-  Map_Layer:addChildren({Tile_Layer, City_Layer, Unit_Layer})
-  Tile_Layer:addChildren(Debug_Hexes)
-  City_Layer:addChildren(Debug_Citys)
-  Unit_Layer:addChildren(Debug_Units)
-
-  local UI_Layer = GameObject:new('UI_Layer',{})
-
-  local MapView = GameObject:new('Map_View',{})
-
-  MapView:addChildren({Map_Layer, UI_Layer})
-
-  print(printHeirarchy(MapView, '', ''))
+  	}))
 
 
-  return MapView
+  local SceneGraph = Collection:new();
+
+  local MapView = Global.Registry:add(GameObject:new('Map_View',{}))
+  local Tile_Layer = Global.Registry:add(GameObject:new('Tile_Layer',{}))
+  local City_Layer = Global.Registry:add(GameObject:new('City_Layer',{}))
+  local Unit_Layer = Global.Registry:add(GameObject:new('Unit_Layer',{}))
+  local UI_Layer = Global.Registry:add(GameObject:new('UI_Layer',{}))
+
+  SceneGraph:attach(MapView)
+  SceneGraph:attachAll({Map_Layer,UI_Layer}, MapView)
+  SceneGraph:attachAll({Tile_Layer,City_Layer,Unit_Layer,UI_Layer}, Map_Layer)
+  SceneGraph:attachAll(Debug_Hexes, Tile_Layer)
+  SceneGraph:attachAll(Debug_Citys, City_Layer)
+  SceneGraph:attachAll(Debug_Units, Unit_Layer)
+
+  return SceneGraph
 
 end
 

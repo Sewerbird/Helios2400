@@ -3,6 +3,9 @@ inspect = require 'lib/inspect'
 ProFi = require 'lib/ProFi'
 
 Loader = require 'src/Loader'
+
+GameObjectRegistry = require 'src/GameObjectRegistry'
+Collection = require 'src/Collection'
 InterfaceableSystem = require 'src/InterfaceableSystem'
 RenderableSystem = require 'src/RenderableSystem'
 
@@ -12,28 +15,32 @@ function love.load()
 
   ProFi:start()
 
-  debugScene = Loader:new():debugLoad()
+  Global = {
+    Registry = GameObjectRegistry:new(),
+    Systems = {
+      Render = RenderableSystem:new(Collection:new()),
+      Interface = InterfaceableSystem:new(Collection:new())
+    }
+  }
+  --[[ Instantiate Global.Systems ]]--
 
-  Sys_Renderable = RenderableSystem:new()
-  Sys_Renderable:addScene('earth_view', debugScene)
-  Sys_Renderable:setScene('earth_view')
+  local scene = Loader:new():debugLoad()
 
-  Sys_Interfaceable = InterfaceableSystem:new()
-  Sys_Interfaceable.rootGameObject = debugScene
-
-
+  Global.Systems.Render = RenderableSystem:new(scene)
+  Global.Systems.Interface = InterfaceableSystem:new(scene)
+  
 end
 
 function love.update( dt )
   --Debug mouse-to-hex output
-  if not GLOBAL_PAUSE then
+  if not Global_PAUSE then
   end
 end
 
 function love.draw()
-  if not GLOBAL_PAUSE then
+  if not Global_PAUSE then
 
-    Sys_Renderable:draw()
+    Global.Systems.Render:draw()
 
     local delta = love.timer.getFPS()
     love.graphics.print({{255,5,5}, "FPS: " .. delta}, 10, 10, 0, 1, 1)
@@ -41,47 +48,46 @@ function love.draw()
 end
 
 function love.mousepressed( x, y, button )
-  GLOBAL_DRAGBEGUN = true
-  Sys_Interfaceable:onTouch(x,y)
+  Global.DRAGBEGUN = true
+  Global.Systems.Interface:onTouch(x,y)
 end
 
 function love.mousemoved( x, y, dx, dy, istouch )
-  if GLOBAL_DRAGBEGUN then
-    Sys_Interfaceable:onDrag(x,y,dx,dy)
+  if Global.DRAGBEGUN then
+    Global.Systems.Interface:onDrag(x,y,dx,dy)
   end
 end
 
 function love.mousereleased( x, y, button )
-  GLOBAL_DRAGBEGUN = false
-  Sys_Interfaceable:onUntouch(x,y)
+  Global.DRAGBEGUN = false
+  Global.Systems.Interface:onUntouch(x,y)
 end
 
 function love.touchpressed( id, x, y, pressure )
-  Sys_Interfaceable:onTouch(x,y)
+  Global.Systems.Interface:onTouch(x,y)
 end
 
 function love.touchmoved( id, x, y, dx, dy, pressure )
-  if GLOBAL_DRAGBEGUN then
-    Sys_Interfaceable:onDrag(x,y,dx,dy)
+  if Global.DRAGBEGUN then
+    Global.Systems.Interface:onDrag(x,y,dx,dy)
   end
 end
 
 function love.touchreleased( id, x, y, pressure )
-  Sys_Interfaceable:onUntouch(x,y)
+  Global.Systems.Interface:onUntouch(x,y)
 end
 
 function love.keypressed( key )
-  Sys_Interfaceable:onKeypress(key)
+  Global.Systems.Interface:onKeypress(key)
 end
-
 
 function love.focus( f )
   if not f then
     print("LOST FOCUS")
-    GLOBAL_PAUSE = true
+    Global.PAUSE = true
   else
     print("GAINED FOCUS")
-    GLOBAL_PAUSE = false
+    Global.PAUSE = false
   end
 end
 
