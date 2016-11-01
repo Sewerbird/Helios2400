@@ -32,8 +32,8 @@ function RenderableSystem:draw ()
 		end
 
 		--Do draw
-		if root:hasComponent('Renderable') then
-			local renderable = root:getComponent('Renderable')
+		local renderable = root:getComponent('Renderable')
+		if renderable ~= nil then
 			if renderable.sprite ~= nil then
 				love.graphics.draw(renderable.sprite.img, renderable.sprite.quad)
 			else
@@ -58,7 +58,7 @@ function RenderableSystem:draw ()
 		end
 
 		--Unpop the coordinate system
-		if delta ~= nil and root:hasComponent('Transform') then
+		if delta ~= nil then
 			love.graphics.translate(-delta.x, -delta.y)
 		end
 	end
