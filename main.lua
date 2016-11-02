@@ -4,31 +4,13 @@ ProFi = require 'lib/ProFi'
 
 Loader = require 'src/Loader'
 
-GameObjectRegistry = require 'src/GameObjectRegistry'
-Collection = require 'src/Collection'
-InterfaceableSystem = require 'src/InterfaceableSystem'
-RenderableSystem = require 'src/RenderableSystem'
-
 
 function love.load()
   print("Time to play!")
 
   ProFi:start()
 
-  Global = {
-    Registry = GameObjectRegistry:new(),
-    Systems = {
-      Render = RenderableSystem:new(Collection:new()),
-      Interface = InterfaceableSystem:new(Collection:new())
-    }
-  }
-  --[[ Instantiate Global.Systems ]]--
-
-  local scene = Loader:new():debugLoad()
-
-  Global.Systems.Render = RenderableSystem:new(scene)
-  Global.Systems.Interface = InterfaceableSystem:new(scene)
-  
+  Loader:new():debugLoad()
 end
 
 function love.update( dt )

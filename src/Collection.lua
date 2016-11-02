@@ -14,7 +14,8 @@ function Edge:init ( from, to )
 end
 
 local Node = class("Node", {
-	nid = nil
+	nid = nil,
+	children = {}
 })
 function Node:init ( nid )
 	self.nid = nid
@@ -30,11 +31,11 @@ function Collection:getRoot ( targetId )
 	assert(#self.nodes > 0, 'no nodes in tree to be a root')
 
 	if #self.nodes == 0 then return nil end
-	if targetId == nil then targetId = self.nodes[1] end
+	if targetId == nil then targetId = self.nodes[2].nid end
 
 	local parent = self:getParent(targetId)
 	if parent == nil then 
-		return targetId.nid 
+		return targetId
 	else 
 		return self:getRoot(parent) 
 	end
@@ -75,9 +76,10 @@ end
 
 function Collection:attach ( attacheeId, attachToId )
 	assert(attacheeId ~= nil, 'trid to attach nil')
-	local newNode = Node:new(attacheeId)
-	self.nodes[attacheeId] = newNode
-	table.insert(self.nodes, newNode)
+	if self.nodes[attacheeId] == nil then
+		local newNode = Node:new(attacheeId)
+		self.nodes[attacheeId] = newNode
+	end
 
 	if attachToId == nil then 
 		print 'Warning: adding node to collection without a parent.'
@@ -88,22 +90,18 @@ function Collection:attach ( attacheeId, attachToId )
 	end
 end
 
-function Collection:detach ( detachee )
+function Collection:detach ( detachee, detachFromId )
 	assert(detachee ~= nil, 'tried to detach nil')
 
-	for i, v in ipairs(self.nodes) do
-		if v.nid == detachee then
-			table.remove(i)
-			break
-		end
-	end
-
 	for i, edge in ipairs(self.edges) do
-		if edge.to == detachee or edge.from == detachee then
-			if edge.from == detachee then
-				print 'Warning: detaching from middle of tree'
+		if edge.to == detachee then
+			for j, child in ipairs(self.nodes[edge.from].children) do
+				if child == detachee then
+					table.remove(self.nodes[edge.from].children, j)
+					break
+				end
 			end
-			table.remove(i)
+			table.remove(self.edges, i)
 			break
 		end
 	end
