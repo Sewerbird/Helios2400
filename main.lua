@@ -5,11 +5,6 @@ debugGraph = require 'lib/debugGraph'
 
 Loader = require 'src/Loader'
 
-GameObjectRegistry = require 'src/GameObjectRegistry'
-Collection = require 'src/Collection'
-InterfaceableSystem = require 'src/InterfaceableSystem'
-RenderableSystem = require 'src/RenderableSystem'
-
 --TODO: move this into a util lib
 function math.round(n, deci)
   deci = 10^(deci or 0)
