@@ -1,32 +1,56 @@
 class = require 'lib/30log'
 inspect = require 'lib/inspect'
 ProFi = require 'lib/ProFi'
+debugGraph = require 'lib/debugGraph'
 
 Loader = require 'src/Loader'
 
+GameObjectRegistry = require 'src/GameObjectRegistry'
+Collection = require 'src/Collection'
+InterfaceableSystem = require 'src/InterfaceableSystem'
+RenderableSystem = require 'src/RenderableSystem'
+
+--TODO: move this into a lib
+function math.round(n, deci)
+  deci = 10^(deci or 0)
+  return math.floor(n*deci+.5)/deci
+end
 
 function love.load()
   print("Time to play!")
 
-  ProFi:start()
-
   Loader:new():debugLoad()
+
+  --Profiling stuff
+  ProFi:start()
+  fpsGraph = debugGraph:new('fps', 0, 0)
+  memGraph = debugGraph:new('mem', 0, 30)
+  dtGraph = debugGraph:new('custom', 0, 60)
+  
 end
 
 function love.update( dt )
   --Debug mouse-to-hex output
   if not Global_PAUSE then
   end
+
+  --Profiling stuff
+  fpsGraph:update(dt)
+  memGraph:update(dt)
+  dtGraph:update(dt, math.floor(dt * 1000))
+  dtGraph.label = 'DT: ' ..  math.round(dt, 4)
 end
 
 function love.draw()
   if not Global_PAUSE then
 
     Global.Systems.Render:draw()
-
-    local delta = love.timer.getFPS()
-    love.graphics.print({{255,5,5}, "FPS: " .. delta}, 10, 10, 0, 1, 1)
   end
+
+  --Profiling stuff
+  fpsGraph:draw()
+  memGraph:draw()
+  dtGraph:draw()
 end
 
 function love.mousepressed( x, y, button )
