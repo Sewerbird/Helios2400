@@ -26,12 +26,6 @@ end
 
 function love.update( dt )
 
-  -- Profiling stuff
-  fpsGraph:update(dt)
-  memGraph:update(dt)
-  dtGraph:update(dt, math.floor(dt * 1000))
-  dtGraph.label = 'DT: ' ..  math.round(dt, 4)
-
   --Debug mouse-to-hex output
   if not Global_PAUSE then
   end
