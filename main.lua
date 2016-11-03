@@ -10,7 +10,7 @@ Collection = require 'src/Collection'
 InterfaceableSystem = require 'src/InterfaceableSystem'
 RenderableSystem = require 'src/RenderableSystem'
 
---TODO: move this into a lib
+--TODO: move this into a util lib
 function math.round(n, deci)
   deci = 10^(deci or 0)
   return math.floor(n*deci+.5)/deci
@@ -30,6 +30,13 @@ function love.load()
 end
 
 function love.update( dt )
+
+  -- Profiling stuff
+  fpsGraph:update(dt)
+  memGraph:update(dt)
+  dtGraph:update(dt, math.floor(dt * 1000))
+  dtGraph.label = 'DT: ' ..  math.round(dt, 4)
+
   --Debug mouse-to-hex output
   if not Global_PAUSE then
   end
@@ -43,11 +50,10 @@ end
 
 function love.draw()
   if not Global_PAUSE then
-
     Global.Systems.Render:draw()
   end
 
-  --Profiling stuff
+  -- Profiling stuff
   fpsGraph:draw()
   memGraph:draw()
   dtGraph:draw()
