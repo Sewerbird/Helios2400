@@ -31,8 +31,12 @@ function Collection:getRoot ( targetId )
 	assert(#self.nodes > 0, 'no nodes in tree to be a root')
 
 	if #self.nodes == 0 then return nil end
-	if targetId == nil then targetId = self.nodes[2].nid end
-
+	if targetId == nil then 
+		for i, v in pairs(self.nodes) do
+			targetId = v.nid 
+			break
+		end
+	end
 	local parent = self:getParent(targetId)
 	if parent == nil then 
 		return targetId
