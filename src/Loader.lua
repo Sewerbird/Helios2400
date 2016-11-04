@@ -10,7 +10,14 @@ Transform = require 'src/Transform'
 Polygon = require 'src/Polygon'
 Sprite = require 'src/Sprite'
 HexCoord = require 'src/HexCoord'
+GameObjectRegistry = require 'src/GameObjectRegistry'
+Collection = require 'src/Collection'
+InterfaceableSystem = require 'src/InterfaceableSystem'
+RenderableSystem = require 'src/RenderableSystem'
+SelectableSystem = require 'src/SelectableSystem'
+
 require 'lib/my_utils'
+local class = require 'lib/30log'
 
 local Loader = class("Loader", {
 	
@@ -25,7 +32,12 @@ function Loader:debugLoad ()
   local City_Quad = love.graphics.newQuad(0, 73, 84, 73, Debug_Spritesheet:getDimensions())
   local Debug_Ship_Quad = love.graphics.newQuad(168, 0, 50, 50, Debug_Spritesheet:getDimensions())
   local Debug_Troop_Quad = love.graphics.newQuad(218, 0, 50, 50, Debug_Spritesheet:getDimensions())
+  local Debug_Cursor_Quad = love.graphics.newQuad(0, 146, 84, 73, Debug_Spritesheet:getDimensions())
 
+  Global = {
+    Registry = GameObjectRegistry:new(),
+    Systems = {}
+  }
   --[[ Instantiate Tilemap View ]]--
 
   --Make Tiles
@@ -71,12 +83,14 @@ function Loader:debugLoad ()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
           print('Clicked on a unit!')
+          Global.Systems.Selection:select(this.component.gob.uid)
         end
       end)
       local City_Touch_Delegate = TouchDelegate:new()
       City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
           print('Clicked on a city!')
+          Global.Systems.Selection:select(this.component.gob.uid)
         end
       end)
 
@@ -133,7 +147,7 @@ function Loader:debugLoad ()
       Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
           if this.component.gob:hasComponent('Addressable') then
             local addr = this.component.gob:getComponent('Addressable')
-            print(inspect(addr.neighbors))
+            print('hex has neighbors ' .. inspect(addr.neighbors))
           end
         end)
 	  	local debug_hex = Global.Registry:add(GameObject:new('Tile',{
@@ -184,7 +198,13 @@ function Loader:debugLoad ()
   SceneGraph:attachAll(Debug_Citys, City_Layer)
   SceneGraph:attachAll(Debug_Units, Unit_Layer)
 
-  return SceneGraph
+
+  Global.Systems.Render = RenderableSystem:new(SceneGraph)
+  Global.Systems.Interface = InterfaceableSystem:new(SceneGraph)
+  Global.Systems.Selection = SelectableSystem:new(SceneGraph, Sprite:new(Debug_Spritesheet, Debug_Cursor_Quad))
+
+  Global.Systems.Selection:select(2)
+  
 
 end
 

@@ -5,12 +5,9 @@ debugGraph = require 'lib/debugGraph'
 
 Loader = require 'src/Loader'
 
-GameObjectRegistry = require 'src/GameObjectRegistry'
-Collection = require 'src/Collection'
-InterfaceableSystem = require 'src/InterfaceableSystem'
-RenderableSystem = require 'src/RenderableSystem'
+GOAL_MEMORY = 1024 * 64 --64 Megabytes
 
---TODO: move this into a lib
+--TODO: move this into a util lib
 function math.round(n, deci)
   deci = 10^(deci or 0)
   return math.floor(n*deci+.5)/deci
@@ -19,20 +16,7 @@ end
 function love.load()
   print("Time to play!")
 
-
-  Global = {
-    Registry = GameObjectRegistry:new(),
-    Systems = {
-      Render = RenderableSystem:new(Collection:new()),
-      Interface = InterfaceableSystem:new(Collection:new())
-    }
-  }
-  --[[ Instantiate Global.Systems ]]--
-
-  local scene = Loader:new():debugLoad()
-
-  Global.Systems.Render = RenderableSystem:new(scene)
-  Global.Systems.Interface = InterfaceableSystem:new(scene)
+  Loader:new():debugLoad()
 
   --Profiling stuff
   ProFi:start()
@@ -43,6 +27,9 @@ function love.load()
 end
 
 function love.update( dt )
+
+  if collectgarbage('count') > GOAL_MEMORY then error('Using too much memory mate!') end
+
   --Debug mouse-to-hex output
   if not Global_PAUSE then
   end
@@ -56,11 +43,10 @@ end
 
 function love.draw()
   if not Global_PAUSE then
-
     Global.Systems.Render:draw()
   end
 
-  --Profiling stuff
+  -- Profiling stuff
   fpsGraph:draw()
   memGraph:draw()
   dtGraph:draw()
