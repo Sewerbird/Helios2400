@@ -5,6 +5,8 @@ debugGraph = require 'lib/debugGraph'
 
 Loader = require 'src/Loader'
 
+GOAL_MEMORY = 1024 * 64 --64 Megabytes
+
 --TODO: move this into a util lib
 function math.round(n, deci)
   deci = 10^(deci or 0)
@@ -25,6 +27,8 @@ function love.load()
 end
 
 function love.update( dt )
+
+  if collectgarbage('count') > GOAL_MEMORY then error('Using too much memory mate!') end
 
   --Debug mouse-to-hex output
   if not Global_PAUSE then
