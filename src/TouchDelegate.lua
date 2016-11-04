@@ -1,4 +1,5 @@
 --TouchDelegate.lua
+local class = require 'lib/30log'
 local TouchDelegate = class("TouchDelegate", {
 	handlers = {},
 	component = nil

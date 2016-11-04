@@ -17,6 +17,7 @@ RenderableSystem = require 'src/RenderableSystem'
 SelectableSystem = require 'src/SelectableSystem'
 
 require 'lib/my_utils'
+local class = require 'lib/30log'
 
 local Loader = class("Loader", {
 	

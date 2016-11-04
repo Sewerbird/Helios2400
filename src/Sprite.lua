@@ -1,4 +1,5 @@
 --Sprite.lua
+local class = require 'lib/30log'
 local Sprite = class("Sprite", {
 	quad = nil,
 	img = nil

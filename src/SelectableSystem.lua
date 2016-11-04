@@ -2,26 +2,39 @@
 local System = require 'src/System'
 local Selectable = require 'src/Selectable'
 
+local GameObject = require 'src/GameObject'
+local Transform = require 'src/Transform'
+local Renderable = require 'src/Renderable'
+local Placeable = require 'src/Placeable'
+local Polygon = require 'src/Polygon'
+
 local SelectableSystem = System:extend({
 	current_selection = nil,
-	selected_unit_cursor_object = nil
+	selected_unit_cursor_object = nil,
+	cursor_sprite = nil
 })
 
 function SelectableSystem:init (targetCollection, cursor_sprite)
 	SelectableSystem.super.init(self, targetCollection)
-	self.selected_unit_cursor_object = Global.Registry:add(GameObject:new('Cursor',{
-		Transform:new(0,0),
-	    Renderable:new(
-	      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-	      cursor_sprite
-	      ),
-	    Placeable:new()
-	}))
+	self.cursor_sprite = cursor_sprite
 
 end
 
+function SelectableSystem:createCursor ()
+	return Global.Registry:add(GameObject:new('Cursor',{
+		Transform:new(0,0),
+	    Renderable:new(
+	      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
+	      self.cursor_sprite
+	      ),
+	    Placeable:new()
+	}))
+end
+
 function SelectableSystem:select ( gameObjectId )
-	print('selecting' .. tostring(gameObjectId))
+	if self.selected_unit_cursor_object == nil then
+		self.selected_unit_cursor_object = self:createCursor()
+	end
 	if self.current_selection ~= nil then 
 		local tgtObj = Global.Registry:get(self.current_selection)
 		local cursor = Global.Registry:get(self.selected_unit_cursor_object)

@@ -1,3 +1,4 @@
+local class = require 'lib/30log'
 local HexCoord = class('HexCoord',{
 	
 })
