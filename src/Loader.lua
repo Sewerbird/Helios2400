@@ -27,6 +27,10 @@ function Loader:debugLoad ()
   local Debug_Ship_Quad = love.graphics.newQuad(168, 0, 50, 50, Debug_Spritesheet:getDimensions())
   local Debug_Troop_Quad = love.graphics.newQuad(218, 0, 50, 50, Debug_Spritesheet:getDimensions())
 
+  local music = love.audio.newSource('assets/music/Ritual.mp3')
+  music:setLooping(true)
+  music:play()
+
   --[[ Instantiate Tilemap View ]]--
 
   --Make Tiles
