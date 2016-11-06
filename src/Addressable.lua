@@ -2,6 +2,7 @@
 
 local Component = require 'src/Component'
 local Addressable = Component:extend('Addressable', {
+	name = 'Addressable',
 	neighbors = nil,
 	idx = nil
 })

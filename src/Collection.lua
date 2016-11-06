@@ -24,12 +24,8 @@ function Collection:getRoot ( targetId )
 
 	--if #self.nodes == 0 then return nil end
 	if targetId == nil then 
-		print('target id is nil')
 		for i, v in pairs(self.nodes) do
-			print('getting root')
-			print(v.nid)
 			if self.nodes[v.nid] ~= nil then
-				print('setting target id to ' .. v.nid)
 				targetId = v.nid
 				break
 			end
@@ -78,9 +74,7 @@ function Collection:attach ( attacheeId, attachToId )
 		self.nodes[attacheeId] = newNode
 	end
 
-	if attachToId == nil then 
-		print('Warning: adding node to collection without a parent.' .. attacheeId)
-	else
+	if attachToId ~= nil then 
 		table.insert(self.nodes[attacheeId].parents,attachToId)
 		table.insert(self.nodes[attachToId].children,attacheeId)
 	end
