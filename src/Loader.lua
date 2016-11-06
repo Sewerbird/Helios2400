@@ -36,6 +36,7 @@ function Loader:debugLoad ()
 
   local music = love.audio.newSource('assets/music/Ritual.mp3')
   music:setLooping(true)
+  music:setVolume(BG_MUSIC_VOL)
   music:play()
 
   Global = {
@@ -178,7 +179,7 @@ function Loader:debugLoad ()
       end
     end)
   local Map_Layer = Global.Registry:add(GameObject:new('Map Layer', {
-	  Transform:new(500,100),
+	  Transform:new(-60,10),
   	Interfaceable:new(
   		Polygon:new({w=1200, h = 800}),
   		Map_Layer_Touch_Delegate)

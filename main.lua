@@ -5,8 +5,6 @@ debugGraph = require 'lib/debugGraph'
 
 Loader = require 'src/Loader'
 
-GOAL_MEMORY = 1024 * 64 --64 Megabytes
-
 --TODO: move this into a util lib
 function math.round(n, deci)
   deci = 10^(deci or 0)
@@ -20,9 +18,9 @@ function love.load()
 
   --Profiling stuff
   ProFi:start()
-  fpsGraph = debugGraph:new('fps', 0, 0)
-  memGraph = debugGraph:new('mem', 0, 30)
-  dtGraph = debugGraph:new('custom', 0, 60)
+  fpsGraph = debugGraph:new('fps', 0, 0, 75)
+  memGraph = debugGraph:new('mem', 0, 30, 75)
+  dtGraph = debugGraph:new('custom', 0, 60, 75)
   
 end
 
@@ -46,6 +44,9 @@ function love.draw()
   end
 
   -- Profiling stuff
+  love.graphics.setColor({100,100,100,100})
+  love.graphics.rectangle('fill',0,0,75,100)
+  love.graphics.setColor({255,255,255,255})
   fpsGraph:draw()
   memGraph:draw()
   dtGraph:draw()
