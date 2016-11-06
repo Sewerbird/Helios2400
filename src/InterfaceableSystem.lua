@@ -31,7 +31,7 @@ function InterfaceableSystem:propogateEvent ( iobj, func, x, y, dx, dy, btn )
 	local l_x = x
 	local l_y = y
 	local has_consumed = false
-	local obj = Global.Registry:get(iobj)
+	local obj = self.registry:get(iobj)
 	--Push transform
 	if obj:hasComponent('Transform') then
 		transform = obj:getComponent('Transform')

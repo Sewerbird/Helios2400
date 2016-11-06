@@ -6,7 +6,8 @@ local Collection = class("Collection", {
 })
 
 local Node = class("Node", {
-	nid = nil
+	nid = nil,
+	children = {}
 })
 function Node:init ( nid )
 	self.nid = nid
@@ -20,8 +21,8 @@ end
 
 function Collection:getRoot ( targetId )
 	--TODO: Only works if collection is a singleton tree
-	--assert(#self.nodes > 0, 'no nodes in tree to be a root')
 
+	--assert(#self.nodes > 0, 'no nodes in tree to be a root')
 	--if #self.nodes == 0 then return nil end
 	if targetId == nil then 
 		for i, v in pairs(self.nodes) do
@@ -68,7 +69,6 @@ end
 
 function Collection:attach ( attacheeId, attachToId )
 	assert(attacheeId ~= nil, 'tried to attach nil' .. tostring(attachToId))
-	
 	if self.nodes[attacheeId] == nil then
 		local newNode = Node:new(attacheeId)
 		self.nodes[attacheeId] = newNode
@@ -80,9 +80,8 @@ function Collection:attach ( attacheeId, attachToId )
 	end
 end
 
-function Collection:detach ( detachee )
+function Collection:detach ( detachee, detachFromId )
 	assert(detachee ~= nil, 'tried to detach nil')
-
 	v = self.nodes[detachee]
 	for j, p in ipairs(v.parents) do
 		for k, c in ipairs(self.nodes[p].children) do

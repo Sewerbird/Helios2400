@@ -3,7 +3,4 @@ local AddressableSystem = System:extend('AddressableSystem',{
 	
 })
 
-function AddressableSystem:init ()
-end
-
 return AddressableSystem
