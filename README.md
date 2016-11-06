@@ -58,10 +58,16 @@ Although Helios2400 is open source software, there are plans to seek funding for
 
 Thanks goes to [Coderbunker](http://www.coderbunker.com/) for support in finding developers and funding and encouragement for Helios2400.
 
-Contributors
+### Contributors
 
 - **Edward Miller** Producer & Lead Developer of Helios2400
 - **Ricky Ng-Adam** Coderbunker Founder
+
+### Music
+
+"Ritual" **Kevin MacLeod** (incompetech.com)
+Licensed under Creative Commons: By Attribution 3.0 License
+http://creativecommons.org/licenses/by/3.0/
 
 ## License/Legal
 

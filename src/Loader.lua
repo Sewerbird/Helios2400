@@ -34,6 +34,10 @@ function Loader:debugLoad ()
   local Debug_Troop_Quad = love.graphics.newQuad(218, 0, 50, 50, Debug_Spritesheet:getDimensions())
   local Debug_Cursor_Quad = love.graphics.newQuad(0, 146, 84, 73, Debug_Spritesheet:getDimensions())
 
+  local music = love.audio.newSource('assets/music/Ritual.mp3')
+  music:setLooping(true)
+  music:play()
+
   Global = {
     Registry = GameObjectRegistry:new(),
     Systems = {}
