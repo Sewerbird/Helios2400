@@ -53,7 +53,7 @@ end
 
 function love.mousepressed( x, y, button )
   Global.DRAGBEGUN = true
-  Global.Systems.Interface:onTouch(x,y)
+  --Global.Systems.Interface:onTouch(x,y)
 end
 
 function love.mousemoved( x, y, dx, dy, istouch )
@@ -64,11 +64,11 @@ end
 
 function love.mousereleased( x, y, button )
   Global.DRAGBEGUN = false
-  Global.Systems.Interface:onUntouch(x,y)
+  Global.Systems.Interface:onTouch(x,y)
 end
 
 function love.touchpressed( id, x, y, pressure )
-  Global.Systems.Interface:onTouch(x,y)
+  --Global.Systems.Interface:onTouch(x,y)
 end
 
 function love.touchmoved( id, x, y, dx, dy, pressure )
@@ -78,7 +78,7 @@ function love.touchmoved( id, x, y, dx, dy, pressure )
 end
 
 function love.touchreleased( id, x, y, pressure )
-  Global.Systems.Interface:onUntouch(x,y)
+  Global.Systems.Interface:onTouch(x,y)
 end
 
 function love.keypressed( key )

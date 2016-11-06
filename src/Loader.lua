@@ -77,20 +77,17 @@ function Loader:debugLoad ()
       end
 
       local address = 'Earth' .. HexCoord:new(i,j):toString()
-      local addressable = Addressable:new(address, neighbors)
 
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
           print('Clicked on a unit!')
-          Global.Systems.Selection:select(this.component.gob.uid)
         end
       end)
       local City_Touch_Delegate = TouchDelegate:new()
       City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
           print('Clicked on a city!')
-          Global.Systems.Selection:select(this.component.gob.uid)
         end
       end)
 
@@ -148,6 +145,7 @@ function Loader:debugLoad ()
           if this.component.gob:hasComponent('Addressable') then
             local addr = this.component.gob:getComponent('Addressable')
             print('hex has neighbors ' .. inspect(addr.neighbors))
+            Global.Systems.Selection:select(this.component.gob.uid)
           end
         end)
 	  	local debug_hex = Global.Registry:add(GameObject:new('Tile',{
@@ -159,7 +157,7 @@ function Loader:debugLoad ()
 		      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 		      Sprite:new(Debug_Spritesheet, hex)
 		      ),
-        addressable
+        Addressable:new(address, neighbors)
   		}))
   		table.insert(Debug_Hexes, debug_hex)
 

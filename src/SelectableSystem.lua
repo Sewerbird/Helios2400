@@ -1,6 +1,5 @@
 --SelectableSystem.lua
 local System = require 'src/System'
-local Selectable = require 'src/Selectable'
 local GameObject = require 'src/GameObject'
 local Transform = require 'src/Transform'
 local Renderable = require 'src/Renderable'
