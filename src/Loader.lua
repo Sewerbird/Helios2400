@@ -29,10 +29,14 @@ function Loader:debugLoad ()
   local Grass_Hex_Quad = love.graphics.newQuad(0, 0, 84, 73, Debug_Spritesheet:getDimensions())
   local Water_Hex_Quad = love.graphics.newQuad(84, 0, 84, 73, Debug_Spritesheet:getDimensions())
   local Arctic_Hex_Quad = love.graphics.newQuad(84, 73, 84, 73, Debug_Spritesheet:getDimensions())
+  local Space_Hex_Quad = love.graphics.newQuad(84, 146, 84, 73, Debug_Spritesheet:getDimensions())
+  local Planet_1_Quad = love.graphics.newQuad(168, 146, 84, 73, Debug_Spritesheet:getDimensions())
+  local Planet_2_Quad = love.graphics.newQuad(252, 146, 84, 73, Debug_Spritesheet:getDimensions())
   local City_Quad = love.graphics.newQuad(0, 73, 84, 73, Debug_Spritesheet:getDimensions())
   local Debug_Ship_Quad = love.graphics.newQuad(168, 0, 50, 50, Debug_Spritesheet:getDimensions())
   local Debug_Troop_Quad = love.graphics.newQuad(218, 0, 50, 50, Debug_Spritesheet:getDimensions())
   local Debug_Cursor_Quad = love.graphics.newQuad(0, 146, 84, 73, Debug_Spritesheet:getDimensions())
+  local Debug_Spaceship_Quad = love.graphics.newQuad(218, 80, 50, 50, Debug_Spritesheet:getDimensions())
 
   local music = love.audio.newSource('assets/music/Ritual.mp3')
   music:setLooping(true)
@@ -98,10 +102,14 @@ function Loader:debugLoad ()
 
       local hex = nil
       local r = math.random()
-      if j == 1 or j == num_rows then hex = Arctic_Hex_Quad
+      if j == 1 or j == num_rows then hex = Space_Hex_Quad
       elseif r < 0.30 then 
-        hex = Grass_Hex_Quad
-        if math.random() < 0.3 then
+        hex = Space_Hex_Quad
+        if math.random() < 0.15 then
+          local planet = Planet_1_Quad
+          if math.random() > 0.3 then
+            planet = Planet_2_Quad
+          end
           local debug_city = Global.Registry:add(GameObject:new('City', {
             Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
             Interfaceable:new(
@@ -109,27 +117,28 @@ function Loader:debugLoad ()
               City_Touch_Delegate),
             Renderable:new(
               Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-              Sprite:new(Debug_Spritesheet, City_Quad)
+              Sprite:new(Debug_Spritesheet, planet)
               ),
             Placeable:new(address)
           }))
           table.insert(Debug_Citys, debug_city)
-        end
-        if math.random() < 0.3 then
-          local debug_unit = Global.Registry:add(GameObject:new('Troop', {
-            Transform:new((i-1) * 84 + ioffset + 17, (j-1) * 73 + joffset + 13),
-            Interfaceable:new(
-              Polygon:new({ w = 50, h = 50 }),
-              Unit_Touch_Delegate),
-            Renderable:new(
-              Polygon:new({ w = 50, h = 50 }),
-              Sprite:new(Debug_Spritesheet, Debug_Troop_Quad)),
-            Placeable:new(address)
-          }))
-          table.insert(Debug_Units, debug_unit)
+
+          if math.random() < 0.3 then
+            local debug_unit = Global.Registry:add(GameObject:new('Troop', {
+              Transform:new((i-1) * 84 + ioffset + 17, (j-1) * 73 + joffset + 13),
+              Interfaceable:new(
+                Polygon:new({ w = 50, h = 50 }),
+                Unit_Touch_Delegate),
+              Renderable:new(
+                Polygon:new({ w = 50, h = 50 }),
+                Sprite:new(Debug_Spritesheet, Debug_Troop_Quad)),
+              Placeable:new(address)
+            }))
+            table.insert(Debug_Units, debug_unit)
+          end
         end
       else 
-        hex = Water_Hex_Quad 
+        hex = Space_Hex_Quad 
         if math.random() < 0.1 then
           local debug_unit = Global.Registry:add(GameObject:new('Ship', {
             Transform:new((i-1) * 84 + ioffset + 17, (j-1) * 73 + joffset + 13),
@@ -138,7 +147,7 @@ function Loader:debugLoad ()
               Unit_Touch_Delegate),
             Renderable:new(
               Polygon:new({ w = 50, h = 50 }),
-              Sprite:new(Debug_Spritesheet, Debug_Ship_Quad)),
+              Sprite:new(Debug_Spritesheet, Debug_Spaceship_Quad)),
             Placeable:new(address)
           }))
           table.insert(Debug_Units, debug_unit)
