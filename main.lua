@@ -10,7 +10,9 @@ Collection = require 'src/Collection'
 InterfaceableSystem = require 'src/InterfaceableSystem'
 RenderableSystem = require 'src/RenderableSystem'
 
---TODO: move this into a lib
+GOAL_MEMORY = 1024 * 64 --64 Megabytes
+
+--TODO: move this into a util lib
 function math.round(n, deci)
   deci = 10^(deci or 0)
   return math.floor(n*deci+.5)/deci
@@ -43,6 +45,9 @@ function love.load()
 end
 
 function love.update( dt )
+  
+  if collectgarbage('count') > GOAL_MEMORY then error('Using too much memory mate!') end
+
   --Debug mouse-to-hex output
   if not Global_PAUSE then
   end

@@ -1,4 +1,5 @@
 --Collection.lua
+local class = require 'lib/30log'
 local Collection = class("Collection", {
 	edges = {},
 	nodes = {}

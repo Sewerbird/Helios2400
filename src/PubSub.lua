@@ -1,4 +1,5 @@
 --PubSub.lua
+local class = require 'lib/30log'
 local PubSub = class('PubSub', {
 	UID_CNTR = 0,
 	topics = {}

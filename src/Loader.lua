@@ -11,6 +11,7 @@ Polygon = require 'src/Polygon'
 Sprite = require 'src/Sprite'
 HexCoord = require 'src/HexCoord'
 require 'lib/my_utils'
+local class = require 'lib/30log'
 
 local Loader = class("Loader", {
 	
