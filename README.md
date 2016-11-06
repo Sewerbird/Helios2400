@@ -1,5 +1,7 @@
 # Helios2400
 
+![Helios2400 Header](https://github.com/Sewerbird/Helios2400/blob/master/SemiFancyScreenie.png)
+
 Helios 2400 is a Grand Strategy game set in the future Solar System: Imperial and Colonial factions of the solar empire vie for supremacy in the wake of a failed succession of the Terran throne.
 
 ## Inspiration
