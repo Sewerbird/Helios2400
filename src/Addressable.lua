@@ -9,6 +9,17 @@ local Addressable = Component:extend('Addressable', {
 function Addressable:init ( idx, neighbors)
 	self.neighbors = neighbors
 	self.idx = idx
+
+	self:neighborsValid()
+end
+
+function Addressable:neighborsValid()
+	for i, v in ipairs(self.neighbors) do
+		if v == self.idx then
+			error 'Tried to create addressable as its own neighbor'
+		end
+	end
+	return true
 end
 
 return Addressable
