@@ -1,4 +1,5 @@
 --GameObject.lua
+local class = require 'lib/30log'
 local GameObject = class("GameObject", {
 	uid = nil,
 	components = {},

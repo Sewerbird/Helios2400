@@ -1,4 +1,5 @@
 --Clickspace Polygon
+local class = require 'lib/30log'
 local Polygon = class('Polygon', {
 	vertices = { 0,0 , 10,0 , 5,10 },
 	w = 10,
@@ -7,11 +8,15 @@ local Polygon = class('Polygon', {
 })
 
 function Polygon:init ( vertices )
+	if not vertices then
+		error 'Tried to create a polygon without vertices'
+	end
+
 	--polygon initialization with a vertex list
 	if vertices and #vertices > 2 then
 		self.vertices = vertices
-	--convenience rectangular overload to allow ({x = 0, y = 0} {w = 100, h = 100}) intiialization
-	else 
+	--convenience rectangular overload to allow ({x = 0, y = 0} {w = width, h = height}) intiialization
+	else
 		self.vertices = {
 			0,0 , 
 			vertices.w,0 , 

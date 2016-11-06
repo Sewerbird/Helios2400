@@ -1,4 +1,5 @@
 --Component.lua
+local class = require 'lib/30log'
 local Component = class('Component', {
 	gid = nil,
 	gob = nil

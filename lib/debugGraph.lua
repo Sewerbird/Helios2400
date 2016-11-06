@@ -68,7 +68,7 @@ function debugGraph:new(type, x, y, width, height, delay, label, font)
         elseif self._type == 'mem' then
           -- Collect memory info and update the label
           val = collectgarbage('count')
-          self.label = "Memory (KB): " .. math.floor(val * 10) / 10
+          self.label = "Memory (MB): " .. (math.floor(val * 10) / 10) / 1024
         else
           -- If the val is nil then we'll just skip this time
           return

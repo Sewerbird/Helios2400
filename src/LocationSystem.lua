@@ -4,7 +4,4 @@ local LocationSystem = System:extend('LocationSystem', {
 	
 })
 
-function LocationSystem:init ( )
-end
-
 return LocationSystem

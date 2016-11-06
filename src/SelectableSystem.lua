@@ -1,15 +1,20 @@
 --SelectableSystem.lua
 local System = require 'src/System'
 local Selectable = require 'src/Selectable'
+local GameObject = require 'src/GameObject'
+local Transform = require 'src/Transform'
+local Renderable = require 'src/Renderable'
+local Placeable = require 'src/Placeable'
+local Polygon = require 'src/Polygon'
 
 local SelectableSystem = System:extend({
 	current_selection = nil,
 	selected_unit_cursor_object = nil
 })
 
-function SelectableSystem:init (targetCollection, cursor_sprite)
-	SelectableSystem.super.init(self, targetCollection)
-	self.selected_unit_cursor_object = Global.Registry:add(GameObject:new('Cursor',{
+function SelectableSystem:init (registry, targetCollection, cursor_sprite)
+	SelectableSystem.super.init(self, registry, targetCollection)
+	self.selected_unit_cursor_object = self.registry:add(GameObject:new('Cursor',{
 		Transform:new(0,0),
 	    Renderable:new(
 	      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
@@ -23,8 +28,8 @@ end
 function SelectableSystem:select ( gameObjectId )
 	print('selecting' .. tostring(gameObjectId))
 	if self.current_selection ~= nil then 
-		local tgtObj = Global.Registry:get(self.current_selection)
-		local cursor = Global.Registry:get(self.selected_unit_cursor_object)
+		local tgtObj = self.registry:get(self.current_selection)
+		local cursor = self.registry:get(self.selected_unit_cursor_object)
 		self.targetCollection:detach(self.selected_unit_cursor_object, self.current_selection)
 		--tgtObj:getComponent('Selectable'):deselect()
 
@@ -35,7 +40,7 @@ function SelectableSystem:select ( gameObjectId )
 	end
 	self.current_selection = gameObjectId
 	if self.current_selection ~= nil then
-		local tgtObj = Global.Registry:get(self.current_selection)
+		local tgtObj = self.registry:get(self.current_selection)
 		self.targetCollection:attach(self.selected_unit_cursor_object, self.current_selection)
 		--tgtObj:getComponent('Selectable'):select()
 	end

@@ -22,7 +22,7 @@ end
 
 function Transform:untranslate ( dx, dy )
 	if type(dx) == 'table' then
-		self.x = self.x + dx.x
+		self.x = self.x - dx.x
 		self.y = self.y - dx.y
 	else
 		self.x = self.x - dx

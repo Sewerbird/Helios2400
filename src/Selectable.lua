@@ -1,5 +1,4 @@
 --Selectable.lua
-
 local Component = require 'src/Component'
 local Selectable = Component:extend('Selectable', {
 

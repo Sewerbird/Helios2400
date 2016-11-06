@@ -54,7 +54,7 @@ function RenderableSystem:draw ()
 
 		--Draw children
 		for i, gid in ipairs(self.targetCollection:getChildren(root.uid)) do
-			drawHeirarchy(Global.Registry:get(gid))
+			drawHeirarchy(self.registry:get(gid))
 		end
 
 		--Unpop the coordinate system
@@ -63,7 +63,7 @@ function RenderableSystem:draw ()
 		end
 	end
 
-	drawHeirarchy(Global.Registry:get(self.targetCollection:getRoot()))
+	drawHeirarchy(self.registry:get(self.targetCollection:getRoot()))
 
 end
 
