@@ -1,4 +1,5 @@
 --System.lua
+local class = require 'lib/30log'
 local System = class("System",{
 	componentPool = {},
 	targetColletion = nil

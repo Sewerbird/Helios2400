@@ -11,6 +11,11 @@ local Interfaceable = Component:extend("Interfaceable", {
 function Interfaceable:init ( polygon, delegate )
 	self.polygon = polygon
 	self.delegate = delegate
+
+	if not delegate then
+		error 'Tried to create Interfaceable without a delegate'
+	end
+	
 	self.delegate.component = self
 end
 

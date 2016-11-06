@@ -1,4 +1,5 @@
 --GameObjectRegistry.lua
+local class = require 'lib/30log'
 local GameObjectRegistry = class('GameObjectRegistry', {
 	registry = {},
 	historicCounter = 1
