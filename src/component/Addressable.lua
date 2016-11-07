@@ -4,12 +4,12 @@ local Component = require 'src/Component'
 local Addressable = Component:extend('Addressable', {
 	name = 'Addressable',
 	neighbors = nil,
-	idx = nil
+	uid = nil
 })
 
-function Addressable:init ( idx, neighbors)
+function Addressable:init ( uid, neighbors)
 	self.neighbors = neighbors
-	self.idx = idx
+	self.uid = uid
 
 	self:neighborsValid()
 end

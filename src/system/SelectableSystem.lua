@@ -1,10 +1,10 @@
 --SelectableSystem.lua
 local System = require 'src/System'
 local GameObject = require 'src/GameObject'
-local Transform = require 'src/Transform'
-local Renderable = require 'src/Renderable'
-local Placeable = require 'src/Placeable'
-local Polygon = require 'src/Polygon'
+local Renderable = require 'src/component/Renderable'
+local Transform = require 'src/component/Transform'
+local Placeable = require 'src/component/Placeable'
+local Polygon = require 'src/datatype/Polygon'
 
 local SelectableSystem = System:extend({
 	current_selection = nil,
