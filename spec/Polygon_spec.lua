@@ -1,5 +1,5 @@
 inspect = require 'lib/inspect'
-Polygon = require 'src/Polygon' 
+Polygon = require 'src/datatype/Polygon' 
 
 describe('Polygon', function ()
 	it('should initialize correctly', function ()

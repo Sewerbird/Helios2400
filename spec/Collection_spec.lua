@@ -1,8 +1,8 @@
 inspect = require 'lib/inspect'
-Collection = require 'src/Collection' 
+IndexTree = require 'src/structure/IndexTree' 
 
-describe('Collection', function ()
-	local myc = Collection:new()
+describe('IndexTree', function ()
+	local myc = IndexTree:new()
 
 	before_each(function()
 		--[[ 
@@ -19,7 +19,7 @@ describe('Collection', function ()
 			|  `-B-'
 			'-Zc
 		]]
-		myc = Collection:new()
+		myc = IndexTree:new()
 
 		myc:attach('Z', nil)
 		myc:attachAll({'Za','Zb','Zc'}, 'Z')

@@ -16,7 +16,7 @@ end
 
 function Addressable:neighborsValid()
 	for i, v in ipairs(self.neighbors) do
-		if v == self.idx then
+		if v == self.uid then
 			error 'Tried to create addressable as its own neighbor'
 		end
 	end

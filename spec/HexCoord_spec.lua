@@ -1,5 +1,5 @@
 inspect = require 'lib/inspect'
-HexCoord = require 'src/HexCoord' 
+HexCoord = require 'src/datatype/HexCoord' 
 
 describe('HexCoord', function ()
 	it('should initialize correctly', function ()

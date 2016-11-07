@@ -1,9 +1,9 @@
 inspect = require 'lib/inspect'
-Interfaceable = require 'src/Interfaceable' 
-Transform = require 'src/Transform'
-Polygon = require 'src/Polygon'
+Interfaceable = require 'src/component/Interfaceable' 
+Transform = require 'src/component/Transform'
+Polygon = require 'src/datatype/Polygon'
 GameObject = require 'src/GameObject'
-TouchDelegate = require 'src/TouchDelegate'
+TouchDelegate = require 'src/datatype/TouchDelegate'
 
 describe('Interfaceable', function ()
 	it('should initialize correctly', function ()

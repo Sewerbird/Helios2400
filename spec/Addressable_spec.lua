@@ -1,5 +1,5 @@
 inspect = require 'lib/inspect'
-Addressable = require 'src/Addressable' 
+Addressable = require 'src/component/Addressable' 
 
 describe('Addressable', function ()
 	it('should initialize correctly', function ()

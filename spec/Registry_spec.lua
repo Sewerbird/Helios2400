@@ -1,15 +1,15 @@
 inspect = require 'lib/inspect'
-GameObjectRegistry = require 'src/GameObjectRegistry' 
+Registry = require 'src/structure/Registry' 
 GameObject = require 'src/GameObject'
 
-describe('GameObjectRegistry', function ()
+describe('Registry', function ()
 	it('should initialize correctly', function ()
-		local my_GameObjectRegistry = GameObjectRegistry:new()
-		assert.truthy(my_GameObjectRegistry)
+		local my_Registry = Registry:new()
+		assert.truthy(my_Registry)
 	end)
 
 	it('should add objects but then deal in ids', function ()
-		local myr = GameObjectRegistry:new()
+		local myr = Registry:new()
 		local moo = GameObject:new()
 		local result = myr:add(moo)
 

@@ -1,5 +1,5 @@
 inspect = require 'lib/inspect'
-Placeable = require 'src/Placeable' 
+Placeable = require 'src/component/Placeable' 
 
 describe('Placeable', function ()
 	it('should initialize correctly', function ()
