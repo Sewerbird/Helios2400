@@ -1,4 +1,4 @@
-# Helios2400
+# Helios2400 <img src="https://travis-ci.org/Sewerbird/Helios2400.svg?branch=master" />
 
 ![Helios2400 Header](https://github.com/Sewerbird/Helios2400/blob/master/SemiFancyScreenie.png)
 
