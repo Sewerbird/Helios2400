@@ -12,6 +12,7 @@ Sprite = require 'src/datatype/Sprite'
 HexCoord = require 'src/datatype/HexCoord'
 Registry = require 'src/structure/Registry'
 IndexTree = require 'src/structure/IndexTree'
+IndexMap = require 'src/structure/IndexMap'
 InterfaceableSystem = require 'src/system/InterfaceableSystem'
 RenderableSystem = require 'src/system/RenderableSystem'
 SelectableSystem = require 'src/system/SelectableSystem'
@@ -47,6 +48,9 @@ function Loader:debugLoad ()
     Registry = Registry:new(),
     Systems = {}
   }
+
+  local debug_map = IndexMap:new()
+
   --[[ Instantiate Tilemap View ]]--
 
   --Make Tiles
@@ -86,7 +90,6 @@ function Loader:debugLoad ()
       end
 
       local address = 'Earth' .. HexCoord:new(i,j):toString()
-
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
@@ -101,10 +104,12 @@ function Loader:debugLoad ()
       end)
 
       local hex = nil
+      local debug_unit = nil
       local r = math.random()
       if j == 1 or j == num_rows then hex = Space_Hex_Quad
       elseif r < 0.30 then 
         hex = Space_Hex_Quad
+        local planet = nil
         if math.random() < 0.15 then
           local planet = Planet_1_Quad
           if math.random() > 0.3 then
@@ -124,7 +129,7 @@ function Loader:debugLoad ()
           table.insert(Debug_Citys, debug_city)
 
           if math.random() < 0.3 then
-            local debug_unit = Global.Registry:add(GameObject:new('Troop', {
+            debug_unit = Global.Registry:add(GameObject:new('Troop', {
               Transform:new((i-1) * 84 + ioffset + 17, (j-1) * 73 + joffset + 13),
               Interfaceable:new(
                 Polygon:new({ w = 50, h = 50 }),
@@ -140,7 +145,7 @@ function Loader:debugLoad ()
       else 
         hex = Space_Hex_Quad 
         if math.random() < 0.1 then
-          local debug_unit = Global.Registry:add(GameObject:new('Ship', {
+          debug_unit = Global.Registry:add(GameObject:new('Ship', {
             Transform:new((i-1) * 84 + ioffset + 17, (j-1) * 73 + joffset + 13),
             Interfaceable:new(
               Polygon:new({ w = 50, h = 50 }),
@@ -152,6 +157,11 @@ function Loader:debugLoad ()
           }))
           table.insert(Debug_Units, debug_unit)
         end
+      end
+      if debug_unit ~= nil then
+        debug_map:addAddress(address, neighbors, {debug_unit})
+      else
+        debug_map:addAddress(address, neighbors, {})
       end
 
       local Hex_Touch_Delegate = TouchDelegate:new();
@@ -210,6 +220,7 @@ function Loader:debugLoad ()
   SceneGraph:attachAll(Debug_Citys, City_Layer)
   SceneGraph:attachAll(Debug_Units, Unit_Layer)
 
+  print(inspect(debug_map))
 
   Global.Systems.Render = RenderableSystem:new(Global.Registry, SceneGraph)
   Global.Systems.Interface = InterfaceableSystem:new(Global.Registry, SceneGraph)

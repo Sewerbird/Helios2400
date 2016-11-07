@@ -5,12 +5,12 @@ local IndexMap = class("IndexMap",{
 })
 
 local Location = class("Location",{
-	address = nil
+	address = nil,
 	placeables = {},
 	neighbors = {}
 })
 
-function Location:init(address, placeables, neighbors)
+function Location:init(address, neighbors, placeables)
 	if address == nil then error('Tried to create location with nil address') end
 	self.address = address
 	self.placeables = placeables or {}
