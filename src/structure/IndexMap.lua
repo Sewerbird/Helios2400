@@ -22,8 +22,8 @@ function IndexMap:addNeighborsRelation(addressA, addressB)
 	table.insert(self.addressbook[addressB],addressA)
 end
 
-function IndexMap:addAddress(address, neighborIds, placeableIds)
-	self.addressbook[address] = Location:new(address, neighborIds, placeableIds)
+function IndexMap:addAddress(address, neighborAddresses, placeableIds)
+	self.addressbook[address] = Location:new(address, neighborAddresses, placeableIds)
 end
 
 function IndexMap:addPlaceable(placeableId, addressId)
@@ -39,6 +39,17 @@ function IndexMap:removePlaceable(placeableId, addressId)
 		self.addressbook[addressId].placeables[placeableId] = nil 
 	end
 	placeables_index[placeableId] = nil
+end
+
+function IndexMap:getPlaceablesAt(addressId)
+	local keyset={}
+	local n=0
+
+	for k,v in pairs(self.addressbook[addressId].placeables) do
+	  n=n+1
+	  keyset[n]=k
+	end
+	return keyset
 end
 
 function IndexMap:findPlaceableAddress(placeableId)
