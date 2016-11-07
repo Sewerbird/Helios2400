@@ -171,7 +171,7 @@ function Loader:debugLoad ()
 		      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 		      Sprite:new(Debug_Spritesheet, hex)
 		      ),
-        Addressable:new(address, neighbors)
+        Addressable:new(address)
   		}))
   		table.insert(Debug_Hexes, debug_hex)
 
