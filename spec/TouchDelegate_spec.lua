@@ -1,5 +1,5 @@
 inspect = require 'lib/inspect'
-TouchDelegate = require 'src/TouchDelegate' 
+TouchDelegate = require 'src/datatype/TouchDelegate' 
 
 describe('TouchDelegate', function ()
 	it('should initialize correctly', function ()

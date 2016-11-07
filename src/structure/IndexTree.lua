@@ -1,7 +1,7 @@
---Collection.lua
+--IndexTree.lua
 local class = require 'lib/30log'
 local inspect = require 'lib/inspect'
-local Collection = class("Collection", {
+local IndexTree = class("IndexTree", {
 	nodes = {}
 })
 
@@ -15,12 +15,8 @@ function Node:init ( nid )
 	self.parents = {}
 end
 
-function Collection:init ()
-
-end
-
-function Collection:getRoot ( targetId )
-	--TODO: Only works if collection is a singleton tree
+function IndexTree:getRoot ( targetId )
+	--TODO: Only works if IndexTree is a singleton tree
 
 	--assert(#self.nodes > 0, 'no nodes in tree to be a root')
 	--if #self.nodes == 0 then return nil end
@@ -41,7 +37,7 @@ function Collection:getRoot ( targetId )
 	end
 end
 
-function Collection:getParent ( targetId )
+function IndexTree:getParent ( targetId )
 	if #self.nodes[targetId].parents > 0 then
 		return self.nodes[targetId].parents[1]
 	else
@@ -49,25 +45,25 @@ function Collection:getParent ( targetId )
 	end
 end
 
-function Collection:getParents ( targetId )
+function IndexTree:getParents ( targetId )
 	return self.nodes[targetId].parents
 end
 
-function Collection:getChildren ( targetId )
+function IndexTree:getChildren ( targetId )
 	return self.nodes[targetId].children
 end
 
-function Collection:hasChildren ( targetId )
+function IndexTree:hasChildren ( targetId )
 	return #self.nodes[targetId].children > 0
 end
 
-function Collection:attachAll( attacheeArray, attachToId )
+function IndexTree:attachAll( attacheeArray, attachToId )
 	for i, attachee in ipairs(attacheeArray) do
 		self:attach(attachee, attachToId)
 	end
 end
 
-function Collection:attach ( attacheeId, attachToId )
+function IndexTree:attach ( attacheeId, attachToId )
 	assert(attacheeId ~= nil, 'tried to attach nil' .. tostring(attachToId))
 	if self.nodes[attacheeId] == nil then
 		local newNode = Node:new(attacheeId)
@@ -80,7 +76,7 @@ function Collection:attach ( attacheeId, attachToId )
 	end
 end
 
-function Collection:detach ( detachee, detachFromId )
+function IndexTree:detach ( detachee, detachFromId )
 	assert(detachee ~= nil, 'tried to detach nil')
 	v = self.nodes[detachee]
 	for j, p in ipairs(v.parents) do
@@ -94,7 +90,7 @@ function Collection:detach ( detachee, detachFromId )
 	v.parents = {}
 end
 
-function Collection:printCollection ()
+function IndexTree:printIndexTree ()
 	for i, node in pairs(self.nodes) do
 		local s = "\t"..node.nid..":{"
 		for q, v in ipairs(node.children) do
@@ -105,4 +101,4 @@ function Collection:printCollection ()
 	end
 end
 
-return Collection
+return IndexTree

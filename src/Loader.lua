@@ -1,20 +1,20 @@
 --Loader.lua
 
-Renderable = require 'src/Renderable'
-Addressable = require 'src/Addressable'
-Placeable = require 'src/Placeable'
-Interfaceable = require 'src/Interfaceable'
-TouchDelegate = require 'src/TouchDelegate'
+Renderable = require 'src/component/Renderable'
+Addressable = require 'src/component/Addressable'
+Placeable = require 'src/component/Placeable'
+Interfaceable = require 'src/component/Interfaceable'
+Transform = require 'src/component/Transform'
+TouchDelegate = require 'src/datatype/TouchDelegate'
 GameObject = require 'src/GameObject'
-Transform = require 'src/Transform'
-Polygon = require 'src/Polygon'
-Sprite = require 'src/Sprite'
-HexCoord = require 'src/HexCoord'
-GameObjectRegistry = require 'src/GameObjectRegistry'
-Collection = require 'src/Collection'
-InterfaceableSystem = require 'src/InterfaceableSystem'
-RenderableSystem = require 'src/RenderableSystem'
-SelectableSystem = require 'src/SelectableSystem'
+Polygon = require 'src/datatype/Polygon'
+Sprite = require 'src/datatype/Sprite'
+HexCoord = require 'src/datatype/HexCoord'
+Registry = require 'src/structure/Registry'
+IndexTree = require 'src/structure/IndexTree'
+InterfaceableSystem = require 'src/system/InterfaceableSystem'
+RenderableSystem = require 'src/system/RenderableSystem'
+SelectableSystem = require 'src/system/SelectableSystem'
 
 require 'lib/my_utils'
 local class = require 'lib/30log'
@@ -44,7 +44,7 @@ function Loader:debugLoad ()
   music:play()
 
   Global = {
-    Registry = GameObjectRegistry:new(),
+    Registry = Registry:new(),
     Systems = {}
   }
   --[[ Instantiate Tilemap View ]]--
@@ -195,7 +195,7 @@ function Loader:debugLoad ()
   	}))
 
 
-  local SceneGraph = Collection:new();
+  local SceneGraph = IndexTree:new();
 
   local MapView = Global.Registry:add(GameObject:new('Map_View',{}))
   local Tile_Layer = Global.Registry:add(GameObject:new('Tile_Layer',{}))

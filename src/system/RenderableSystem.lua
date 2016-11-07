@@ -7,7 +7,6 @@
 ]]--
 
 local System = require 'src/System'
-local Renderable = require 'src/Renderable'
 
 local RenderableSystem = System:extend("RenderableSystem",{
 	scenes = {},
@@ -44,13 +43,6 @@ function RenderableSystem:draw ()
 				love.graphics.setColor({r,g,b,a})
 			end
 		end
-		--[[Draw debug addressable idx
-		if root:hasComponent('Addressable') then
-			local addressable = root:getComponent('Addressable')
-			if addressable.idx ~= nil then
-				love.graphics.print(addressable.idx, 0 , 0)
-			end
-		end]]
 
 		--Draw children
 		for i, gid in ipairs(self.targetCollection:getChildren(root.uid)) do

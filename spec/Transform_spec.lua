@@ -1,5 +1,5 @@
 inspect = require 'lib/inspect'
-Transform = require 'src/Transform' 
+Transform = require 'src/component/Transform' 
 
 describe('Transform', function ()
 	it('should initialize correctly', function ()

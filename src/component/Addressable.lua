@@ -4,19 +4,19 @@ local Component = require 'src/Component'
 local Addressable = Component:extend('Addressable', {
 	name = 'Addressable',
 	neighbors = nil,
-	idx = nil
+	uid = nil
 })
 
-function Addressable:init ( idx, neighbors)
+function Addressable:init ( uid, neighbors)
 	self.neighbors = neighbors
-	self.idx = idx
+	self.uid = uid
 
 	self:neighborsValid()
 end
 
 function Addressable:neighborsValid()
 	for i, v in ipairs(self.neighbors) do
-		if v == self.idx then
+		if v == self.uid then
 			error 'Tried to create addressable as its own neighbor'
 		end
 	end

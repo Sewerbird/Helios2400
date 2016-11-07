@@ -1,5 +1,5 @@
 inspect = require 'lib/inspect'
-Renderable = require 'src/Renderable' 
+Renderable = require 'src/component/Renderable' 
 
 describe('Renderable', function ()
 	it('should initialize correctly', function ()
