@@ -62,8 +62,9 @@ Thanks goes to [Coderbunker](http://www.coderbunker.com/) for support in finding
 
 ### Contributors
 
-- **Edward Miller** Producer & Lead Developer of Helios2400
-- **Ricky Ng-Adam** Coderbunker Founder
+- **Edward Miller** Producer & Lead Developer
+- **Thimo Vasser** Developer
+- **Ricky Ng-Adam** Coderbunker Liaision
 
 ### Music
 
