@@ -93,18 +93,19 @@ function Loader:debugLoad ()
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
-          print('Clicked on a unit!')
+          print('Clicked on a unit (' .. this.component.gob.uid .. ')! Is situated at address:' .. debug_map:summarizeAddress(debug_map:findPlaceableAddress(this.component.gob.uid)))
         end
       end)
       local City_Touch_Delegate = TouchDelegate:new()
       City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
-          print('Clicked on a city!')
+          print('Clicked on a city (' .. this.component.gob.uid .. ')! Is situated at address: ' .. debug_map:summarizeAddress(debug_map:findPlaceableAddress(this.component.gob.uid)))
         end
       end)
 
       local hex = nil
       local debug_unit = nil
+      local debug_city = nil
       local r = math.random()
       if j == 1 or j == num_rows then hex = Space_Hex_Quad
       elseif r < 0.30 then 
@@ -115,7 +116,7 @@ function Loader:debugLoad ()
           if math.random() > 0.3 then
             planet = Planet_2_Quad
           end
-          local debug_city = Global.Registry:add(GameObject:new('City', {
+          debug_city = Global.Registry:add(GameObject:new('City', {
             Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
             Interfaceable:new(
               Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37}),
@@ -159,16 +160,24 @@ function Loader:debugLoad ()
         end
       end
       if debug_unit ~= nil then
-        debug_map:addAddress(address, neighbors, {debug_unit})
+        if debug_city ~= nil then
+          debug_map:addAddress(address, neighbors, {debug_city, debug_unit})
+        else
+          debug_map:addAddress(address, neighbors, {debug_unit})
+        end
       else
-        debug_map:addAddress(address, neighbors, {})
+        if debug_city ~= nil then
+          debug_map:addAddress(address, neighbors, {debug_city})
+        else
+          debug_map:addAddress(address, neighbors, {})
+        end
       end
 
       local Hex_Touch_Delegate = TouchDelegate:new();
       Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
           if this.component.gob:hasComponent('Addressable') then
             local addr = this.component.gob:getComponent('Addressable')
-            print('hex has neighbors ' .. inspect(addr.neighbors))
+            print(debug_map:summarizeAddress(address))
             Global.Systems.Selection:select(this.component.gob.uid)
           end
         end)

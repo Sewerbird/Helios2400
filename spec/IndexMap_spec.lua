@@ -21,9 +21,11 @@ describe('IndexMap', function ()
 		local placed
 
 		placed = mym:getPlaceablesAt('3')
+		assert.are.same(placed,{'objA'})
 		assert.are.same(#placed,1)
 
 		placed = mym:getPlaceablesAt('2')
+		assert.are.same(placed,{})
 		assert.are.same(#placed,0)
 
 		assert.are.same(mym:findPlaceableAddress('objA'),'3')
@@ -34,9 +36,11 @@ describe('IndexMap', function ()
 
 		placed = mym:getPlaceablesAt('4')
 		assert.are.same(#placed,2)
+		assert.are.same(placed,{'objB','objA'})
 
 		placed = mym:getPlaceablesAt('3')
 		assert.are.same(#placed,0)
+		assert.are.same(placed,{})
 
 		assert.are.same(mym:getNeighbors('a'),{'1','2','3','4','5','6'})
 		assert.are.same(mym:getNeighbors('3'),{'a','2','4'})

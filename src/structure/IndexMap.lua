@@ -61,6 +61,7 @@ function IndexMap:getPlaceablesAt(addressId)
 end
 
 function IndexMap:findPlaceableAddress(placeableId)
+	print('found placeable address for ' .. tostring(placeableId) ..': ' .. tostring(self.placeables_index[placeableId]))
 	return self.placeables_index[placeableId]
 end
 
@@ -75,5 +76,8 @@ function IndexMap:movePlaceable(placeableId, srcAddressId, dstAddressId)
 	end
 end
 
+function IndexMap:summarizeAddress(addressId)
+	return "Address '" .. addressId .. "' contains " .. inspect(self:getPlaceablesAt(addressId)) .. " and borders " .. inspect(self:getNeighbors(addressId))
+end
 
 return IndexMap
