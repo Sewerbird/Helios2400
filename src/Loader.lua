@@ -220,8 +220,6 @@ function Loader:debugLoad ()
   SceneGraph:attachAll(Debug_Citys, City_Layer)
   SceneGraph:attachAll(Debug_Units, Unit_Layer)
 
-  print(inspect(debug_map))
-
   Global.Systems.Render = RenderableSystem:new(Global.Registry, SceneGraph)
   Global.Systems.Interface = InterfaceableSystem:new(Global.Registry, SceneGraph)
   Global.Systems.Selection = SelectableSystem:new(Global.Registry, SceneGraph, Sprite:new(Debug_Spritesheet, Debug_Cursor_Quad))
