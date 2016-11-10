@@ -3,6 +3,7 @@ inspect = require 'lib/inspect'
 ProFi = require 'lib/ProFi'
 debugGraph = require 'lib/debugGraph'
 
+AssetLoader = require 'src/AssetLoader'
 Loader = require 'src/Loader'
 
 --TODO: move this into a util lib
@@ -14,6 +15,7 @@ end
 function love.load()
   print("Time to play!")
 
+  AssetLoader:new():loadAssets("/assets")
   Loader:new():debugLoad()
 
   --Profiling stuff
