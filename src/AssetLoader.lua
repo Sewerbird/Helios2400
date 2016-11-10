@@ -22,8 +22,10 @@ function AssetLoader:loadAsset(asset)
 	if(asset.assetId == nil) then print(self.errorPrefix .. " asset is missing assetId") return end
 	if(asset.assetType == nil) then print(self.errorPrefix .. " asset is missing assetType") return end
 		
-	if asset.assetType == "spriteSheet" then self:loadSpriteSheet(asset)
-	elseif asset.assetType == "sprite" then self:loadSprite(asset) 
+	if asset.assetType == "spriteSheet" then 
+		self:loadSpriteSheet(asset)
+	elseif asset.assetType == "sprite" then 
+		self:loadSprite(asset)
 	else
 		print(self.errorPrefix .. "incorrect asset type " .. asset.assetType " for " .. asset.assetId)
 	end
@@ -51,8 +53,18 @@ function AssetLoader.isAsset(String)
 end
 
 function AssetLoader:getAsset(assetId)
-	if self.assets[assetId] == nil then print(self.errorPrefix .. assetId .. " is not loaded or incorrect") return nil end
+	if self.assets[assetId] == nil then 
+		print(self.errorPrefix .. assetId .. " is not loaded or incorrect")
+	end
+
 	return self.assets[assetId]
+end
+
+function AssetLoader:printAllAssets()
+	print("Assets:")
+	for k,v in pairs(self.assets) do
+		print("\t- \"" .. k .. "\"",v)
+	end
 end
 
 return AssetLoader

@@ -15,7 +15,9 @@ end
 function love.load()
   print("Time to play!")
 
-  AssetLoader:new():loadAssets("/assets")
+  AssetLoader = AssetLoader:new()
+  AssetLoader:loadAssets()
+  AssetLoader:printAllAssets()
   Loader:new():debugLoad()
 
   --Profiling stuff
