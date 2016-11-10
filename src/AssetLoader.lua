@@ -21,14 +21,25 @@ end
 function AssetLoader:loadAsset(asset)
 	if(asset.assetId == nil) then print(self.errorPrefix .. " asset is missing assetId") return end
 	if(asset.assetType == nil) then print(self.errorPrefix .. " asset is missing assetType") return end
-		
+	
+	if self.assets[asset.assetId] ~= nil then 
+		print(self.errorPrefix.. "assetId " .. asset.assetId .. " is not unique")
+		return
+	end
+
 	if asset.assetType == "spriteSheet" then 
 		self:loadSpriteSheet(asset)
-	elseif asset.assetType == "sprite" then 
-		self:loadSprite(asset)
-	else
-		print(self.errorPrefix .. "incorrect asset type " .. asset.assetType " for " .. asset.assetId)
+		return
 	end
+	if asset.assetType == "sprite" then 
+		self:loadSprite(asset)
+		return
+	end
+	if asset.assetType == "audio" then 
+		self:loadAudio(asset)
+		return
+	end
+	print(self.errorPrefix .. "incorrect asset type " .. asset.assetType " for " .. asset.assetId)
 end
 
 function AssetLoader:loadSpriteSheet(spriteSheet)
@@ -39,13 +50,23 @@ function AssetLoader:loadSpriteSheet(spriteSheet)
 end
 
 function AssetLoader:loadSprite(sprite,spriteSheetId)
-	if self.assets[sprite.assetId] ~= nil then 
-		print(self.errorPrefix.. "assetId " .. sprite.assetId .. " is not unique") 
-	else
-		if(sprite.width == nil) then print(self.errorPrefix .. " sprite width is not defined for " .. sprite.assetId) return end
-		if(sprite.height == nil) then print(self.errorPrefix .. " sprite height is not defined for " .. sprite.assetId) return end
-		self.assets[sprite.assetId] = love.graphics.newQuad(sprite.x or 0, sprite.y or 0, sprite.width, sprite.height, self:getAsset(spriteSheetId):getDimensions())
-	end
+	if(sprite.width == nil) then print(self.errorPrefix .. " sprite width is not defined for " .. sprite.assetId) return end
+	if(sprite.height == nil) then print(self.errorPrefix .. " sprite height is not defined for " .. sprite.assetId) return end
+	local spriteSheet = self:getAsset(spriteSheetId)
+	self.assets[sprite.assetId] = Sprite:new(
+		spriteSheet, 
+		love.graphics.newQuad(
+			sprite.x or 0, 
+			sprite.y or 0, 
+			sprite.width, 
+			sprite.height, 
+			spriteSheet:getDimensions()
+		)
+	)
+end
+
+function AssetLoader:loadAudio(audio)
+	self.assets[audio.assetId] = love.audio.newSource(self.rootPath .. audio.assetPath)
 end
 
 function AssetLoader.isAsset(String)

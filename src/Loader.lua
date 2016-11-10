@@ -37,7 +37,8 @@ function Loader:debugLoad ()
   local Debug_Cursor_Quad = AssetLoader:getAsset("CURSOR_1")
   local Debug_Spaceship_Quad = AssetLoader:getAsset("SPACE_SHIP_1")
 
-  local music = love.audio.newSource('assets/music/Ritual.mp3')
+  local music = AssetLoader:getAsset("RITUAL_1")
+
   music:setLooping(true)
   music:setVolume(BG_MUSIC_VOL)
   music:play()
@@ -116,7 +117,7 @@ function Loader:debugLoad ()
               City_Touch_Delegate),
             Renderable:new(
               Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-              Sprite:new(Debug_Spritesheet, planet)
+              planet
               ),
             Placeable:new(address)
           }))
@@ -130,7 +131,7 @@ function Loader:debugLoad ()
                 Unit_Touch_Delegate),
               Renderable:new(
                 Polygon:new({ w = 50, h = 50 }),
-                Sprite:new(Debug_Spritesheet, Debug_Troop_Quad)),
+                Debug_Troop_Quad),
               Placeable:new(address)
             }))
             table.insert(Debug_Units, debug_unit)
@@ -146,7 +147,7 @@ function Loader:debugLoad ()
               Unit_Touch_Delegate),
             Renderable:new(
               Polygon:new({ w = 50, h = 50 }),
-              Sprite:new(Debug_Spritesheet, Debug_Spaceship_Quad)),
+              Debug_Spaceship_Quad),
             Placeable:new(address)
           }))
           table.insert(Debug_Units, debug_unit)
@@ -168,7 +169,7 @@ function Loader:debugLoad ()
 		      Hex_Touch_Delegate),
 		    Renderable:new(
 		      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-		      Sprite:new(Debug_Spritesheet, hex)
+		      hex
 		      ),
         Addressable:new(address)
   		}))
@@ -212,7 +213,7 @@ function Loader:debugLoad ()
 
   Global.Systems.Render = RenderableSystem:new(Global.Registry, SceneGraph)
   Global.Systems.Interface = InterfaceableSystem:new(Global.Registry, SceneGraph)
-  Global.Systems.Selection = SelectableSystem:new(Global.Registry, SceneGraph, Sprite:new(Debug_Spritesheet, Debug_Cursor_Quad))
+  Global.Systems.Selection = SelectableSystem:new(Global.Registry, SceneGraph, Debug_Cursor_Quad)
 
   Global.Systems.Selection:select(2)
   
