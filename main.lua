@@ -33,6 +33,7 @@ function love.update( dt )
 
   --Debug mouse-to-hex output
   if not Global_PAUSE then
+    Global.Systems.Render:update(dt)
   end
 
   --Profiling stuff

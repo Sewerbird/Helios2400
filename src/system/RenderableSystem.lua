@@ -20,6 +20,28 @@ function RenderableSystem:setScene ( tag )
 
 end
 
+function RenderableSystem:update( dt )
+
+	local function updateHeirarchy ( root , dt)
+		local animatable = root:getComponent('Animatable')
+		if animatable ~= nil then
+			if animatable.animation ~= nil then
+				animatable.animation.ani:update(dt)
+			end
+		end
+
+		--Update children
+		for i, gid in ipairs(self.targetCollection:getChildren(root.uid)) do
+			updateHeirarchy(self.registry:get(gid), dt)
+		end
+	end
+
+
+	updateHeirarchy(self.registry:get(self.targetCollection:getRoot()), dt)
+
+
+end
+
 function RenderableSystem:draw ()
 	local function drawHeirarchy ( root )
 		--Pop the coordinate system
