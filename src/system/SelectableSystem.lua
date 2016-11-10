@@ -1,7 +1,7 @@
 --SelectableSystem.lua
 local System = require 'src/System'
 local GameObject = require 'src/GameObject'
-local Renderable = require 'src/component/Renderable'
+local Animatable = require 'src/component/Animatable'
 local Transform = require 'src/component/Transform'
 local Placeable = require 'src/component/Placeable'
 local Polygon = require 'src/datatype/Polygon'
@@ -15,7 +15,7 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 	SelectableSystem.super.init(self, registry, targetCollection)
 	self.selected_unit_cursor_object = self.registry:add(GameObject:new('Cursor',{
 		Transform:new(0,0),
-	    Renderable:new(
+	    Animatable:new(
 	      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 	      cursor_sprite
 	      ),

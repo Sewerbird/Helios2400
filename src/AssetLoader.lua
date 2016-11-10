@@ -1,4 +1,5 @@
 require "lib/Tserial"
+local anim8 = require "lib/anim8"
 local class = require 'lib/30log'
 
 local AssetLoader = class("AssetLoader", {
@@ -44,8 +45,14 @@ end
 
 function AssetLoader:loadSpriteSheet(spriteSheet)
 	self.assets[spriteSheet.assetId] = love.graphics.newImage(self.rootPath .. spriteSheet.assetPath)
-	for i,v in ipairs(spriteSheet.data) do
-		self:loadSprite(v,spriteSheet.assetId)
+	for i,asset in ipairs(spriteSheet.data) do
+		if asset.assetType == "sprite" then
+			self:loadSprite(asset,spriteSheet.assetId)
+		elseif asset.assetType == "animation" then
+			self:loadAnimation(asset,spriteSheet.assetId)
+		else
+			print(self.errorPrefix .. "incorrect asset type " .. asset.assetType " for " .. asset.assetId .. " in spritesheet " .. spriteSheet.assetId)
+		end
 	end
 end
 
@@ -63,6 +70,21 @@ function AssetLoader:loadSprite(sprite,spriteSheetId)
 			spriteSheet:getDimensions()
 		)
 	)
+end
+
+function AssetLoader:loadAnimation(animation,spriteSheetId)
+	print("loading animation " .. animation.assetId)
+
+	if(animation.frameWidth == nil) then print(self.errorPrefix .. " animation frameWidth is not defined for " .. animation.assetId) return end
+	if(animation.frameHeight == nil) then print(self.errorPrefix .. " animation frameHeight is not defined for " .. animation.assetId) return end
+	if(animation.amountOfFrames == nil) then print(self.errorPrefix .. " animation amountOfFrames is not defined for " .. animation.assetId) return end
+
+	local spriteSheet = self:getAsset(spriteSheetId)
+
+	local grid = anim8.newGrid(animation.frameWidth,animation.frameHeight,spriteSheet:getWidth(), spriteSheet:getHeight(), animation.x or 0, animation.y or 0)
+	local anim = anim8.newAnimation(grid('1-'..animation.amountOfFrames, 1),{['1-'..animation.amountOfFrames]=0.2})
+	
+	self.assets[animation.assetId] = Animation:new(anim, spriteSheet)
 end
 
 function AssetLoader:loadAudio(audio)

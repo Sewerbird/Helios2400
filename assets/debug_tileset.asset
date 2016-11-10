@@ -5,6 +5,7 @@
 	data = {
 		{
 			assetId = "TILE_GRASS_1",
+			assetType = "sprite",
 			x = 0,
 			y = 0,
 			width = 84,
@@ -12,6 +13,7 @@
 		},
 		{
 			assetId = "TILE_WATER_1",
+			assetType = "sprite",
 			x = 84,
 			y = 0,
 			width = 84,
@@ -19,6 +21,7 @@
 		},
 		{
 			assetId = "TILE_ARCTIC_1",
+			assetType = "sprite",
 			x = 84,
 			y = 73,
 			width = 84,
@@ -26,6 +29,7 @@
 		},
 		{
 			assetId = "TILE_SPACE_1",
+			assetType = "sprite",
 			x = 84,
 			y = 146,
 			width = 84,
@@ -33,6 +37,7 @@
 		},
 		{
 			assetId = "TILE_PLANET_1",
+			assetType = "sprite",
 			x = 168,
 			y = 146,
 			width = 84,
@@ -40,6 +45,7 @@
 		},
 		{
 			assetId = "TILE_PLANET_2",
+			assetType = "sprite",
 			x = 252,
 			y = 146,
 			width = 84,
@@ -47,6 +53,7 @@
 		},
 		{
 			assetId = "CITY_1",
+			assetType = "sprite",
 			x = 0,
 			y = 73,
 			width = 84,
@@ -54,6 +61,7 @@
 		},
 		{
 			assetId = "SHIP_1",
+			assetType = "sprite",
 			x = 168,
 			y = 0,
 			width = 50,
@@ -61,24 +69,28 @@
 		},
 		{
 			assetId = "TROOP_1",
+			assetType = "sprite",
 			x = 218,
 			y = 0,
 			width = 50,
 			height = 50
 		},
 		{
-			assetId = "CURSOR_1",
-			x = 0,
-			y = 146,
-			width = 84,
-			height = 73
-		},
-		{
 			assetId = "SPACE_SHIP_1",
+			assetType = "sprite",
 			x = 218,
 			y = 80,
 			width = 50,
 			height = 50
+		},
+		{
+			assetId = "CURSOR_1",
+			assetType = "animation",
+			x = 0,
+			y = 219,
+			frameWidth = 84,
+			frameHeight = 73,
+			amountOfFrames = 3
 		}
 	}
 }

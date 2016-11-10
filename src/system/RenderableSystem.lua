@@ -20,7 +20,6 @@ function RenderableSystem:setScene ( tag )
 
 end
 
-
 function RenderableSystem:draw ()
 	local function drawHeirarchy ( root )
 		--Pop the coordinate system
@@ -31,6 +30,7 @@ function RenderableSystem:draw ()
 		end
 
 		--Do draw
+		--Renderable
 		local renderable = root:getComponent('Renderable')
 		if renderable ~= nil then
 			if renderable.sprite ~= nil then
@@ -40,6 +40,19 @@ function RenderableSystem:draw ()
 				love.graphics.setColor(renderable.backgroundcolor)
 				love.graphics.setLineWidth(3)
 				love.graphics.polygon('line', renderable.polygon.vertices)
+				love.graphics.setColor({r,g,b,a})
+			end
+		end
+		--Animatable
+		local animatable = root:getComponent('Animatable')
+		if animatable ~= nil then
+			if animatable.animation ~= nil then
+				animatable.animation.ani:draw(animatable.animation.sprite)--, animatable.animation.quad)
+			else
+				local r, g, b, a = love.graphics.getColor()
+				love.graphics.setColor(animatable.backgroundcolor)
+				love.graphics.setLineWidth(3)
+				love.graphics.polygon('line', animatable.polygon.vertices)
 				love.graphics.setColor({r,g,b,a})
 			end
 		end
