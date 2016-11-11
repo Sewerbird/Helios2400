@@ -4,11 +4,12 @@ local class = require 'lib/30log'
 
 local AssetLoader = class("AssetLoader", {
 	assets = {},
-	rootPath = "assets/",
+	rootPath = "",
 	errorPrefix = "ERROR: "
 })
 
-function AssetLoader:loadAssets()
+function AssetLoader:loadAssets(rootPath)
+	self.rootPath = rootPath
 	for i,v in ipairs(love.filesystem.getDirectoryItems(self.rootPath)) do
 		if self.isAsset(v) then
 			local filePath = self.rootPath .. v
@@ -20,11 +21,11 @@ function AssetLoader:loadAssets()
 end
 
 function AssetLoader:loadAsset(asset)
-	if(asset.assetId == nil) then print(self.errorPrefix .. " asset is missing assetId") return end
-	if(asset.assetType == nil) then print(self.errorPrefix .. " asset is missing assetType") return end
+	if(asset.assetId == nil) then error(self.errorPrefix .. " asset is missing assetId") return end
+	if(asset.assetType == nil) then error(self.errorPrefix .. " asset is missing assetType") return end
 	
 	if self.assets[asset.assetId] ~= nil then 
-		print(self.errorPrefix.. "assetId " .. asset.assetId .. " is not unique")
+		error(self.errorPrefix.. "assetId " .. asset.assetId .. " is not unique")
 		return
 	end
 
@@ -40,7 +41,7 @@ function AssetLoader:loadAsset(asset)
 		self:loadAudio(asset)
 		return
 	end
-	print(self.errorPrefix .. "incorrect asset type " .. asset.assetType " for " .. asset.assetId)
+	error(self.errorPrefix .. "incorrect asset type " .. asset.assetType " for " .. asset.assetId)
 end
 
 function AssetLoader:loadSpriteSheet(spriteSheet)
@@ -51,14 +52,14 @@ function AssetLoader:loadSpriteSheet(spriteSheet)
 		elseif asset.assetType == "animation" then
 			self:loadAnimation(asset,spriteSheet.assetId)
 		else
-			print(self.errorPrefix .. "incorrect asset type " .. asset.assetType " for " .. asset.assetId .. " in spritesheet " .. spriteSheet.assetId)
+			error(self.errorPrefix .. "incorrect asset type " .. asset.assetType " for " .. asset.assetId .. " in spritesheet " .. spriteSheet.assetId)
 		end
 	end
 end
 
 function AssetLoader:loadSprite(sprite,spriteSheetId)
-	if(sprite.width == nil) then print(self.errorPrefix .. " sprite width is not defined for " .. sprite.assetId) return end
-	if(sprite.height == nil) then print(self.errorPrefix .. " sprite height is not defined for " .. sprite.assetId) return end
+	if(sprite.width == nil) then error(self.errorPrefix .. " sprite width is not defined for " .. sprite.assetId) return end
+	if(sprite.height == nil) then error(self.errorPrefix .. " sprite height is not defined for " .. sprite.assetId) return end
 	local spriteSheet = self:getAsset(spriteSheetId)
 	self.assets[sprite.assetId] = Sprite:new(
 		spriteSheet, 
@@ -73,12 +74,10 @@ function AssetLoader:loadSprite(sprite,spriteSheetId)
 end
 
 function AssetLoader:loadAnimation(animation,spriteSheetId)
-	print("loading animation " .. animation.assetId)
-
-	if(animation.frameWidth == nil) then print(self.errorPrefix .. " animation frameWidth is not defined for " .. animation.assetId) return end
-	if(animation.frameHeight == nil) then print(self.errorPrefix .. " animation frameHeight is not defined for " .. animation.assetId) return end
-	if(animation.amountOfFrames == nil) then print(self.errorPrefix .. " animation amountOfFrames is not defined for " .. animation.assetId) return end
-	if(animation.frameTime == nil) then print(self.errorPrefix .. " animation frameTime is not defined for " .. animation.assetId) return end
+	if(animation.frameWidth == nil) then error(self.errorPrefix .. " animation frameWidth is not defined for " .. animation.assetId) return end
+	if(animation.frameHeight == nil) then error(self.errorPrefix .. " animation frameHeight is not defined for " .. animation.assetId) return end
+	if(animation.amountOfFrames == nil) then error(self.errorPrefix .. " animation amountOfFrames is not defined for " .. animation.assetId) return end
+	if(animation.frameTime == nil) then error(self.errorPrefix .. " animation frameTime is not defined for " .. animation.assetId) return end
 
 	local spriteSheet = self:getAsset(spriteSheetId)
 
@@ -98,7 +97,7 @@ end
 
 function AssetLoader:getAsset(assetId)
 	if self.assets[assetId] == nil then 
-		print(self.errorPrefix .. assetId .. " is not loaded or incorrect")
+		error(self.errorPrefix .. assetId .. " is not loaded or incorrect")
 	end
 
 	return self.assets[assetId]
