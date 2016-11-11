@@ -23,10 +23,12 @@ end
 function RenderableSystem:update( dt )
 
 	local function updateHeirarchy ( root , dt)
-		local animatable = root:getComponent('Animatable')
-		if animatable ~= nil then
-			if animatable.animation ~= nil then
-				animatable.animation.ani:update(dt)
+		local renderable = root:getComponent('Renderable')
+		if renderable ~= nil then
+			if renderable.render ~= nil then
+				if renderable.render.rtype == "animation" then
+					renderable.render.ani:update(dt)
+				end
 			end
 		end
 
@@ -36,9 +38,7 @@ function RenderableSystem:update( dt )
 		end
 	end
 
-
 	updateHeirarchy(self.registry:get(self.targetCollection:getRoot()), dt)
-
 
 end
 
@@ -55,26 +55,17 @@ function RenderableSystem:draw ()
 		--Renderable
 		local renderable = root:getComponent('Renderable')
 		if renderable ~= nil then
-			if renderable.sprite ~= nil then
-				love.graphics.draw(renderable.sprite.img, renderable.sprite.quad)
+			if renderable.render ~= nil then
+				if renderable.render.rtype == "sprite" then
+					love.graphics.draw(renderable.render.img, renderable.render.quad)
+				elseif renderable.render.rtype == "animation" then
+					renderable.render.ani:draw(renderable.render.sprite)
+				end
 			else
 				local r, g, b, a = love.graphics.getColor()
 				love.graphics.setColor(renderable.backgroundcolor)
 				love.graphics.setLineWidth(3)
 				love.graphics.polygon('line', renderable.polygon.vertices)
-				love.graphics.setColor({r,g,b,a})
-			end
-		end
-		--Animatable
-		local animatable = root:getComponent('Animatable')
-		if animatable ~= nil then
-			if animatable.animation ~= nil then
-				animatable.animation.ani:draw(animatable.animation.sprite)--, animatable.animation.quad)
-			else
-				local r, g, b, a = love.graphics.getColor()
-				love.graphics.setColor(animatable.backgroundcolor)
-				love.graphics.setLineWidth(3)
-				love.graphics.polygon('line', animatable.polygon.vertices)
 				love.graphics.setColor({r,g,b,a})
 			end
 		end
