@@ -12,6 +12,7 @@ Sprite = require 'src/datatype/Sprite'
 HexCoord = require 'src/datatype/HexCoord'
 Registry = require 'src/structure/Registry'
 IndexTree = require 'src/structure/IndexTree'
+IndexMap = require 'src/structure/IndexMap'
 InterfaceableSystem = require 'src/system/InterfaceableSystem'
 RenderableSystem = require 'src/system/RenderableSystem'
 SelectableSystem = require 'src/system/SelectableSystem'
@@ -47,110 +48,125 @@ function Loader:debugLoad ()
     Registry = Registry:new(),
     Systems = {}
   }
-  --[[ Instantiate Tilemap View ]]--
 
-  --Make Tiles
-  local Debug_Hexes = {}
-  local Debug_Citys = {}
-  local Debug_Units = {}
+  local space_map = IndexMap:new()
+  local earth_map = IndexMap:new()
+
+  --[[ Instantiate Tilemap View ]]--
 
   local joffset = 0
   local num_rows = 10
   local num_cols = 20
-  local idx = 1
+
+  --Earth Map
+  local Earth_Hexes = {}
+  local Earth_Citys = {}
+  local Earth_Units = {}
 
   for i = 1 , num_cols do --x
   	for j = 1 , num_rows do --y
   		if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
-  		ioffset = (i-1) * -21
+  		local ioffset = (i-1) * -21
 
       local neighbors   
       if j % 2 == 1 then
         neighbors = {
-          HexCoord:new(i,j-1):toString(),
-          HexCoord:new(i,j+1):toString(),
-          HexCoord:new(i-1,j+1):toString(),
-          HexCoord:new(i+1,j+1):toString(),
-          HexCoord:new(i-1,j):toString(),
-          HexCoord:new(i+1,j):toString()
+          'Earth' .. HexCoord:new(i,j-1):toString(),
+          'Earth' .. HexCoord:new(i,j+1):toString(),
+          'Earth' .. HexCoord:new(i-1,j+1):toString(),
+          'Earth' .. HexCoord:new(i+1,j+1):toString(),
+          'Earth' .. HexCoord:new(i-1,j):toString(),
+          'Earth' .. HexCoord:new(i+1,j):toString()
           }
       else
         neighbors = {
-          HexCoord:new(i,j-1):toString(),
-          HexCoord:new(i,j+1):toString(),
-          HexCoord:new(i-1,j-1):toString(),
-          HexCoord:new(i+1,j-1):toString(),
-          HexCoord:new(i-1,j):toString(),
-          HexCoord:new(i+1,j):toString()
+          'Earth' .. HexCoord:new(i,j-1):toString(),
+          'Earth' .. HexCoord:new(i,j+1):toString(),
+          'Earth' .. HexCoord:new(i-1,j-1):toString(),
+          'Earth' .. HexCoord:new(i+1,j-1):toString(),
+          'Earth' .. HexCoord:new(i-1,j):toString(),
+          'Earth' .. HexCoord:new(i+1,j):toString()
           }
       end
 
       local address = 'Earth' .. HexCoord:new(i,j):toString()
-
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
-          print('Clicked on a unit!')
+          print('Clicked on a unit (' .. this.component.gob.uid .. ')! Is situated at address:' .. earth_map:summarizeAddress(earth_map:findPlaceableAddress(this.component.gob.uid)))
         end
       end)
       local City_Touch_Delegate = TouchDelegate:new()
       City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
-          print('Clicked on a city!')
+          print('Clicked on a city (' .. this.component.gob.uid .. ')! Is situated at address: ' .. earth_map:summarizeAddress(earth_map:findPlaceableAddress(this.component.gob.uid)))
         end
       end)
 
       local hex = nil
+      local debug_unit = nil
+      local debug_city = nil
       local r = math.random()
-      if j == 1 or j == num_rows then hex = Space_Hex_Quad
+      if j == 1 or j == num_rows then hex = Arctic_Hex_Quad
       elseif r < 0.30 then 
-        hex = Space_Hex_Quad
+        hex = Grass_Hex_Quad
+        local planet = nil
         if math.random() < 0.15 then
-          local planet = Planet_1_Quad
-          if math.random() > 0.3 then
-            planet = Planet_2_Quad
-          end
-          local debug_city = Global.Registry:add(GameObject:new('City', {
+          local city = City_Quad
+          debug_city = Global.Registry:add(GameObject:new('City', {
             Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
             Interfaceable:new(
               Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37}),
               City_Touch_Delegate),
             Renderable:new(
               Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-              Sprite:new(Debug_Spritesheet, planet)
+              Sprite:new(Debug_Spritesheet, city)
               ),
             Placeable:new(address)
           }))
-          table.insert(Debug_Citys, debug_city)
+          table.insert(Earth_Citys, debug_city)
 
-          if math.random() < 0.3 then
-            local debug_unit = Global.Registry:add(GameObject:new('Troop', {
-              Transform:new((i-1) * 84 + ioffset + 17, (j-1) * 73 + joffset + 13),
-              Interfaceable:new(
-                Polygon:new({ w = 50, h = 50 }),
-                Unit_Touch_Delegate),
-              Renderable:new(
-                Polygon:new({ w = 50, h = 50 }),
-                Sprite:new(Debug_Spritesheet, Debug_Troop_Quad)),
-              Placeable:new(address)
-            }))
-            table.insert(Debug_Units, debug_unit)
-          end
         end
-      else 
-        hex = Space_Hex_Quad 
-        if math.random() < 0.1 then
-          local debug_unit = Global.Registry:add(GameObject:new('Ship', {
+        if math.random() < 0.3 then
+          debug_unit = Global.Registry:add(GameObject:new('Troop', {
             Transform:new((i-1) * 84 + ioffset + 17, (j-1) * 73 + joffset + 13),
             Interfaceable:new(
               Polygon:new({ w = 50, h = 50 }),
               Unit_Touch_Delegate),
             Renderable:new(
               Polygon:new({ w = 50, h = 50 }),
-              Sprite:new(Debug_Spritesheet, Debug_Spaceship_Quad)),
+              Sprite:new(Debug_Spritesheet, Debug_Troop_Quad)),
             Placeable:new(address)
           }))
-          table.insert(Debug_Units, debug_unit)
+          table.insert(Earth_Units, debug_unit)
+        end
+      else 
+        hex = Water_Hex_Quad 
+        if math.random() < 0.1 then
+          debug_unit = Global.Registry:add(GameObject:new('Ship', {
+            Transform:new((i-1) * 84 + ioffset + 17, (j-1) * 73 + joffset + 13),
+            Interfaceable:new(
+              Polygon:new({ w = 50, h = 50 }),
+              Unit_Touch_Delegate),
+            Renderable:new(
+              Polygon:new({ w = 50, h = 50 }),
+              Sprite:new(Debug_Spritesheet, Debug_Ship_Quad)),
+            Placeable:new(address)
+          }))
+          table.insert(Earth_Units, debug_unit)
+        end
+      end
+      if debug_unit ~= nil then
+        if debug_city ~= nil then
+          earth_map:addAddress(address, neighbors, {debug_city, debug_unit})
+        else
+          earth_map:addAddress(address, neighbors, {debug_unit})
+        end
+      else
+        if debug_city ~= nil then
+          earth_map:addAddress(address, neighbors, {debug_city})
+        else
+          earth_map:addAddress(address, neighbors, {})
         end
       end
 
@@ -158,7 +174,7 @@ function Loader:debugLoad ()
       Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
           if this.component.gob:hasComponent('Addressable') then
             local addr = this.component.gob:getComponent('Addressable')
-            print('hex has neighbors ' .. inspect(addr.neighbors))
+            print(earth_map:summarizeAddress(address))
             Global.Systems.Selection:select(this.component.gob.uid)
           end
         end)
@@ -173,9 +189,8 @@ function Loader:debugLoad ()
 		      ),
         Addressable:new(address)
   		}))
-  		table.insert(Debug_Hexes, debug_hex)
+  		table.insert(Earth_Hexes, debug_hex)
 
-      idx = idx + 1
 	  end
   end
 
@@ -206,16 +221,13 @@ function Loader:debugLoad ()
   SceneGraph:attach(MapView)
   SceneGraph:attachAll({Map_Layer,UI_Layer}, MapView)
   SceneGraph:attachAll({Tile_Layer,City_Layer,Unit_Layer,UI_Layer}, Map_Layer)
-  SceneGraph:attachAll(Debug_Hexes, Tile_Layer)
-  SceneGraph:attachAll(Debug_Citys, City_Layer)
-  SceneGraph:attachAll(Debug_Units, Unit_Layer)
-
+  SceneGraph:attachAll(Earth_Hexes, Tile_Layer)
+  SceneGraph:attachAll(Earth_Citys, City_Layer)
+  SceneGraph:attachAll(Earth_Units, Unit_Layer)
 
   Global.Systems.Render = RenderableSystem:new(Global.Registry, SceneGraph)
   Global.Systems.Interface = InterfaceableSystem:new(Global.Registry, SceneGraph)
   Global.Systems.Selection = SelectableSystem:new(Global.Registry, SceneGraph, Sprite:new(Debug_Spritesheet, Debug_Cursor_Quad))
-
-  Global.Systems.Selection:select(2)
   
 
 end
