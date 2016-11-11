@@ -90,7 +90,8 @@
 			y = 219,
 			frameWidth = 84,
 			frameHeight = 73,
-			amountOfFrames = 3
+			amountOfFrames = 3,
+			frameTime = 0.3
 		}
 	}
 }

@@ -78,11 +78,12 @@ function AssetLoader:loadAnimation(animation,spriteSheetId)
 	if(animation.frameWidth == nil) then print(self.errorPrefix .. " animation frameWidth is not defined for " .. animation.assetId) return end
 	if(animation.frameHeight == nil) then print(self.errorPrefix .. " animation frameHeight is not defined for " .. animation.assetId) return end
 	if(animation.amountOfFrames == nil) then print(self.errorPrefix .. " animation amountOfFrames is not defined for " .. animation.assetId) return end
+	if(animation.frameTime == nil) then print(self.errorPrefix .. " animation frameTime is not defined for " .. animation.assetId) return end
 
 	local spriteSheet = self:getAsset(spriteSheetId)
 
 	local grid = anim8.newGrid(animation.frameWidth,animation.frameHeight,spriteSheet:getWidth(), spriteSheet:getHeight(), animation.x or 0, animation.y or 0)
-	local anim = anim8.newAnimation(grid('1-'..animation.amountOfFrames, 1),{['1-'..animation.amountOfFrames]=0.2})
+	local anim = anim8.newAnimation(grid('1-'..animation.amountOfFrames, 1),{['1-'..animation.amountOfFrames]=animation.frameTime})
 	
 	self.assets[animation.assetId] = Animation:new(anim, spriteSheet)
 end
