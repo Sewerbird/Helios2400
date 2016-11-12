@@ -76,9 +76,21 @@ function IndexTree:attach ( attacheeId, attachToId )
 	end
 end
 
+function IndexTree:detachAll ( detachFromId )
+	local v = self.nodes[detachFromId]
+	for j, p in ipairs(v.children) do
+		for k, c in ipairs(self.nodes[p].parents) do
+			if c == v.nid then
+				table.remove(self.nodes[p].parents, k)
+			end
+		end
+	end
+	v.children = {}
+end
+
 function IndexTree:detach ( detachee, detachFromId )
 	assert(detachee ~= nil, 'tried to detach nil')
-	v = self.nodes[detachee]
+	local v = self.nodes[detachee]
 	for j, p in ipairs(v.parents) do
 		for k, c in ipairs(self.nodes[p].children) do
 			if c == v.nid then
