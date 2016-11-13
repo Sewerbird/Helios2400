@@ -10,6 +10,16 @@ function Transform:init ( x, y )
 	self.y = y or 0
 end
 
+function Transform:teleport ( x, y )
+	if type(x) == 'table' then
+		self.x = x.x
+		self.y = x.y
+	else
+		self.x = x
+		self.y = y
+	end
+end
+
 function Transform:translate ( dx, dy )
 	if type(dx) == 'table' then
 		self.x = self.x + dx.x
