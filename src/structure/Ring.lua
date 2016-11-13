@@ -1,11 +1,17 @@
 local class = require 'lib/30log'
 local inspect = require 'lib/inspect'
 local Ring = class("Ring", {
-	elements = {}
+	elements = {},
 	cursor = nil
 })
 
-function Ring:addView (...)
+function Ring:init ( eles )
+	if eles ~= nil then
+		self:add(eles)
+	end
+end
+
+function Ring:add (...)
 	if ... then
 		local targs = {...}
 		for _,v in ipairs(targs) do

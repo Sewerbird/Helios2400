@@ -45,11 +45,6 @@ function Loader:debugLoad ()
   music:setVolume(BG_MUSIC_VOL)
   music:play()
 
-  Global = {
-    Registry = Registry:new(),
-    Systems = {}
-  }
-
   local space_map = IndexMap:new()
   local earth_map = IndexMap:new()
 
@@ -94,19 +89,21 @@ function Loader:debugLoad ()
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
-          Global.Systems.Selection:select(this.component.gob.uid)
+          print('TODO: SHOULD BROADCAST A SELECT ON ' .. this.component.gob.uid) -- Global.Systems.Selection:select(this.component.gob.uid)
+          Global.PubSub:publish("select",{uid = this.component.gob.uid})
           print('Clicked on a unit (' .. this.component.gob.uid .. ')! Is situated at address:' .. earth_map:summarizeAddress(earth_map:findPlaceableAddress(this.component.gob.uid)))
           return true
         end
       end)
       local City_Touch_Delegate = TouchDelegate:new()
-      --[[City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
+      City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
-          Global.Systems.Selection:select(this.component.gob.uid)
+          print('TODO: SHOULD BROADCAST A SELECT ON ' .. this.component.gob.uid) -- Global.Systems.Selection:select(this.component.gob.uid)
+          Global.PubSub:publish("select",{uid = this.component.gob.uid})
           print('Clicked on a city (' .. this.component.gob.uid .. ')! Is situated at address: ' .. earth_map:summarizeAddress(earth_map:findPlaceableAddress(this.component.gob.uid)))
           --return true
         end
-      end)]]--
+      end)
 
       local hex = nil
       local debug_unit = nil
@@ -181,7 +178,9 @@ function Loader:debugLoad ()
       Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
           if this.component.gob:hasComponent('Addressable') then
             local addr = this.component.gob:getComponent('Addressable')
-            Global.Systems.Selection:moveSelectedTo(this.component.gob.uid, this.component.address)
+            print('TODO: SHOULD BROADCAST A MOVE TO ' .. this.component.gob.uid)
+            --Global.Systems.Selection:moveSelectedTo(this.component.gob.uid, this.component.address)
+            Global.PubSub:publish("moveTo",{uid = this.component.gob.uid, address = addr})
           end
         end)
 	  	local debug_hex = Global.Registry:add(GameObject:new('Tile',{
@@ -231,12 +230,7 @@ function Loader:debugLoad ()
   SceneGraph:attachAll(Earth_Citys, City_Layer)
   SceneGraph:attachAll(Earth_Units, Unit_Layer)
 
-
-  Global.Systems.Render = RenderableSystem:new(Global.Registry, SceneGraph)
-  Global.Systems.Interface = InterfaceableSystem:new(Global.Registry, SceneGraph)
-  Global.Systems.Selection = SelectableSystem:new(Global.Registry, SceneGraph, Sprite:new(Debug_Spritesheet, Debug_Cursor_Quad))
-  
-
+  return SceneGraph
 end
 
 return Loader

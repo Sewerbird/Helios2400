@@ -9,17 +9,8 @@
 local System = require 'src/System'
 
 local RenderableSystem = System:extend("RenderableSystem",{
-	scenes = {},
-	active_scene = nil
+
 })
-
-function RenderableSystem:addScene ( tag, scene )
-end
-
-function RenderableSystem:setScene ( tag )
-
-end
-
 
 function RenderableSystem:draw ()
 	local function drawHeirarchy ( root )
@@ -54,7 +45,6 @@ function RenderableSystem:draw ()
 			love.graphics.translate(-delta.x, -delta.y)
 		end
 	end
-
 	drawHeirarchy(self.registry:get(self.targetCollection:getRoot()))
 
 end

@@ -4,6 +4,9 @@ ProFi = require 'lib/ProFi'
 debugGraph = require 'lib/debugGraph'
 
 Loader = require 'src/Loader'
+GameViewer = require 'src/ui/GameViewer'
+PubSub = require 'src/PubSub'
+local my_viewer
 
 --TODO: move this into a util lib
 function math.round(n, deci)
@@ -14,7 +17,13 @@ end
 function love.load()
   print("Time to play!")
 
-  Loader:new():debugLoad()
+  Global = {
+    PubSub = PubSub:new(),
+    Registry = Registry:new(),
+    Systems = {}
+  }
+
+  my_viewer = GameViewer:new(Global.Registry, Loader:new():debugLoad())
 
   --Profiling stuff
   ProFi:start()
@@ -40,7 +49,7 @@ end
 
 function love.draw()
   if not Global_PAUSE then
-    Global.Systems.Render:draw()
+    my_viewer.Systems.Render:draw()
   end
 
   -- Profiling stuff
@@ -54,36 +63,36 @@ end
 
 function love.mousepressed( x, y, button )
   Global.DRAGBEGUN = true
-  Global.Systems.Interface:onTouch(x,y)
+  my_viewer.Systems.Interface:onTouch(x,y)
 end
 
 function love.mousemoved( x, y, dx, dy, istouch )
   if Global.DRAGBEGUN then
-    Global.Systems.Interface:onDrag(x,y,dx,dy)
+    my_viewer.Systems.Interface:onDrag(x,y,dx,dy)
   end
 end
 
 function love.mousereleased( x, y, button )
   Global.DRAGBEGUN = false
-  Global.Systems.Interface:onUntouch(x,y)
+  my_viewer.Systems.Interface:onUntouch(x,y)
 end
 
 function love.touchpressed( id, x, y, pressure )
-  Global.Systems.Interface:onTouch(x,y)
+  my_viewer.Systems.Interface:onTouch(x,y)
 end
 
 function love.touchmoved( id, x, y, dx, dy, pressure )
   if Global.DRAGBEGUN then
-    Global.Systems.Interface:onDrag(x,y,dx,dy)
+    my_viewer.Systems.Interface:onDrag(x,y,dx,dy)
   end
 end
 
 function love.touchreleased( id, x, y, pressure )
-  Global.Systems.Interface:onUntouch(x,y)
+  my_viewer.Systems.Interface:onUntouch(x,y)
 end
 
 function love.keypressed( key )
-  Global.Systems.Interface:onKeypress(key)
+  my_viewer.Systems.Interface:onKeypress(key)
 end
 
 function love.focus( f )

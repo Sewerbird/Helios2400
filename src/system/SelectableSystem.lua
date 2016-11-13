@@ -13,14 +13,26 @@ local SelectableSystem = System:extend({
 
 function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 	SelectableSystem.super.init(self, registry, targetCollection)
+	--TODO: use AssetLoader
+	local Debug_Spritesheet = love.graphics.newImage('assets/debug_tileset.png')
+	local Debug_Cursor_Quad = love.graphics.newQuad(0, 146, 84, 73, Debug_Spritesheet:getDimensions())
 	self.selected_unit_cursor_object = self.registry:add(GameObject:new('Cursor',{
 		Transform:new(0,0),
 	    Renderable:new(
 	      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-	      cursor_sprite
+	      Sprite:new(Debug_Spritesheet, Debug_Cursor_Quad)
 	      ),
 	    Placeable:new()
 	}))
+
+	local unsubSelect= Global.PubSub:subscribe("select", function (this, msg)
+		self:select(msg.uid)
+	end)
+
+	local unsubMoveTo = Global.PubSub:subscribe("moveTo", function (this, msg)
+		self:moveSelectedTo(msg.uid, msg.address)
+	end)
+
 
 end
 

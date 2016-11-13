@@ -43,7 +43,7 @@ end
 
 function Queue:peekNext (idx)
   local nxt = idx + 1
-  if nxt > #self._et 0 then return nil end
+  if nxt > #(self._et) then return nil end
   return self._et[nxt]
 end
 
