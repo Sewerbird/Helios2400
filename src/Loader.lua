@@ -174,7 +174,6 @@ function Loader:debugLoad ()
       Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
           if this.component.gob:hasComponent('Addressable') then
             local addr = this.component.gob:getComponent('Addressable')
-            print(earth_map:summarizeAddress(address))
             Global.Systems.Selection:select(this.component.gob.uid)
           end
         end)

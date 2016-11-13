@@ -25,7 +25,6 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 end
 
 function SelectableSystem:select ( gameObjectId )
-	print('selecting' .. tostring(gameObjectId))
 	if self.current_selection ~= nil then 
 		local tgtObj = self.registry:get(self.current_selection)
 		local cursor = self.registry:get(self.selected_unit_cursor_object)
