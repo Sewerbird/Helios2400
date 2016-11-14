@@ -1,10 +1,11 @@
 --GameViewer
 local class = require 'lib/30log'
 local inspect = require 'lib/inspect'
-local Queue = require 'src/structure/Queue'
 local Ring = require 'src/structure/Ring'
-local Stack = require 'src/structure/Stack'
-local IndexTree = require 'src/structure/Stack'
+local InterfaceableSystem = require 'src/system/InterfaceableSystem'
+local RenderableSystem = require 'src/system/RenderableSystem'
+local SelectableSystem = require 'src/system/SelectableSystem'
+
 local GameViewer = class("GameViewer", {
 	Registry = nil,
 	Systems = {},
