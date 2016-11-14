@@ -32,8 +32,6 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 	local unsubMoveTo = Global.PubSub:subscribe("moveTo", function (this, msg)
 		self:moveSelectedTo(msg.uid, msg.address)
 	end)
-
-
 end
 
 function SelectableSystem:select ( gameObjectId )
