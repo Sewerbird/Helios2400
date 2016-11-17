@@ -8,8 +8,9 @@
 			assetType = "sprite",
 			x = 0,
 			y = 0,
+			width = 84,
 			height = 73
-		}
+		},
 		{
 			assetId = "TEST_ASSET_CORRECT_ANIMATION",
 			assetType = "animation",

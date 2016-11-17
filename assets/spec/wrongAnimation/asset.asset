@@ -10,7 +10,7 @@
 			y = 0,
 			width = 84,
 			height = 73
-		}
+		},
 		{
 			assetId = "TEST_ASSET_WRONG_ANIMATION",
 			assetType = "animation",

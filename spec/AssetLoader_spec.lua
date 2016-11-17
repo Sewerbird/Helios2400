@@ -1,6 +1,6 @@
 inspect = require 'lib/inspect'
-AssetLoader = require 'src/AssetLoader' 
-require 'spec/lovemocks'
+require 'spec/lovemock'
+AssetLoader = require 'src/AssetLoader'
 
 describe('AssetLoader', function ()
 

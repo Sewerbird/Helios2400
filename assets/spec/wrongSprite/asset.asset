@@ -1,16 +1,15 @@
 {
-	assetId = "DOUBLE_ID",
+	assetId = "TEST_ASSET_CORRECT",
 	assetType = "spriteSheet",
 	assetPath = "spec/test_asset.png",
 	data = {
 		{
-			assetId = "DOUBLE_ID",
+			assetId = "TEST_ASSET_CORRECT_IMAGE",
 			assetType = "sprite",
 			x = 0,
 			y = 0,
-			width = 84,
 			height = 73
-		}
+		},
 		{
 			assetId = "TEST_ASSET_CORRECT_ANIMATION",
 			assetType = "animation",

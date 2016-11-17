@@ -1,6 +1,9 @@
 require "lib/Tserial"
+inspect = require 'lib/inspect'
 local anim8 = require "lib/anim8"
 local class = require 'lib/30log'
+Sprite = require 'src/datatype/Sprite'
+Animation = require 'src/datatype/Animation' 
 
 local AssetLoader = class("AssetLoader", {
 	assets = {},
@@ -13,8 +16,8 @@ function AssetLoader:loadAssets(rootPath)
 	for i,v in ipairs(love.filesystem.getDirectoryItems(self.rootPath)) do
 		if self.isAsset(v) then
 			local filePath = self.rootPath .. v
-			print("loading asset", filePath)
-			local asset = Tserial.unpack(love.filesystem.read(filePath),true)
+			local file = love.filesystem.read(filePath)
+			local asset = Tserial.unpack(file,false)
 			self:loadAsset(asset)
 		end
 	end

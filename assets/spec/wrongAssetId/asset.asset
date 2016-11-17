@@ -1,16 +1,16 @@
 {
-	assetId = "TEST_ASSET_CORRECT",
+	assetId = "DOUBLE_ID",
 	assetType = "spriteSheet",
-	assetPath = "spec/non_existant_path.png",
+	assetPath = "spec/test_asset.png",
 	data = {
 		{
-			assetId = "TEST_ASSET_CORRECT_IMAGE",
+			assetId = "DOUBLE_ID",
 			assetType = "sprite",
 			x = 0,
 			y = 0,
 			width = 84,
 			height = 73
-		}
+		},
 		{
 			assetId = "TEST_ASSET_CORRECT_ANIMATION",
 			assetType = "animation",

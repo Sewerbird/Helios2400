@@ -1,7 +1,7 @@
 {
 	assetId = "TEST_ASSET_CORRECT",
 	assetType = "spriteSheet",
-	assetPath = "spec/test_asset.png",
+	assetPath = "spec/non_existant_path.png",
 	data = {
 		{
 			assetId = "TEST_ASSET_CORRECT_IMAGE",
@@ -10,7 +10,7 @@
 			y = 0,
 			width = 84,
 			height = 73
-		}
+		},
 		{
 			assetId = "TEST_ASSET_CORRECT_ANIMATION",
 			assetType = "animation",
