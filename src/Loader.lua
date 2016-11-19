@@ -52,6 +52,9 @@ function Loader:debugLoad ()
   local num_cols = 20
 
   --Earth Map
+
+  local SceneGraph = IndexTree:new();
+
   local Earth_Hexes = {}
   local Earth_Citys = {}
   local Earth_Units = {}
@@ -126,35 +129,45 @@ function Loader:debugLoad ()
           table.insert(Earth_Citys, debug_city)
 
         end
-        if math.random() < 0.3 then
-          debug_unit = Global.Registry:add(GameObject:new('Troop', {
-            Transform:new((i-1) * 84 + ioffset + (84/2) - (50/2), (j-1) * 73 + joffset + (73/2) - (50/2)),
+        if math.random() < 0.13 then
+          --DEBUG LAND ARMY
+          debug_unit = Global.Registry:add(GameObject:new('Army', {
+            Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
             Interfaceable:new(
-              Polygon:new({ w = 50, h = 50 }),
+              Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73, 0,37}),
               Unit_Touch_Delegate),
-            Renderable:new(
-              Polygon:new({ w = 50, h = 50 }),
-              Sprite:new(Debug_Spritesheet, Debug_Troop_Quad)),
             Placeable:new(address),
             Moveable:new()
           }))
+          debug_unit_bg = Global.Registry:add(GameObject:new('Army_BG', {
+            Transform:new((84-50)/2, (73-50)/2),
+            Renderable:new(
+              Polygon:new({ w = 50, h = 50}),
+              nil,
+              {200, 60, 60})
+          }))
+          debug_unit_sprite = Global.Registry:add(GameObject:new('Troop', {
+            Transform:new(),
+            Renderable:new(
+              Polygon:new({ w = 50, h = 50 }),
+              Sprite:new(Debug_Spritesheet, Debug_Troop_Quad))
+          }))
+          debug_unit_name = Global.Registry:add(GameObject:new('Name', {
+            Transform:new(-3,38),
+            Renderable:new(
+              nil,
+              nil,
+              nil,
+              (math.floor(math.random()*10)) .. "th Army")
+          }))
+          SceneGraph:attach(debug_unit,nil)
+          SceneGraph:attach(debug_unit_bg, debug_unit)
+          SceneGraph:attachAll({debug_unit_sprite, debug_unit_name}, debug_unit_bg)
           table.insert(Earth_Units, debug_unit)
         end
       else 
         hex = Water_Hex_Quad 
         if math.random() < 0.1 then
-          debug_unit = Global.Registry:add(GameObject:new('Ship', {
-            Transform:new((i-1) * 84 + ioffset + (84/2) - (50/2), (j-1) * 73 + joffset + (73/2) - (50/2)),
-            Interfaceable:new(
-              Polygon:new({ w = 50, h = 50 }),
-              Unit_Touch_Delegate),
-            Renderable:new(
-              Polygon:new({ w = 50, h = 50 }),
-              Sprite:new(Debug_Spritesheet, Debug_Ship_Quad)),
-            Placeable:new(address),
-            Moveable:new()
-          }))
-          table.insert(Earth_Units, debug_unit)
         end
       end
       if debug_unit ~= nil then
@@ -211,8 +224,6 @@ function Loader:debugLoad ()
   		Map_Layer_Touch_Delegate)
   	}))
 
-
-  local SceneGraph = IndexTree:new(earth_map);
 
   local MapView = Global.Registry:add(GameObject:new('Map_View',{}))
   local Tile_Layer = Global.Registry:add(GameObject:new('Tile_Layer',{}))

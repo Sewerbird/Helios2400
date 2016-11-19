@@ -80,8 +80,8 @@ function SelectableSystem:moveSelectedTo (tgtGameObjectId, tgtAddress)
 			local plc = srcObj:getComponent('Placeable')
 			local adr = dstObj:getComponent('Addressable')
 			local dst_transform = dstObj:getComponent('Transform')
-			local dst_poly = dstObj:getComponent('Renderable').polygon
-			local src_poly = srcObj:getComponent('Renderable').polygon
+			local dst_poly = dstObj:getComponent('Interfaceable').polygon
+			local src_poly = srcObj:getComponent('Interfaceable').polygon
 
 			plc.address = adr.address
 			srcObj:getComponent('Transform'):teleport(dst_transform.x + dst_poly.w/2 - src_poly.w/2, dst_transform.y + dst_poly.h/2 - src_poly.h/2)
