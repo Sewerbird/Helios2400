@@ -5,6 +5,7 @@ Addressable = require 'src/component/Addressable'
 Placeable = require 'src/component/Placeable'
 Interfaceable = require 'src/component/Interfaceable'
 Moveable = require 'src/component/Moveable'
+Updateable = require 'src/component/Updateable'
 Transform = require 'src/component/Transform'
 TouchDelegate = require 'src/datatype/TouchDelegate'
 GameObject = require 'src/GameObject'
@@ -180,10 +181,26 @@ function Loader:debugLoad ()
               Polygon:new({ w = 50 * math.random(), h=5}),
               nil,
               {100,200,100})
-            }))
+          }))
+          debug_unit_timer = Global.Registry:add(GameObject:new('Timer', {
+            Transform:new(0,15),
+            Renderable:new(
+              nil,
+              nil,
+              nil,
+              "0:00"),
+            Updateable:new({
+              tick = function (this, msg)
+                local renderable = this.gob:getComponent("Renderable")
+                if renderable ~= nil then
+                  renderable.text = msg.ticktext
+                end
+              end
+            })
+          }))
           SceneGraph:attach(debug_unit,nil)
           SceneGraph:attach(debug_unit_bg, debug_unit)
-          SceneGraph:attachAll({debug_unit_sprite, debug_unit_name, debug_unit_health}, debug_unit_bg)
+          SceneGraph:attachAll({debug_unit_sprite, debug_unit_name, debug_unit_health, debug_unit_timer}, debug_unit_bg)
           table.insert(Earth_Units, debug_unit)
         end
       else 

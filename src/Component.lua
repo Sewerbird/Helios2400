@@ -12,6 +12,7 @@ end
 function Component:onAdd ( parent )
 	self.gob = parent
 	self.gid = parent.uid
+	self.fns = {}
 end
 
 function Component:getObject ()

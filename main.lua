@@ -33,11 +33,18 @@ function love.load()
   
 end
 
+local tickAccumulator = 0
+
 function love.update( dt )
   if collectgarbage('count') > GOAL_MEMORY then error('Using too much memory mate!') end
 
   --Debug mouse-to-hex output
   if not Global_PAUSE then
+    tickAccumulator = tickAccumulator + dt
+    if tickAccumulator > 1 then
+      tickAccumulator = tickAccumulator - 1
+      Global.PubSub:publish('tick',{ticktext = dt})
+    end
   end
 
   --Profiling stuff
