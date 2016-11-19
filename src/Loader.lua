@@ -143,6 +143,8 @@ function Loader:debugLoad ()
         end
         if math.random() < 0.13 then
           --DEBUG LAND ARMY
+          local team_color = {200,60,60,200}
+          if math.random() > 0.5 then team_color = {60,60,200,200} end
           debug_unit = Global.Registry:add(GameObject:new('Army', {
             Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
             Interfaceable:new(
@@ -156,7 +158,7 @@ function Loader:debugLoad ()
             Renderable:new(
               Polygon:new({ w = 50, h = 50}),
               nil,
-              {200, 60, 60, 200})
+              team_color)
           }))
           debug_unit_sprite = Global.Registry:add(GameObject:new('Troop', {
             Transform:new(3,5),
