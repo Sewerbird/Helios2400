@@ -48,8 +48,8 @@ function Loader:debugLoad ()
   --[[ Instantiate Tilemap View ]]--
 
   local joffset = 0
-  local num_rows = 10
-  local num_cols = 20
+  local num_rows = 12
+  local num_cols = 24
 
   --Earth Map
 
@@ -58,6 +58,8 @@ function Loader:debugLoad ()
   local Earth_Hexes = {}
   local Earth_Citys = {}
   local Earth_Units = {}
+
+  local city_names = {'New Moroni', 'Tiangong', 'Elonia', 'Neokyoto', 'Al Kicab'}
 
   for i = 1 , num_cols do --x
   	for j = 1 , num_rows do --y
@@ -99,7 +101,7 @@ function Loader:debugLoad ()
       City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
           print('TODO: SHOULD BROADCAST A SELECT ON ' .. this.component.gob.uid) -- Global.Systems.Selection:select(this.component.gob.uid)
-          Global.PubSub:publish("select",{uid = this.component.gob.uid})
+          --Global.PubSub:publish("select",{uid = this.component.gob.uid})
           print('Clicked on a city (' .. this.component.gob.uid .. ')! Is situated at address: ' .. earth_map:summarizeAddress(earth_map:findPlaceableAddress(this.component.gob.uid)))
           --return true
         end
@@ -126,6 +128,16 @@ function Loader:debugLoad ()
               ),
             Placeable:new(address)
           }))
+          debug_city_label = Global.Registry:add(GameObject:new('Name', {
+            Transform:new(0,60),
+            Renderable:new(
+              Polygon:new({ w=84, h=13 }),
+              nil,
+              {120,120,200,200},
+              city_names[math.floor(math.random()*#city_names)+1])
+            }))
+          SceneGraph:attach(debug_city, nil)
+          SceneGraph:attach(debug_city_label, debug_city)
           table.insert(Earth_Citys, debug_city)
 
         end
@@ -144,25 +156,32 @@ function Loader:debugLoad ()
             Renderable:new(
               Polygon:new({ w = 50, h = 50}),
               nil,
-              {200, 60, 60})
+              {200, 60, 60, 200})
           }))
           debug_unit_sprite = Global.Registry:add(GameObject:new('Troop', {
-            Transform:new(),
+            Transform:new(3,5),
             Renderable:new(
               Polygon:new({ w = 50, h = 50 }),
               Sprite:new(Debug_Spritesheet, Debug_Troop_Quad))
           }))
           debug_unit_name = Global.Registry:add(GameObject:new('Name', {
-            Transform:new(-3,38),
+            Transform:new(-3,0),
             Renderable:new(
               nil,
               nil,
               nil,
               (math.floor(math.random()*10)) .. "th Army")
           }))
+          debug_unit_health = Global.Registry:add(GameObject:new('HealthBar', {
+            Transform:new(0,45),
+            Renderable:new(
+              Polygon:new({ w = 50 * math.random(), h=5}),
+              nil,
+              {100,200,100})
+            }))
           SceneGraph:attach(debug_unit,nil)
           SceneGraph:attach(debug_unit_bg, debug_unit)
-          SceneGraph:attachAll({debug_unit_sprite, debug_unit_name}, debug_unit_bg)
+          SceneGraph:attachAll({debug_unit_sprite, debug_unit_name, debug_unit_health}, debug_unit_bg)
           table.insert(Earth_Units, debug_unit)
         end
       else 
@@ -210,22 +229,27 @@ function Loader:debugLoad ()
   end
 
   --Compose & Populate the layers
-  local Map_Layer_Touch_Delegate = TouchDelegate:new();
-  Map_Layer_Touch_Delegate:setHandler('onDrag', function(this, x,y,dx,dy)
-      if this.component.gob:hasComponent('Transform') then
-        local t = this.component.gob:getComponent('Transform')
-        t:translate(dx,dy)
-      end
-    end)
+
   local Map_Layer = Global.Registry:add(GameObject:new('Map Layer', {
-	  Transform:new(-60,10),
-  	Interfaceable:new(
-  		Polygon:new({w=1200, h = 800}),
-  		Map_Layer_Touch_Delegate)
-  	}))
+    Transform:new(-60,10)
+    }))
+  local Map_View_Touch_Delegate = TouchDelegate:new();
+  Map_View_Touch_Delegate:setHandler('onDrag', function(this, x,y,dx,dy)
+    if Global.Registry:get(Map_Layer):hasComponent('Transform') then
+      local t = Global.Registry:get(Map_Layer):getComponent('Transform')
+      t:translate(dx,dy)
+    end
+  end)
+  local MapView = Global.Registry:add(GameObject:new('Map_View',{
+    Transform:new(0,0),
+    Interfaceable:new(
+      Polygon:new({w=1200, h=800}),
+      Map_View_Touch_Delegate)
+    }))
+
+  
 
 
-  local MapView = Global.Registry:add(GameObject:new('Map_View',{}))
   local Tile_Layer = Global.Registry:add(GameObject:new('Tile_Layer',{}))
   local City_Layer = Global.Registry:add(GameObject:new('City_Layer',{}))
   local Unit_Layer = Global.Registry:add(GameObject:new('Unit_Layer',{}))
