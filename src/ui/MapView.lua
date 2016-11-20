@@ -38,7 +38,7 @@ MapView.new = function(self, registry, scenegraph, map, tiles, cities, units)
   scenegraph:attachAll(cities, City_Layer)
   scenegraph:attachAll(units, Unit_Layer)
 
-  return me_view --, Tile_Layer, City_Layer, Unit_Layer, UI_Layer
+  return Map_View, Tile_Layer, City_Layer, Unit_Layer, UI_Layer
 end
 
 return MapView

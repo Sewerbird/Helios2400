@@ -103,8 +103,8 @@ function Loader:debugLoad ()
       Earth_Map:addAddress(hex_info.address, hex_info.neighbors, {oCity, oArmy})
     end
   end
-  ----[[Instantiate Tilemap View ]]--
 
+  --[[Instantiate Tilemap View ]]--
   local SceneGraph = IndexTree:new();
   local Earth_Tiles = {}
   local Earth_Cities = {}

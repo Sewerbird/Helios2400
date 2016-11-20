@@ -42,8 +42,8 @@ function love.update( dt )
   --Debug mouse-to-hex output
   if not Global.PAUSE then
     tickAccumulator = tickAccumulator + dt
-    if tickAccumulator > 1 then
-      tickAccumulator = tickAccumulator - 1
+    if tickAccumulator > 0.1 then
+      tickAccumulator = tickAccumulator - 0.1
       local val = math.random()
       Global.PubSub:publish('hurt',{percent = val})
     end
