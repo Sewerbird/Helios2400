@@ -31,7 +31,7 @@ function IndexMap:addAddress(address, neighborAddresses, placeableIds)
 	self.addressbook[address] = Location:new(address, neighborAddresses, placeableIds)
 	if placeableIds ~= nil then
 		for i = 1, #placeableIds do
-			self:addPlaceable(placeableIds[i],address)
+			if placeableIds[i] ~= nil then self:addPlaceable(placeableIds[i],address) end
 		end
 	end
 end

@@ -1,23 +1,25 @@
 --Loader.lua
-
-Renderable = require 'src/component/Renderable'
-Addressable = require 'src/component/Addressable'
-Placeable = require 'src/component/Placeable'
-Interfaceable = require 'src/component/Interfaceable'
-Moveable = require 'src/component/Moveable'
-Updateable = require 'src/component/Updateable'
-Transform = require 'src/component/Transform'
-TouchDelegate = require 'src/datatype/TouchDelegate'
-GameInfo = require 'src/component/GameInfo'
-GameObject = require 'src/GameObject'
-Polygon = require 'src/datatype/Polygon'
-Sprite = require 'src/datatype/Sprite'
-HexCoord = require 'src/datatype/HexCoord'
-Registry = require 'src/structure/Registry'
-IndexTree = require 'src/structure/IndexTree'
-IndexMap = require 'src/structure/IndexMap'
-
 require 'lib/my_utils'
+local Renderable = require 'src/component/Renderable'
+local Addressable = require 'src/component/Addressable'
+local Placeable = require 'src/component/Placeable'
+local Interfaceable = require 'src/component/Interfaceable'
+local Moveable = require 'src/component/Moveable'
+local Updateable = require 'src/component/Updateable'
+local Transform = require 'src/component/Transform'
+local TouchDelegate = require 'src/datatype/TouchDelegate'
+local GameInfo = require 'src/component/GameInfo'
+local GameObject = require 'src/GameObject'
+local Polygon = require 'src/datatype/Polygon'
+local Sprite = require 'src/datatype/Sprite'
+local HexCoord = require 'src/datatype/HexCoord'
+local Registry = require 'src/structure/Registry'
+local IndexTree = require 'src/structure/IndexTree'
+local IndexMap = require 'src/structure/IndexMap'
+local MapView = require 'src/ui/MapView'
+local CityMapViewIcon = require 'src/ui/CityMapViewIcon'
+local ArmyMapViewIcon = require 'src/ui/ArmyMapViewIcon'
+local TileMapViewIcon = require 'src/ui/TileMapViewIcon'
 local class = require 'lib/30log'
 
 local Loader = class("Loader", {
@@ -26,6 +28,7 @@ local Loader = class("Loader", {
 
 function Loader:debugLoad ()
 
+  --[[ Load Assets ]]--
   local Debug_Spritesheet = love.graphics.newImage('assets/debug_tileset.png')
   local Grass_Hex_Quad = love.graphics.newQuad(0, 0, 84, 73, Debug_Spritesheet:getDimensions())
   local Water_Hex_Quad = love.graphics.newQuad(84, 0, 84, 73, Debug_Spritesheet:getDimensions())
@@ -44,255 +47,82 @@ function Loader:debugLoad ()
   music:setVolume(BG_MUSIC_VOL)
   music:play()
 
-  local space_map = IndexMap:new()
-  local earth_map = IndexMap:new()
 
-  --[[ Instantiate Tilemap View ]]--
-
+  --[[ Generate the Game State ]]--
+  local debug_gamestate = Global.Registry--TODO: make this with a Registry:new();
+  local city_names = {'New Moroni', 'Tiangong', 'Elonia', 'Neokyoto', 'Al Kicab', 'Choaswell', 'Atraapool', 'Efrimirie', 'Droawona'}
   local joffset = 0
   local num_rows = 12
   local num_cols = 24
-
-  --Earth Map
-
-  local SceneGraph = IndexTree:new();
-
-  local Earth_Hexes = {}
-  local Earth_Citys = {}
-  local Earth_Units = {}
-
-  local city_names = {'New Moroni', 'Tiangong', 'Elonia', 'Neokyoto', 'Al Kicab'}
+  local Earth_Map = IndexMap:new()
 
   for i = 1 , num_cols do --x
-  	for j = 1 , num_rows do --y
-  		if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
-  		local ioffset = (i-1) * -21
+    for j = 1 , num_rows do
+      if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
+      local ioffset = (i-1) * -21
+      local hex = (j==1 or j==num_rows) and Arctic_Hex_Quad or ((math.random() < 0.3) and Grass_Hex_Quad or Water_Hex_Quad)
 
-      local neighbors   
-      if j % 2 == 1 then
+      local hex_info = {
+        map = 'Earth',
+        address = 'Earth' .. HexCoord:new(i,j):toString(),
+        terrain_sprite = hex,
         neighbors = {
           'Earth' .. HexCoord:new(i,j-1):toString(),
           'Earth' .. HexCoord:new(i,j+1):toString(),
-          'Earth' .. HexCoord:new(i-1,j+1):toString(),
-          'Earth' .. HexCoord:new(i+1,j+1):toString(),
+          (j % 2 == 0) and 'Earth' .. HexCoord:new(i-1,j+1):toString() or 'Earth' .. HexCoord:new(i-1,j-1):toString(),
+          (j % 2 == 0) and 'Earth' .. HexCoord:new(i+1,j+1):toString() or 'Earth' .. HexCoord:new(i+1,j-1):toString(),
           'Earth' .. HexCoord:new(i-1,j):toString(),
           'Earth' .. HexCoord:new(i+1,j):toString()
-          }
-      else
-        neighbors = {
-          'Earth' .. HexCoord:new(i,j-1):toString(),
-          'Earth' .. HexCoord:new(i,j+1):toString(),
-          'Earth' .. HexCoord:new(i-1,j-1):toString(),
-          'Earth' .. HexCoord:new(i+1,j-1):toString(),
-          'Earth' .. HexCoord:new(i-1,j):toString(),
-          'Earth' .. HexCoord:new(i+1,j):toString()
-          }
-      end
+        },
+        worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
+      }
+      local city_info = (hex == Grass_Hex_Quad and math.random() < 0.15) and {
+        city_name = city_names[math.floor(math.random()*#city_names)+1],
+        address = hex_info.address,
+        icon_sprite = City_Quad,
+        worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
+      } or nil
+      local army_info = (hex == Grass_Hex_Quad and math.random() < 0.13) and {
+        team_color = (math.random() > 0.5) and {60,60,200,200} or {200,60,60,200},
+        icon_sprite = Debug_Troop_Quad,
+        curr_hp = math.floor(math.random() * 100),
+        max_hp = 100,
+        army_type = 'stealth',
+        army_name = (math.floor(math.random()*10)) .. "th Army",
+        personel_cnt = math.floor(math.random() * 10),
+        assault_rating = 4,
+        defense_rating = 3,
+        address = hex_info.address,
+        worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
+      } or nil
 
-      local address = 'Earth' .. HexCoord:new(i,j):toString()
-      local Unit_Touch_Delegate = TouchDelegate:new()
-      Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
-        if this.component.gob:hasComponent('Placeable') then
-          print('TODO: SHOULD BROADCAST A SELECT ON ' .. this.component.gob.uid) -- Global.Systems.Selection:select(this.component.gob.uid)
-          Global.PubSub:publish("select",{uid = this.component.gob.uid})
-          print('Clicked on a unit (' .. this.component.gob.uid .. ')! Is situated at address:' .. earth_map:summarizeAddress(earth_map:findPlaceableAddress(this.component.gob.uid)))
-          return true
-        end
-      end)
-      local City_Touch_Delegate = TouchDelegate:new()
-      City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
-        if this.component.gob:hasComponent('Placeable') then
-          print('TODO: SHOULD BROADCAST A SELECT ON ' .. this.component.gob.uid) -- Global.Systems.Selection:select(this.component.gob.uid)
-          --Global.PubSub:publish("select",{uid = this.component.gob.uid})
-          print('Clicked on a city (' .. this.component.gob.uid .. ')! Is situated at address: ' .. earth_map:summarizeAddress(earth_map:findPlaceableAddress(this.component.gob.uid)))
-          --return true
-        end
-      end)
+      local oHex = debug_gamestate:add(GameObject:new('gsHex',{GameInfo:new(hex_info)}))
+      local oCity = city_info and debug_gamestate:add(GameObject:new('gsCity',{GameInfo:new(city_info)})) or nil
+      local oArmy = army_info and debug_gamestate:add(GameObject:new('gsArmy',{GameInfo:new(army_info)})) or nil
 
-      local hex = nil
-      local debug_unit = nil
-      local debug_city = nil
-      local r = math.random()
-      if j == 1 or j == num_rows then hex = Arctic_Hex_Quad
-      elseif r < 0.30 then 
-        hex = Grass_Hex_Quad
-        local planet = nil
-        if math.random() < 0.15 then
-          local city_info = {
-          	name = city_names[math.floor(math.random()*#city_names)+1],
-          	address = address
-        	}
-        	Global.Registry:add(GameObject:new('City_Info', {
-        		GameInfo:new(city_info)
-        	}))
-          local city = City_Quad
-          debug_city = Global.Registry:add(GameObject:new('City', {
-            Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
-            Interfaceable:new(
-              Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37}),
-              City_Touch_Delegate),
-            Renderable:new(
-              Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-              Sprite:new(Debug_Spritesheet, city)
-              ),
-            Placeable:new(address)
-          }))
-          debug_city_label = Global.Registry:add(GameObject:new('Name', {
-            Transform:new(0,60),
-            Renderable:new(
-              Polygon:new({ w=84, h=13 }),
-              nil,
-              {120,120,200,200},
-              city_names[math.floor(math.random()*#city_names)+1])
-            }))
-          SceneGraph:attach(debug_city, nil)
-          SceneGraph:attach(debug_city_label, debug_city)
-          table.insert(Earth_Citys, debug_city)
-
-        end
-        if math.random() < 0.13 then
-          --DEBUG LAND ARMY
-          local team_color = {200,60,60,200}
-          if math.random() > 0.5 then team_color = {60,60,200,200} end
-          local game_info = {
-            team_color = team_color,
-            curr_hp = math.floor(math.random() * 100),
-            max_hp = 100,
-            army_type = 'stealth',
-            personel_cnt = math.floor(math.random() * 10),
-            assault_rating = 4,
-            defense_rating = 3,
-            address = address
-          }
-          debug_unit_info = Global.Registry:add(GameObject:new('Army_Info', {
-            GameInfo:new(game_info)
-          }))
-          debug_unit = Global.Registry:add(GameObject:new('Army', {
-            Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
-            Interfaceable:new(
-              Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73, 0,37}),
-              Unit_Touch_Delegate),
-            Placeable:new(address),
-            Moveable:new()
-          }))
-          debug_unit_bg = Global.Registry:add(GameObject:new('Army_BG', {
-            Transform:new((84-50)/2, (73-50)/2),
-            Renderable:new(
-              Polygon:new({ w = 50, h = 50}),
-              nil,
-              team_color)
-          }))
-          debug_unit_sprite = Global.Registry:add(GameObject:new('Troop', {
-            Transform:new(3,5),
-            Renderable:new(
-              Polygon:new({ w = 50, h = 50 }),
-              Sprite:new(Debug_Spritesheet, Debug_Troop_Quad))
-          }))
-          debug_unit_name = Global.Registry:add(GameObject:new('Name', {
-            Transform:new(-3,0),
-            Renderable:new(
-              nil,
-              nil,
-              nil,
-              (math.floor(math.random()*10)) .. "th Army")
-          }))
-          debug_unit_health = Global.Registry:add(GameObject:new('HealthBar', {
-            Transform:new(0,45),
-            Renderable:new(
-              Polygon:new({ w = 50 * (game_info.curr_hp / game_info.max_hp), h=5}),
-              nil,
-              {100,200,100})
-          }))
-          debug_unit_timer = Global.Registry:add(GameObject:new('Timer', {
-            Transform:new(0,15),
-            Renderable:new(
-              nil,
-              nil,
-              nil,
-              "0:00")
-          }))
-          SceneGraph:attach(debug_unit,nil)
-          SceneGraph:attach(debug_unit_bg, debug_unit)
-          SceneGraph:attachAll({debug_unit_sprite, debug_unit_name, debug_unit_health, debug_unit_timer}, debug_unit_bg)
-          table.insert(Earth_Units, debug_unit)
-        end
-      else 
-        hex = Water_Hex_Quad 
-        if math.random() < 0.1 then
-        end
-      end
-      if debug_unit ~= nil then
-        if debug_city ~= nil then
-          earth_map:addAddress(address, neighbors, {debug_city, debug_unit})
-        else
-          earth_map:addAddress(address, neighbors, {debug_unit})
-        end
-      else
-        if debug_city ~= nil then
-          earth_map:addAddress(address, neighbors, {debug_city})
-        else
-          earth_map:addAddress(address, neighbors, {})
-        end
-      end
-
-      local Hex_Touch_Delegate = TouchDelegate:new();
-      Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
-          if this.component.gob:hasComponent('Addressable') then
-            local addr = this.component.gob:getComponent('Addressable')
-            print('TODO: SHOULD BROADCAST A MOVE TO ' .. this.component.gob.uid)
-            --Global.Systems.Selection:moveSelectedTo(this.component.gob.uid, this.component.address)
-            Global.PubSub:publish("moveTo",{uid = this.component.gob.uid, address = addr})
-          end
-        end)
-	  	local debug_hex = Global.Registry:add(GameObject:new('Tile',{
-	  		Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
-		    Interfaceable:new(
-		      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-		      Hex_Touch_Delegate),
-		    Renderable:new(
-		      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-		      Sprite:new(Debug_Spritesheet, hex)
-		      ),
-        Addressable:new(address)
-  		}))
-  		table.insert(Earth_Hexes, debug_hex)
-
-	  end
+      Earth_Map:addAddress(hex_info.address, hex_info.neighbors, {oCity, oArmy})
+    end
   end
 
-  --Compose & Populate the layers
+  --[[Instantiate Tilemap View ]]--
+  local SceneGraph = IndexTree:new();
+  local Earth_Tiles = {}
+  local Earth_Cities = {}
+  local Earth_Units = {}
 
-  local Map_Layer = Global.Registry:add(GameObject:new('Map Layer', {
-    Transform:new(-60,10)
-    }))
-  local Map_View_Touch_Delegate = TouchDelegate:new();
-  Map_View_Touch_Delegate:setHandler('onDrag', function(this, x,y,dx,dy)
-    if Global.Registry:get(Map_Layer):hasComponent('Transform') then
-      local t = Global.Registry:get(Map_Layer):getComponent('Transform')
-      t:translate(dx,dy)
+  for i, obj in ipairs(debug_gamestate.registry) do
+    local tgt = obj:getComponent("GameInfo")
+    local nxt = nil
+    if obj.description == 'gsHex' then
+      table.insert(Earth_Tiles, TileMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,obj:getComponent("GameInfo"),Debug_Spritesheet))
+    elseif obj.description == 'gsCity' then
+      table.insert(Earth_Cities, CityMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,obj:getComponent("GameInfo"),Debug_Spritesheet))
+    elseif obj.description == 'gsArmy' then
+      table.insert(Earth_Units, ArmyMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,obj:getComponent("GameInfo"),Debug_Spritesheet))
     end
-  end)
-  local MapView = Global.Registry:add(GameObject:new('Map_View',{
-    Transform:new(0,0),
-    Interfaceable:new(
-      Polygon:new({w=1200, h=800}),
-      Map_View_Touch_Delegate)
-    }))
+  end
 
-  
-
-
-  local Tile_Layer = Global.Registry:add(GameObject:new('Tile_Layer',{}))
-  local City_Layer = Global.Registry:add(GameObject:new('City_Layer',{}))
-  local Unit_Layer = Global.Registry:add(GameObject:new('Unit_Layer',{}))
-  local UI_Layer = Global.Registry:add(GameObject:new('UI_Layer',{}))
-
-  SceneGraph:attach(MapView)
-  SceneGraph:attachAll({Map_Layer,UI_Layer}, MapView)
-  SceneGraph:attachAll({Tile_Layer,City_Layer,Unit_Layer,UI_Layer}, Map_Layer)
-  SceneGraph:attachAll(Earth_Hexes, Tile_Layer)
-  SceneGraph:attachAll(Earth_Citys, City_Layer)
-  SceneGraph:attachAll(Earth_Units, Unit_Layer)
+  local Earth_View = MapView:new(debug_gamestate, SceneGraph, Earth_Map, Earth_Tiles, Earth_Cities, Earth_Units)
 
   return SceneGraph
 end

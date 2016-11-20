@@ -31,13 +31,17 @@ function Component:getSiblingComponent ( type )
 end
 
 function Component:bindstate(field, obj, topic, fn)
-	if field == nil then return end
+	if field == nil then return self end
 
-	self[field] = obj
+	if obj ~= nil then
+		self[field] = obj
+	end
 	
-	if topic == nil or fn == nil then return end
+	if topic == nil or fn == nil then return self end
 
-	self["_"..field] = StateBinding:new(field, topic, fn)
+	self["_"..field] = StateBinding:new(self, topic, fn)
+
+	return self
 end
 
 

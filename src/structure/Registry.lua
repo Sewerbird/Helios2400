@@ -2,7 +2,7 @@
 local class = require 'lib/30log'
 local Registry = class('Registry', {
 	registry = {},
-	historicCounter = 1
+	historicCounter = 0
 })
 
 function Registry:init ( )

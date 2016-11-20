@@ -5,6 +5,7 @@ local Renderable = require 'src/component/Renderable'
 local Transform = require 'src/component/Transform'
 local Placeable = require 'src/component/Placeable'
 local Polygon = require 'src/datatype/Polygon'
+local Sprite = require 'src/datatype/Sprite'
 
 local SelectableSystem = System:extend({
 	current_selection = nil,

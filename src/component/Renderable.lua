@@ -11,10 +11,10 @@ local Renderable = Component:extend("Renderable", {
 function Renderable:init ( polygon, sprite, backgroundcolor, text)
 	Renderable.super.init(self)
 
-	self:bindstate('polygon', polygon)
-	self:bindstate('sprite', sprite or nil)
-	self:bindstate('backgroundcolor', backgroundcolor or {math.floor(math.random() * 255),100,100})
-	self:bindstate('text', text or nil)
+	self.polygon = polygon
+	self.sprite = sprite or nil
+	self.backgroundcolor = backgroundcolor or {math.floor(math.random() * 255),100,100}
+	self.text = text or nil
 end
 
 return Renderable
