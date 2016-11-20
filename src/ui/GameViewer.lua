@@ -31,6 +31,7 @@ function GameViewer:draw ()
 end
 
 function GameViewer:update ( dt )
+	self.Registry:summarize()
 end
 
 return GameViewer

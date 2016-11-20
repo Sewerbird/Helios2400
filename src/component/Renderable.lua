@@ -9,10 +9,14 @@ local Renderable = Component:extend("Renderable", {
 })
 
 function Renderable:init ( polygon, sprite, backgroundcolor, text)
-	self.polygon = polygon
-	self.sprite = sprite or nil
-	self.backgroundcolor = backgroundcolor or {math.floor(math.random() * 255),100,100}
-	self.text = text or nil
+	Renderable.super.init(self)
+
+	self:bindstate('polygon', polygon)
+	self:bindstate('sprite', sprite or nil)
+	self:bindstate('backgroundcolor', backgroundcolor or {math.floor(math.random() * 255),100,100})
+	self:bindstate('text', text or nil, 'tick', function (this, tgt, msg)
+			self.text = msg.ticktext
+		end)
 end
 
 return Renderable

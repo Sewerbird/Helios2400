@@ -19,8 +19,7 @@ function love.load()
 
   Global = {
     PubSub = PubSub:new(),
-    Registry = Registry:new(),
-    Systems = {}
+    Registry = Registry:new()
   }
 
   my_viewer = GameViewer:new(Global.Registry, Loader:new():debugLoad())
@@ -30,6 +29,7 @@ function love.load()
   fpsGraph = debugGraph:new('fps', 0, 0, 75)
   memGraph = debugGraph:new('mem', 0, 30, 75)
   dtGraph = debugGraph:new('custom', 0, 60, 75)
+  objGraph = debugGraph:new('custom', 0, 90, 75)
   
 end
 
@@ -52,6 +52,8 @@ function love.update( dt )
   memGraph:update(dt)
   dtGraph:update(dt, math.floor(dt * 1000))
   dtGraph.label = 'DT: ' ..  math.round(dt, 4)
+  objGraph:update(dt, Global.Registry:getCount())
+  objGraph.label = 'CNT: ' .. Global.Registry:getCount()
 end
 
 function love.draw()
@@ -61,11 +63,12 @@ function love.draw()
 
   -- Profiling stuff
   love.graphics.setColor({100,100,100,100})
-  love.graphics.rectangle('fill',0,0,75,100)
+  love.graphics.rectangle('fill',0,0,75,120)
   love.graphics.setColor({255,255,255,255})
   fpsGraph:draw()
   memGraph:draw()
   dtGraph:draw()
+  objGraph:draw()
 end
 
 function love.mousepressed( x, y, button )

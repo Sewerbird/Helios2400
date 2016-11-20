@@ -8,6 +8,7 @@ Moveable = require 'src/component/Moveable'
 Updateable = require 'src/component/Updateable'
 Transform = require 'src/component/Transform'
 TouchDelegate = require 'src/datatype/TouchDelegate'
+GameInfo = require 'src/component/GameInfo'
 GameObject = require 'src/GameObject'
 Polygon = require 'src/datatype/Polygon'
 Sprite = require 'src/datatype/Sprite'
@@ -117,6 +118,13 @@ function Loader:debugLoad ()
         hex = Grass_Hex_Quad
         local planet = nil
         if math.random() < 0.15 then
+          local city_info = {
+          	name = city_names[math.floor(math.random()*#city_names)+1],
+          	address = address
+        	}
+        	Global.Registry:add(GameObject:new('City_Info', {
+        		GameInfo:new(city_info)
+        	}))
           local city = City_Quad
           debug_city = Global.Registry:add(GameObject:new('City', {
             Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
@@ -146,6 +154,19 @@ function Loader:debugLoad ()
           --DEBUG LAND ARMY
           local team_color = {200,60,60,200}
           if math.random() > 0.5 then team_color = {60,60,200,200} end
+          local game_info = {
+            team_color = team_color,
+            curr_hp = math.floor(math.random() * 100),
+            max_hp = 100,
+            army_type = 'stealth',
+            personel_cnt = math.floor(math.random() * 10),
+            assault_rating = 4,
+            defense_rating = 3,
+            address = address
+          }
+          debug_unit_info = Global.Registry:add(GameObject:new('Army_Info', {
+            GameInfo:new(game_info)
+          }))
           debug_unit = Global.Registry:add(GameObject:new('Army', {
             Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
             Interfaceable:new(
@@ -178,7 +199,7 @@ function Loader:debugLoad ()
           debug_unit_health = Global.Registry:add(GameObject:new('HealthBar', {
             Transform:new(0,45),
             Renderable:new(
-              Polygon:new({ w = 50 * math.random(), h=5}),
+              Polygon:new({ w = 50 * (game_info.curr_hp / game_info.max_hp), h=5}),
               nil,
               {100,200,100})
           }))
@@ -188,15 +209,7 @@ function Loader:debugLoad ()
               nil,
               nil,
               nil,
-              "0:00"),
-            Updateable:new({
-              tick = function (this, msg)
-                local renderable = this.gob:getComponent("Renderable")
-                if renderable ~= nil then
-                  renderable.text = msg.ticktext
-                end
-              end
-            })
+              "0:00")
           }))
           SceneGraph:attach(debug_unit,nil)
           SceneGraph:attach(debug_unit_bg, debug_unit)
