@@ -4,6 +4,9 @@ ProFi = require 'lib/ProFi'
 debugGraph = require 'lib/debugGraph'
 
 Loader = require 'src/Loader'
+GameViewer = require 'src/ui/GameViewer'
+PubSub = require 'src/PubSub'
+local my_viewer
 
 --TODO: move this into a util lib
 function math.round(n, deci)
@@ -14,21 +17,34 @@ end
 function love.load()
   print("Time to play!")
 
-  Loader:new():debugLoad()
+  Global = {
+    PubSub = PubSub:new(),
+    Registry = Registry:new()
+  }
+
+  my_viewer = GameViewer:new(Global.Registry, Loader:new():debugLoad())
 
   --Profiling stuff
   ProFi:start()
   fpsGraph = debugGraph:new('fps', 0, 0, 75)
   memGraph = debugGraph:new('mem', 0, 30, 75)
   dtGraph = debugGraph:new('custom', 0, 60, 75)
+  objGraph = debugGraph:new('custom', 0, 90, 75)
   
 end
+
+local tickAccumulator = 0
 
 function love.update( dt )
   if collectgarbage('count') > GOAL_MEMORY then error('Using too much memory mate!') end
 
   --Debug mouse-to-hex output
   if not Global_PAUSE then
+    tickAccumulator = tickAccumulator + dt
+    if tickAccumulator > 1 then
+      tickAccumulator = tickAccumulator - 1
+      Global.PubSub:publish('tick',{ticktext = dt})
+    end
   end
 
   --Profiling stuff
@@ -36,54 +52,57 @@ function love.update( dt )
   memGraph:update(dt)
   dtGraph:update(dt, math.floor(dt * 1000))
   dtGraph.label = 'DT: ' ..  math.round(dt, 4)
+  objGraph:update(dt, Global.Registry:getCount())
+  objGraph.label = 'CNT: ' .. Global.Registry:getCount()
 end
 
 function love.draw()
   if not Global_PAUSE then
-    Global.Systems.Render:draw()
+    my_viewer.Systems.Render:draw()
   end
 
   -- Profiling stuff
   love.graphics.setColor({100,100,100,100})
-  love.graphics.rectangle('fill',0,0,75,100)
+  love.graphics.rectangle('fill',0,0,75,120)
   love.graphics.setColor({255,255,255,255})
   fpsGraph:draw()
   memGraph:draw()
   dtGraph:draw()
+  objGraph:draw()
 end
 
 function love.mousepressed( x, y, button )
   Global.DRAGBEGUN = true
-  Global.Systems.Interface:onTouch(x,y)
+  my_viewer.Systems.Interface:onTouch(x,y)
 end
 
 function love.mousemoved( x, y, dx, dy, istouch )
   if Global.DRAGBEGUN then
-    Global.Systems.Interface:onDrag(x,y,dx,dy)
+    my_viewer.Systems.Interface:onDrag(x,y,dx,dy)
   end
 end
 
 function love.mousereleased( x, y, button )
   Global.DRAGBEGUN = false
-  Global.Systems.Interface:onUntouch(x,y)
+  my_viewer.Systems.Interface:onUntouch(x,y)
 end
 
 function love.touchpressed( id, x, y, pressure )
-  Global.Systems.Interface:onTouch(x,y)
+  my_viewer.Systems.Interface:onTouch(x,y)
 end
 
 function love.touchmoved( id, x, y, dx, dy, pressure )
   if Global.DRAGBEGUN then
-    Global.Systems.Interface:onDrag(x,y,dx,dy)
+    my_viewer.Systems.Interface:onDrag(x,y,dx,dy)
   end
 end
 
 function love.touchreleased( id, x, y, pressure )
-  Global.Systems.Interface:onUntouch(x,y)
+  my_viewer.Systems.Interface:onUntouch(x,y)
 end
 
 function love.keypressed( key )
-  Global.Systems.Interface:onKeypress(key)
+  my_viewer.Systems.Interface:onKeypress(key)
 end
 
 function love.focus( f )
