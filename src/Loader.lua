@@ -4,8 +4,11 @@ Renderable = require 'src/component/Renderable'
 Addressable = require 'src/component/Addressable'
 Placeable = require 'src/component/Placeable'
 Interfaceable = require 'src/component/Interfaceable'
+Moveable = require 'src/component/Moveable'
+Updateable = require 'src/component/Updateable'
 Transform = require 'src/component/Transform'
 TouchDelegate = require 'src/datatype/TouchDelegate'
+GameInfo = require 'src/component/GameInfo'
 GameObject = require 'src/GameObject'
 Polygon = require 'src/datatype/Polygon'
 Sprite = require 'src/datatype/Sprite'
@@ -13,9 +16,6 @@ HexCoord = require 'src/datatype/HexCoord'
 Registry = require 'src/structure/Registry'
 IndexTree = require 'src/structure/IndexTree'
 IndexMap = require 'src/structure/IndexMap'
-InterfaceableSystem = require 'src/system/InterfaceableSystem'
-RenderableSystem = require 'src/system/RenderableSystem'
-SelectableSystem = require 'src/system/SelectableSystem'
 
 require 'lib/my_utils'
 local class = require 'lib/30log'
@@ -44,24 +44,24 @@ function Loader:debugLoad ()
   music:setVolume(BG_MUSIC_VOL)
   music:play()
 
-  Global = {
-    Registry = Registry:new(),
-    Systems = {}
-  }
-
   local space_map = IndexMap:new()
   local earth_map = IndexMap:new()
 
   --[[ Instantiate Tilemap View ]]--
 
   local joffset = 0
-  local num_rows = 10
-  local num_cols = 20
+  local num_rows = 12
+  local num_cols = 24
 
   --Earth Map
+
+  local SceneGraph = IndexTree:new();
+
   local Earth_Hexes = {}
   local Earth_Citys = {}
   local Earth_Units = {}
+
+  local city_names = {'New Moroni', 'Tiangong', 'Elonia', 'Neokyoto', 'Al Kicab'}
 
   for i = 1 , num_cols do --x
   	for j = 1 , num_rows do --y
@@ -93,13 +93,19 @@ function Loader:debugLoad ()
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
+          print('TODO: SHOULD BROADCAST A SELECT ON ' .. this.component.gob.uid) -- Global.Systems.Selection:select(this.component.gob.uid)
+          Global.PubSub:publish("select",{uid = this.component.gob.uid})
           print('Clicked on a unit (' .. this.component.gob.uid .. ')! Is situated at address:' .. earth_map:summarizeAddress(earth_map:findPlaceableAddress(this.component.gob.uid)))
+          return true
         end
       end)
       local City_Touch_Delegate = TouchDelegate:new()
       City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
+          print('TODO: SHOULD BROADCAST A SELECT ON ' .. this.component.gob.uid) -- Global.Systems.Selection:select(this.component.gob.uid)
+          --Global.PubSub:publish("select",{uid = this.component.gob.uid})
           print('Clicked on a city (' .. this.component.gob.uid .. ')! Is situated at address: ' .. earth_map:summarizeAddress(earth_map:findPlaceableAddress(this.component.gob.uid)))
+          --return true
         end
       end)
 
@@ -112,6 +118,13 @@ function Loader:debugLoad ()
         hex = Grass_Hex_Quad
         local planet = nil
         if math.random() < 0.15 then
+          local city_info = {
+          	name = city_names[math.floor(math.random()*#city_names)+1],
+          	address = address
+        	}
+        	Global.Registry:add(GameObject:new('City_Info', {
+        		GameInfo:new(city_info)
+        	}))
           local city = City_Quad
           debug_city = Global.Registry:add(GameObject:new('City', {
             Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
@@ -124,36 +137,88 @@ function Loader:debugLoad ()
               ),
             Placeable:new(address)
           }))
+          debug_city_label = Global.Registry:add(GameObject:new('Name', {
+            Transform:new(0,60),
+            Renderable:new(
+              Polygon:new({ w=84, h=13 }),
+              nil,
+              {120,120,200,200},
+              city_names[math.floor(math.random()*#city_names)+1])
+            }))
+          SceneGraph:attach(debug_city, nil)
+          SceneGraph:attach(debug_city_label, debug_city)
           table.insert(Earth_Citys, debug_city)
 
         end
-        if math.random() < 0.3 then
-          debug_unit = Global.Registry:add(GameObject:new('Troop', {
-            Transform:new((i-1) * 84 + ioffset + 17, (j-1) * 73 + joffset + 13),
+        if math.random() < 0.13 then
+          --DEBUG LAND ARMY
+          local team_color = {200,60,60,200}
+          if math.random() > 0.5 then team_color = {60,60,200,200} end
+          local game_info = {
+            team_color = team_color,
+            curr_hp = math.floor(math.random() * 100),
+            max_hp = 100,
+            army_type = 'stealth',
+            personel_cnt = math.floor(math.random() * 10),
+            assault_rating = 4,
+            defense_rating = 3,
+            address = address
+          }
+          debug_unit_info = Global.Registry:add(GameObject:new('Army_Info', {
+            GameInfo:new(game_info)
+          }))
+          debug_unit = Global.Registry:add(GameObject:new('Army', {
+            Transform:new((i-1) * 84 + ioffset, (j-1) * 73 + joffset),
             Interfaceable:new(
-              Polygon:new({ w = 50, h = 50 }),
+              Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73, 0,37}),
               Unit_Touch_Delegate),
+            Placeable:new(address),
+            Moveable:new()
+          }))
+          debug_unit_bg = Global.Registry:add(GameObject:new('Army_BG', {
+            Transform:new((84-50)/2, (73-50)/2),
+            Renderable:new(
+              Polygon:new({ w = 50, h = 50}),
+              nil,
+              team_color)
+          }))
+          debug_unit_sprite = Global.Registry:add(GameObject:new('Troop', {
+            Transform:new(3,5),
             Renderable:new(
               Polygon:new({ w = 50, h = 50 }),
-              Sprite:new(Debug_Spritesheet, Debug_Troop_Quad)),
-            Placeable:new(address)
+              Sprite:new(Debug_Spritesheet, Debug_Troop_Quad))
           }))
+          debug_unit_name = Global.Registry:add(GameObject:new('Name', {
+            Transform:new(-3,0),
+            Renderable:new(
+              nil,
+              nil,
+              nil,
+              (math.floor(math.random()*10)) .. "th Army")
+          }))
+          debug_unit_health = Global.Registry:add(GameObject:new('HealthBar', {
+            Transform:new(0,45),
+            Renderable:new(
+              Polygon:new({ w = 50 * (game_info.curr_hp / game_info.max_hp), h=5}),
+              nil,
+              {100,200,100})
+          }))
+          debug_unit_timer = Global.Registry:add(GameObject:new('Timer', {
+            Transform:new(0,15),
+            Renderable:new(
+              nil,
+              nil,
+              nil,
+              "0:00")
+          }))
+          SceneGraph:attach(debug_unit,nil)
+          SceneGraph:attach(debug_unit_bg, debug_unit)
+          SceneGraph:attachAll({debug_unit_sprite, debug_unit_name, debug_unit_health, debug_unit_timer}, debug_unit_bg)
           table.insert(Earth_Units, debug_unit)
         end
       else 
         hex = Water_Hex_Quad 
         if math.random() < 0.1 then
-          debug_unit = Global.Registry:add(GameObject:new('Ship', {
-            Transform:new((i-1) * 84 + ioffset + 17, (j-1) * 73 + joffset + 13),
-            Interfaceable:new(
-              Polygon:new({ w = 50, h = 50 }),
-              Unit_Touch_Delegate),
-            Renderable:new(
-              Polygon:new({ w = 50, h = 50 }),
-              Sprite:new(Debug_Spritesheet, Debug_Ship_Quad)),
-            Placeable:new(address)
-          }))
-          table.insert(Earth_Units, debug_unit)
         end
       end
       if debug_unit ~= nil then
@@ -174,8 +239,9 @@ function Loader:debugLoad ()
       Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
           if this.component.gob:hasComponent('Addressable') then
             local addr = this.component.gob:getComponent('Addressable')
-            print(earth_map:summarizeAddress(address))
-            Global.Systems.Selection:select(this.component.gob.uid)
+            print('TODO: SHOULD BROADCAST A MOVE TO ' .. this.component.gob.uid)
+            --Global.Systems.Selection:moveSelectedTo(this.component.gob.uid, this.component.address)
+            Global.PubSub:publish("moveTo",{uid = this.component.gob.uid, address = addr})
           end
         end)
 	  	local debug_hex = Global.Registry:add(GameObject:new('Tile',{
@@ -195,24 +261,27 @@ function Loader:debugLoad ()
   end
 
   --Compose & Populate the layers
-  local Map_Layer_Touch_Delegate = TouchDelegate:new();
-  Map_Layer_Touch_Delegate:setHandler('onDrag', function(this, x,y,dx,dy)
-      if this.component.gob:hasComponent('Transform') then
-        local t = this.component.gob:getComponent('Transform')
-        t:translate(dx,dy)
-      end
-    end)
+
   local Map_Layer = Global.Registry:add(GameObject:new('Map Layer', {
-	  Transform:new(-60,10),
-  	Interfaceable:new(
-  		Polygon:new({w=1200, h = 800}),
-  		Map_Layer_Touch_Delegate)
-  	}))
+    Transform:new(-60,10)
+    }))
+  local Map_View_Touch_Delegate = TouchDelegate:new();
+  Map_View_Touch_Delegate:setHandler('onDrag', function(this, x,y,dx,dy)
+    if Global.Registry:get(Map_Layer):hasComponent('Transform') then
+      local t = Global.Registry:get(Map_Layer):getComponent('Transform')
+      t:translate(dx,dy)
+    end
+  end)
+  local MapView = Global.Registry:add(GameObject:new('Map_View',{
+    Transform:new(0,0),
+    Interfaceable:new(
+      Polygon:new({w=1200, h=800}),
+      Map_View_Touch_Delegate)
+    }))
+
+  
 
 
-  local SceneGraph = IndexTree:new();
-
-  local MapView = Global.Registry:add(GameObject:new('Map_View',{}))
   local Tile_Layer = Global.Registry:add(GameObject:new('Tile_Layer',{}))
   local City_Layer = Global.Registry:add(GameObject:new('City_Layer',{}))
   local Unit_Layer = Global.Registry:add(GameObject:new('Unit_Layer',{}))
@@ -225,11 +294,7 @@ function Loader:debugLoad ()
   SceneGraph:attachAll(Earth_Citys, City_Layer)
   SceneGraph:attachAll(Earth_Units, Unit_Layer)
 
-  Global.Systems.Render = RenderableSystem:new(Global.Registry, SceneGraph)
-  Global.Systems.Interface = InterfaceableSystem:new(Global.Registry, SceneGraph)
-  Global.Systems.Selection = SelectableSystem:new(Global.Registry, SceneGraph, Sprite:new(Debug_Spritesheet, Debug_Cursor_Quad))
-  
-
+  return SceneGraph
 end
 
 return Loader

@@ -25,10 +25,10 @@ function PubSub:subscribe( topic, callback )
 end
 
 function PubSub:publish( topic, message )
-	if self.topics[topic] == nil then return end
+	if self.topics[topic] == nil then self.topics[topic] = {} end
 
 	for i, v in ipairs(self.topics[topic]) do
-	  v.cb(message)
+	  v:cb(message)
 	end
 end
 

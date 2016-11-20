@@ -61,7 +61,6 @@ function IndexMap:getPlaceablesAt(addressId)
 end
 
 function IndexMap:findPlaceableAddress(placeableId)
-	print('found placeable address for ' .. tostring(placeableId) ..': ' .. tostring(self.placeables_index[placeableId]))
 	return self.placeables_index[placeableId]
 end
 

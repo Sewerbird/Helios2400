@@ -27,4 +27,12 @@ function Registry:get ( tgtObjectId )
 	return self.registry[tgtObjectId]
 end
 
+function Registry:summarize ( )
+	print("Registry has " .. #self.registry .. " entries ")
+end
+
+function Registry:getCount ()
+	return #self.registry
+end
+
 return Registry
