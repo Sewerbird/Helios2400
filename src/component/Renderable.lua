@@ -14,9 +14,7 @@ function Renderable:init ( polygon, sprite, backgroundcolor, text)
 	self:bindstate('polygon', polygon)
 	self:bindstate('sprite', sprite or nil)
 	self:bindstate('backgroundcolor', backgroundcolor or {math.floor(math.random() * 255),100,100})
-	self:bindstate('text', text or nil, 'tick', function (this, tgt, msg)
-			self.text = msg.ticktext
-		end)
+	self:bindstate('text', text or nil)
 end
 
 return Renderable
