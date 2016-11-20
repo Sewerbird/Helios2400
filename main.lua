@@ -43,7 +43,8 @@ function love.update( dt )
     tickAccumulator = tickAccumulator + dt
     if tickAccumulator > 1 then
       tickAccumulator = tickAccumulator - 1
-      Global.PubSub:publish('tick',{ticktext = dt})
+      local val = math.random()
+      Global.PubSub:publish('hurt',{percent = val})
     end
   end
 
