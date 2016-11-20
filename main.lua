@@ -3,9 +3,10 @@ inspect = require 'lib/inspect'
 ProFi = require 'lib/ProFi'
 debugGraph = require 'lib/debugGraph'
 
-Loader = require 'src/Loader'
-GameViewer = require 'src/ui/GameViewer'
-PubSub = require 'src/PubSub'
+local Loader = require 'src/Loader'
+local GameViewer = require 'src/ui/GameViewer'
+local PubSub = require 'src/PubSub'
+local Registry = require 'src/structure/Registry'
 local my_viewer
 
 --TODO: move this into a util lib
@@ -39,7 +40,7 @@ function love.update( dt )
   if collectgarbage('count') > GOAL_MEMORY then error('Using too much memory mate!') end
 
   --Debug mouse-to-hex output
-  if not Global_PAUSE then
+  if not Global.PAUSE then
     tickAccumulator = tickAccumulator + dt
     if tickAccumulator > 1 then
       tickAccumulator = tickAccumulator - 1
@@ -58,7 +59,7 @@ function love.update( dt )
 end
 
 function love.draw()
-  if not Global_PAUSE then
+  if not Global.PAUSE then
     my_viewer.Systems.Render:draw()
   end
 
