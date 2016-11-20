@@ -40,8 +40,12 @@ function InterfaceableSystem:propogateEvent ( iobj, func, x, y, dx, dy, btn )
 	--Execute on self
 	if obj:hasComponent('Interfaceable') then
 		local inter = obj:getComponent('Interfaceable')
-		if inter[func] ~= nil and inter.polygon:containsPoint(l_x,l_y) then
-			has_consumed = inter[func](inter,x,y,dx,dy,btn)
+		if inter[func] ~= nil and (func == 'onKeypress' or inter.polygon:containsPoint(l_x,l_y)) then
+			if func == 'onKeypress' then
+				has_consumed = inter[func](inter, btn)
+			else
+				has_consumed = inter[func](inter,x,y,dx,dy,btn)
+			end
 			if has_consumed then return true end
 		end
 	end

@@ -45,7 +45,7 @@ function TouchDelegate:onUntouch ( x, y )
 	return false;
 end
 
-function TouchDelegate:onKeypress ( x, y, dx, dy, key )
+function TouchDelegate:onKeypress ( key )
 	if self:hasHandler('onKeypress') then
 		return self.handlers['onKeypress'](self,key)
 	end

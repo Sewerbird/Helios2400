@@ -1,6 +1,8 @@
 require "lib/Tserial"
 local anim8 = require "lib/anim8"
 local class = require 'lib/30log'
+local Sprite = require 'src/datatype/Sprite'
+local Animation = require 'src/datatype/Animation'
 
 local AssetLoader = class("AssetLoader", {
 	assets = {},

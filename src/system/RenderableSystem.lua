@@ -9,16 +9,8 @@
 local System = require 'src/System'
 
 local RenderableSystem = System:extend("RenderableSystem",{
-	scenes = {},
-	active_scene = nil
+
 })
-
-function RenderableSystem:addScene ( tag, scene )
-end
-
-function RenderableSystem:setScene ( tag )
-
-end
 
 function RenderableSystem:update( dt )
 
@@ -61,12 +53,15 @@ function RenderableSystem:draw ()
 				elseif renderable.render.rtype == "animation" then
 					renderable.render.ani:draw(renderable.render.sprite)
 				end
-			else
+			elseif false and renderable.polygon ~= nil then
 				local r, g, b, a = love.graphics.getColor()
 				love.graphics.setColor(renderable.backgroundcolor)
 				love.graphics.setLineWidth(3)
-				love.graphics.polygon('line', renderable.polygon.vertices)
+				love.graphics.polygon('fill', renderable.polygon.vertices)
 				love.graphics.setColor({r,g,b,a})
+			end
+			if renderable.text ~= nil then
+				love.graphics.print(renderable.text)
 			end
 		end
 
@@ -80,7 +75,6 @@ function RenderableSystem:draw ()
 			love.graphics.translate(-delta.x, -delta.y)
 		end
 	end
-
 	drawHeirarchy(self.registry:get(self.targetCollection:getRoot()))
 
 end

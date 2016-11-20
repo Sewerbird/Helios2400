@@ -1,5 +1,7 @@
 --Component.lua
 local class = require 'lib/30log'
+local StateBinding = require 'src/datatype/StateBinding'
+
 local Component = class('Component', {
 	gid = nil,
 	gob = nil
@@ -12,6 +14,7 @@ end
 function Component:onAdd ( parent )
 	self.gob = parent
 	self.gid = parent.uid
+	self.fns = {}
 end
 
 function Component:getObject ()
@@ -26,5 +29,20 @@ function Component:getSiblingComponent ( type )
 		return nil
 	end
 end
+
+function Component:bindstate(field, obj, topic, fn)
+	if field == nil then return self end
+
+	if obj ~= nil then
+		self[field] = obj
+	end
+	
+	if topic == nil or fn == nil then return self end
+
+	self["_"..field] = StateBinding:new(self, topic, fn)
+
+	return self
+end
+
 
 return Component
