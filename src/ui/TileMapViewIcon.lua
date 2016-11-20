@@ -27,7 +27,7 @@ TileMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo)
 			Hex_Touch_Delegate),
 		Renderable:new(
 			Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-			Sprite:new(Global.Assets:getAsset("DEBUG_TILESET_1"), Global.Assets:getAsset(gameinfo.terrain_sprite))
+			Global.Assets:getAsset(gameinfo.terrain_sprite)
 			),
 		Addressable:new(gameinfo.address)
 	}))

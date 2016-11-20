@@ -8,7 +8,7 @@ local Renderable = Component:extend("Renderable", {
 	text = nil
 })
 
-function Renderable:init ( polygon, sprite, backgroundcolor, text)
+function Renderable:init ( polygon, render, backgroundcolor, text)
 	Renderable.super.init(self)
 	self.polygon = polygon
 	self.render = render or nil

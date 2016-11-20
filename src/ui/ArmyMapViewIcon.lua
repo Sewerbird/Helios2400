@@ -40,7 +40,8 @@ ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo)
         Transform:new(3,5),
         Renderable:new(
           Polygon:new({ w = 50, h = 50 }),
-          Global.Assets:getAsset(gameinfo.icon_sprite))
+          Global.Assets:getAsset(gameinfo.icon_sprite)
+        )
       }))
       debug_army_name = registry:add(GameObject:new('Name', {
         Transform:new(-3,0),

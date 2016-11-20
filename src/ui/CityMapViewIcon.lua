@@ -25,7 +25,7 @@ CityMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo)
 			City_Touch_Delegate),
 		Renderable:new(
 			Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-			Sprite:new(Global.Assets:getAsset("DEBUG_TILESET_1"), Global.Assets:getAsset(gameinfo.icon_sprite))
+			Global.Assets:getAsset(gameinfo.icon_sprite)
 			),
 		Placeable:new(gameinfo.address)
 	}))

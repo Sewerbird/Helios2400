@@ -53,7 +53,7 @@ function RenderableSystem:draw ()
 				elseif renderable.render.rtype == "animation" then
 					renderable.render.ani:draw(renderable.render.sprite)
 				end
-			elseif false and renderable.polygon ~= nil then
+			elseif renderable.polygon ~= nil then
 				local r, g, b, a = love.graphics.getColor()
 				love.graphics.setColor(renderable.backgroundcolor)
 				love.graphics.setLineWidth(3)

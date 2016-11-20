@@ -77,13 +77,13 @@ function Loader:debugLoad ()
         },
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
       }
-      local city_info = (hex == Grass_Hex_Quad and math.random() < 0.15) and {
+      local city_info = (hex == "TILE_GRASS_1" and math.random() < 0.15) and {
         city_name = city_names[math.floor(math.random()*#city_names)+1],
         address = hex_info.address,
         icon_sprite = "CITY_1",
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
       } or nil
-      local army_info = (hex == Grass_Hex_Quad and math.random() < 0.13) and {
+      local army_info = (hex == "TILE_GRASS_1" and math.random() < 0.13) and {
         team_color = (math.random() > 0.5) and {60,60,200,200} or {200,60,60,200},
         icon_sprite = "TROOP_1",
         curr_hp = math.floor(math.random() * 100),
@@ -113,13 +113,12 @@ function Loader:debugLoad ()
 
   for i, obj in ipairs(debug_gamestate.registry) do
     local tgt = obj:getComponent("GameInfo")
-    local nxt = nil
     if obj.description == 'gsHex' then
-      table.insert(Earth_Tiles, TileMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,obj:getComponent("GameInfo")))
+      table.insert(Earth_Tiles, TileMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,obj:getComponent("GameInfo"),Debug_Spritesheet))
     elseif obj.description == 'gsCity' then
-      table.insert(Earth_Cities, CityMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,obj:getComponent("GameInfo")))
+      table.insert(Earth_Cities, CityMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,obj:getComponent("GameInfo"),Debug_Spritesheet))
     elseif obj.description == 'gsArmy' then
-      table.insert(Earth_Units, ArmyMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,obj:getComponent("GameInfo")))
+      table.insert(Earth_Units, ArmyMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,obj:getComponent("GameInfo"),Debug_Spritesheet))
     end
   end
 
