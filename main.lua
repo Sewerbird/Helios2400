@@ -3,6 +3,7 @@ inspect = require 'lib/inspect'
 ProFi = require 'lib/ProFi'
 debugGraph = require 'lib/debugGraph'
 
+local AssetLoader = require 'src/AssetLoader'
 local Loader = require 'src/Loader'
 local GameViewer = require 'src/ui/GameViewer'
 local PubSub = require 'src/PubSub'
@@ -18,9 +19,14 @@ end
 function love.load()
   print("Time to play!")
 
+  Assets = AssetLoader:new()
+  Assets:loadAssets()
+  Assets:printAllAssets()
+
   Global = {
     PubSub = PubSub:new(),
-    Registry = Registry:new()
+    Registry = Registry:new(),
+    Assets = Assets
   }
 
   my_viewer = GameViewer:new(Global.Registry, Loader:new():debugLoad())
@@ -47,6 +53,7 @@ function love.update( dt )
       local val = math.random()
       Global.PubSub:publish('hurt',{percent = val})
     end
+    my_viewer.Systems.Render:update(dt)
   end
 
   --Profiling stuff

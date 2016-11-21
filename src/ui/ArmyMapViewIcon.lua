@@ -12,7 +12,7 @@ local Sprite = require 'src/datatype/Sprite'
 
 local ArmyMapViewIcon = {}
 
-ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo, spritesheet)
+ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo)
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
@@ -40,7 +40,8 @@ ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo, sprite
         Transform:new(3,5),
         Renderable:new(
           Polygon:new({ w = 50, h = 50 }),
-          Sprite:new(spritesheet, gameinfo.icon_sprite))
+          Global.Assets:getAsset(gameinfo.icon_sprite)
+        )
       }))
       debug_army_name = registry:add(GameObject:new('Name', {
         Transform:new(-3,0),
