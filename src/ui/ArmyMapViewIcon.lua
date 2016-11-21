@@ -28,11 +28,8 @@ ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
           gameinfo.worldspace_coord[1],
           gameinfo.worldspace_coord[2]):bindstate('transform', nil, gamestate, function(this, cmp, msg)
             local new_xy = registry:get(msg.destination_info):getComponent("GameInfo").worldspace_coord
-            print("it was " .. cmp.x .. "," .. cmp.y)
             cmp.x = new_xy[1]
             cmp.y = new_xy[2]
-            print("it is " .. cmp.x .. "," .. cmp.y)
-            print("--->" .. inspect(cmp, {depth=2}))
           end),
         Interfaceable:new(
           Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73, 0,37}),
