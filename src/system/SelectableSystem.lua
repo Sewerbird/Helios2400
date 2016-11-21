@@ -7,6 +7,8 @@ local Placeable = require 'src/component/Placeable'
 local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
 
+local MoveArmyMutator = require 'src/state/mutator/MoveArmyMutator'
+
 local SelectableSystem = System:extend({
 	current_selection = nil,
 	selected_unit_cursor_object = nil
@@ -73,21 +75,19 @@ function SelectableSystem:moveSelectedTo (tgtGameObjectId, tgtAddress)
 		local dstObj = self.registry:get(tgtGameObjectId)
 
 		if srcObj:hasComponent('Moveable') and srcObj:hasComponent('Placeable') and dstObj:hasComponent('Addressable') then
-
-			--we can move this thing
-			local plc = srcObj:getComponent('Placeable')
-			local adr = dstObj:getComponent('Addressable')
-			local dst_transform = dstObj:getComponent('Transform')
-			local dst_poly = dstObj:getComponent('Interfaceable').polygon
-			local src_poly = srcObj:getComponent('Interfaceable').polygon
-
-			plc.address = adr.address
-			srcObj:getComponent('Transform'):teleport(dst_transform.x + dst_poly.w/2 - src_poly.w/2, dst_transform.y + dst_poly.h/2 - src_poly.h/2)
+			--TODO: make this generate a mutator instead
+			local mutMove = MoveArmyMutator:new(
+				srcObj:getComponent('Stateful').ref, 
+				srcObj:getComponent('Stateful').ref,
+				dstObj:getComponent('Stateful').ref,
+				srcObj:getComponent('Placeable').address, 
+				dstObj:getComponent('Addressable').address, 
+				0)
+			Global.PubSub:publish("IMMEDIATE_MUTATE", mutMove)
 		else
 			self:select(tgtGameObjectId)
 		end
 	else
-		print('selecting')
 		self:select(tgtGameObjectId)
 	end
 end

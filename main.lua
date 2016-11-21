@@ -8,6 +8,7 @@ local Loader = require 'src/Loader'
 local GameViewer = require 'src/ui/GameViewer'
 local PubSub = require 'src/PubSub'
 local Registry = require 'src/structure/Registry'
+local MutatorBus = require 'src/state/MutatorBus'
 local my_viewer
 
 --TODO: move this into a util lib
@@ -28,6 +29,7 @@ function love.load()
     Registry = Registry:new(),
     Assets = Assets
   }
+  Global.MutatorBus = MutatorBus:new(Global.Registry)
 
   my_viewer = GameViewer:new(Global.Registry, Loader:new():debugLoad())
 

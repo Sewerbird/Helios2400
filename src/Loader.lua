@@ -88,6 +88,8 @@ function Loader:debugLoad ()
         icon_sprite = "TROOP_1",
         curr_hp = math.floor(math.random() * 100),
         max_hp = 100,
+        max_move = 10,
+        curr_move = 10,
         army_type = 'stealth',
         army_name = (math.floor(math.random()*10)) .. "th Army",
         personel_cnt = math.floor(math.random() * 10),
@@ -111,14 +113,14 @@ function Loader:debugLoad ()
   local Earth_Cities = {}
   local Earth_Units = {}
 
-  for i, obj in ipairs(debug_gamestate.registry) do
+  for key, obj in ipairs(debug_gamestate.registry) do
     local tgt = obj:getComponent("GameInfo")
     if obj.description == 'gsHex' then
-      table.insert(Earth_Tiles, TileMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,obj:getComponent("GameInfo"),Debug_Spritesheet))
+      table.insert(Earth_Tiles, TileMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,key))
     elseif obj.description == 'gsCity' then
-      table.insert(Earth_Cities, CityMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,obj:getComponent("GameInfo"),Debug_Spritesheet))
+      table.insert(Earth_Cities, CityMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,key))
     elseif obj.description == 'gsArmy' then
-      table.insert(Earth_Units, ArmyMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,obj:getComponent("GameInfo"),Debug_Spritesheet))
+      table.insert(Earth_Units, ArmyMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,key))
     end
   end
 

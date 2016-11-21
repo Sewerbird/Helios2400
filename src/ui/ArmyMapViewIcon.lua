@@ -5,6 +5,7 @@ local Placeable = require 'src/component/Placeable'
 local Moveable = require 'src/component/Moveable'
 local Interfaceable = require 'src/component/Interfaceable'
 local Transform = require 'src/component/Transform'
+local Stateful = require 'src/component/Stateful'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 local GameObject = require 'src/GameObject'
 local Polygon = require 'src/datatype/Polygon'
@@ -12,7 +13,8 @@ local Sprite = require 'src/datatype/Sprite'
 
 local ArmyMapViewIcon = {}
 
-ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo)
+ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
+      local gameinfo = registry:get(gamestate):getComponent("GameInfo")
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
@@ -22,10 +24,20 @@ ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo)
         end
       end)
       debug_army = registry:add(GameObject:new('Army', {
-        Transform:new(gameinfo.worldspace_coord[1],gameinfo.worldspace_coord[2]),
+        Transform:new(
+          gameinfo.worldspace_coord[1],
+          gameinfo.worldspace_coord[2]):bindstate('transform', nil, gamestate, function(this, cmp, msg)
+            local new_xy = registry:get(msg.destination_info):getComponent("GameInfo").worldspace_coord
+            print("it was " .. cmp.x .. "," .. cmp.y)
+            cmp.x = new_xy[1]
+            cmp.y = new_xy[2]
+            print("it is " .. cmp.x .. "," .. cmp.y)
+            print("--->" .. inspect(cmp, {depth=2}))
+          end),
         Interfaceable:new(
           Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73, 0,37}),
           Unit_Touch_Delegate),
+        Stateful:new(gamestate),
         Placeable:new(gameinfo.address),
         Moveable:new()
       }))
@@ -34,14 +46,15 @@ ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo)
         Renderable:new(
           Polygon:new({ w = 50, h = 50}),
           nil,
-          gameinfo.team_color)
+          gameinfo.team_color),
+        Stateful:new(gamestate)
       }))
       debug_army_sprite = registry:add(GameObject:new('Troop', {
         Transform:new(3,5),
         Renderable:new(
           Polygon:new({ w = 50, h = 50 }),
-          Global.Assets:getAsset(gameinfo.icon_sprite)
-        )
+          Global.Assets:getAsset(gameinfo.icon_sprite)),
+        Stateful:new(gamestate)
       }))
       debug_army_name = registry:add(GameObject:new('Name', {
         Transform:new(-3,0),
@@ -49,7 +62,8 @@ ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo)
           nil,
           nil,
           nil,
-          gameinfo.army_name)
+          gameinfo.army_name),
+        Stateful:new(gamestate)
       }))
       debug_army_health = registry:add(GameObject:new('HealthBar', {
         Transform:new(0,45),
@@ -58,7 +72,8 @@ ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo)
           nil,
           {100,200,100}):bindstate('polygon', nil, 'hurt', function(this, cmp, msg) 
             cmp.polygon = Polygon:new({w = 50 * (msg.percent), h=5}) 
-          end)
+          end),
+        Stateful:new(gamestate)
       }))
       debug_army_timer = registry:add(GameObject:new('Timer', {
         Transform:new(0,15),
@@ -67,8 +82,9 @@ ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo)
           nil,
           nil,
           "0:00"):bindstate('text', nil, 'hurt', function(this, cmp, msg) 
-            cmp.text = math.floor(100 * msg.percent) .. "%"
-          end)
+            cmp.text = math.floor(100 * msg.percent) .. "% @" .. registry:get(gamestate):getComponent("GameInfo").address
+          end),
+        Stateful:new(gamestate)
       }))
       scenegraph:attach(debug_army,nil)
       scenegraph:attach(debug_army_bg, debug_army)

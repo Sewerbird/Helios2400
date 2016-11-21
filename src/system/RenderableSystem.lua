@@ -34,49 +34,52 @@ function RenderableSystem:update( dt )
 
 end
 
-function RenderableSystem:draw ()
-	local function drawHeirarchy ( root )
-		--Pop the coordinate system
-		local delta
-		if root:hasComponent('Transform') then
-			delta = root:getComponent('Transform')
-			love.graphics.translate(delta.x, delta.y)
-		end
+function RenderableSystem:drawHeirarchy ( root )
+	--Pop the coordinate system
+	local delta
+	if root:hasComponent('Transform') then
+		delta = root:getComponent('Transform')
+		love.graphics.push()
+		love.graphics.translate(delta.x, delta.y)
+	end
 
-		--Do draw
-		--Renderable
-		local renderable = root:getComponent('Renderable')
-		if renderable ~= nil then
-			if renderable.render ~= nil then
-				if renderable.render.rtype == "sprite" then
-					love.graphics.draw(renderable.render.img, renderable.render.quad)
-				elseif renderable.render.rtype == "animation" then
-					renderable.render.ani:draw(renderable.render.sprite)
-				end
-			elseif renderable.polygon ~= nil then
-				local r, g, b, a = love.graphics.getColor()
-				love.graphics.setColor(renderable.backgroundcolor)
-				love.graphics.setLineWidth(3)
-				love.graphics.polygon('fill', renderable.polygon.vertices)
-				love.graphics.setColor({r,g,b,a})
+	--Do draw
+	--Renderable
+	local renderable = root:getComponent('Renderable')
+	if renderable ~= nil then
+		if renderable.render ~= nil then
+			if renderable.render.rtype == "sprite" then
+				love.graphics.draw(renderable.render.img, renderable.render.quad)
+			elseif renderable.render.rtype == "animation" then
+				renderable.render.ani:draw(renderable.render.sprite)
 			end
-			if renderable.text ~= nil then
-				love.graphics.print(renderable.text)
-			end
+		elseif renderable.polygon ~= nil then
+			local r, g, b, a = love.graphics.getColor()
+			love.graphics.setColor(renderable.backgroundcolor)
+			love.graphics.setLineWidth(3)
+			love.graphics.polygon('fill', renderable.polygon.vertices)
+			love.graphics.setColor({r,g,b,a})
+		end
+		if renderable.text ~= nil then
+			love.graphics.print(renderable.text)
 		end
 
-		--Draw children
-		for i, gid in ipairs(self.targetCollection:getChildren(root.uid)) do
-			drawHeirarchy(self.registry:get(gid))
-		end
-
-		--Unpop the coordinate system
-		if delta ~= nil then
-			love.graphics.translate(-delta.x, -delta.y)
+		if renderable.text ~= nil then
+			love.graphics.print(renderable.text)
 		end
 	end
-	drawHeirarchy(self.registry:get(self.targetCollection:getRoot()))
 
+	--Draw children
+	for i, gid in ipairs(self.targetCollection:getChildren(root.uid)) do
+		self:drawHeirarchy(self.registry:get(gid))
+	end
+
+	--Unpop the coordinate system
+	if delta ~= nil then love.graphics.pop() end
+end
+
+function RenderableSystem:draw ()
+	self:drawHeirarchy(self.registry:get(self.targetCollection:getRoot()))
 end
 
 return RenderableSystem
