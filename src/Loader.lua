@@ -10,8 +10,10 @@ local Transform = require 'src/component/Transform'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 local GameInfo = require 'src/component/GameInfo'
 local GameObject = require 'src/GameObject'
+local AssetLoader = require 'src/AssetLoader'
 local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
+local Animation = require 'src/datatype/Animation'
 local HexCoord = require 'src/datatype/HexCoord'
 local Registry = require 'src/structure/Registry'
 local IndexTree = require 'src/structure/IndexTree'
@@ -27,22 +29,21 @@ local Loader = class("Loader", {
 })
 
 function Loader:debugLoad ()
+  local Assets = Global.Assets
+  local Debug_Spritesheet = Assets:getAsset("DEBUG_TILESET_1")
+  local Grass_Hex_Quad = Assets:getAsset("TILE_GRASS_1")
+  local Water_Hex_Quad = Assets:getAsset("TILE_WATER_1")
+  local Arctic_Hex_Quad = Assets:getAsset("TILE_ARCTIC_1")
+  local Space_Hex_Quad = Assets:getAsset("TILE_SPACE_1")
+  local Planet_1_Quad = Assets:getAsset("TILE_PLANET_1")
+  local Planet_2_Quad = Assets:getAsset("TILE_PLANET_2")
+  local City_Quad = Assets:getAsset("CITY_1")
+  local Debug_Ship_Quad = Assets:getAsset("SHIP_1")
+  local Debug_Troop_Quad = Assets:getAsset("TROOP_1")
+  local Debug_Cursor_Quad = Assets:getAsset("CURSOR_1")
+  local Debug_Spaceship_Quad = Assets:getAsset("SPACE_SHIP_1")
 
-  --[[ Load Assets ]]--
-  local Debug_Spritesheet = love.graphics.newImage('assets/debug_tileset.png')
-  local Grass_Hex_Quad = love.graphics.newQuad(0, 0, 84, 73, Debug_Spritesheet:getDimensions())
-  local Water_Hex_Quad = love.graphics.newQuad(84, 0, 84, 73, Debug_Spritesheet:getDimensions())
-  local Arctic_Hex_Quad = love.graphics.newQuad(84, 73, 84, 73, Debug_Spritesheet:getDimensions())
-  local Space_Hex_Quad = love.graphics.newQuad(84, 146, 84, 73, Debug_Spritesheet:getDimensions())
-  local Planet_1_Quad = love.graphics.newQuad(168, 146, 84, 73, Debug_Spritesheet:getDimensions())
-  local Planet_2_Quad = love.graphics.newQuad(252, 146, 84, 73, Debug_Spritesheet:getDimensions())
-  local City_Quad = love.graphics.newQuad(0, 73, 84, 73, Debug_Spritesheet:getDimensions())
-  local Debug_Ship_Quad = love.graphics.newQuad(168, 0, 50, 50, Debug_Spritesheet:getDimensions())
-  local Debug_Troop_Quad = love.graphics.newQuad(218, 0, 50, 50, Debug_Spritesheet:getDimensions())
-  local Debug_Cursor_Quad = love.graphics.newQuad(0, 146, 84, 73, Debug_Spritesheet:getDimensions())
-  local Debug_Spaceship_Quad = love.graphics.newQuad(218, 80, 50, 50, Debug_Spritesheet:getDimensions())
-
-  local music = love.audio.newSource('assets/music/Ritual.mp3')
+  local music = Assets:getAsset("RITUAL_1")
   music:setLooping(true)
   music:setVolume(BG_MUSIC_VOL)
   music:play()
@@ -60,7 +61,7 @@ function Loader:debugLoad ()
     for j = 1 , num_rows do
       if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
       local ioffset = (i-1) * -21
-      local hex = (j==1 or j==num_rows) and Arctic_Hex_Quad or ((math.random() < 0.3) and Grass_Hex_Quad or Water_Hex_Quad)
+      local hex = (j==1 or j==num_rows) and "TILE_ARCTIC_1" or ((math.random() < 0.3) and "TILE_GRASS_1" or "TILE_WATER_1")
 
       local hex_info = {
         map = 'Earth',
@@ -76,15 +77,15 @@ function Loader:debugLoad ()
         },
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
       }
-      local city_info = (hex == Grass_Hex_Quad and math.random() < 0.15) and {
+      local city_info = (hex == "TILE_GRASS_1" and math.random() < 0.15) and {
         city_name = city_names[math.floor(math.random()*#city_names)+1],
         address = hex_info.address,
-        icon_sprite = City_Quad,
+        icon_sprite = "CITY_1",
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
       } or nil
-      local army_info = (hex == Grass_Hex_Quad and math.random() < 0.13) and {
+      local army_info = (hex == "TILE_GRASS_1" and math.random() < 0.13) and {
         team_color = (math.random() > 0.5) and {60,60,200,200} or {200,60,60,200},
-        icon_sprite = Debug_Troop_Quad,
+        icon_sprite = "TROOP_1",
         curr_hp = math.floor(math.random() * 100),
         max_hp = 100,
         army_type = 'stealth',
@@ -112,7 +113,6 @@ function Loader:debugLoad ()
 
   for i, obj in ipairs(debug_gamestate.registry) do
     local tgt = obj:getComponent("GameInfo")
-    local nxt = nil
     if obj.description == 'gsHex' then
       table.insert(Earth_Tiles, TileMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,obj:getComponent("GameInfo"),Debug_Spritesheet))
     elseif obj.description == 'gsCity' then

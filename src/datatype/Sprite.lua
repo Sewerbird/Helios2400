@@ -2,7 +2,8 @@
 local class = require 'lib/30log'
 local Sprite = class("Sprite", {
 	quad = nil,
-	img = nil
+	img = nil,
+	rtype = "sprite"
 })
 
 function Sprite:init ( img_reference, quad_reference )

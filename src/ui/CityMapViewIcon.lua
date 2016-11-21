@@ -11,7 +11,7 @@ local Sprite = require 'src/datatype/Sprite'
 
 local CityMapViewIcon = {}
 
-CityMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo, spritesheet)
+CityMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo)
 	local City_Touch_Delegate = TouchDelegate:new()
 	City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
 		if this.component.gob:hasComponent('Placeable') then
@@ -25,7 +25,7 @@ CityMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo, sprite
 			City_Touch_Delegate),
 		Renderable:new(
 			Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-			Sprite:new(spritesheet, gameinfo.icon_sprite)
+			Global.Assets:getAsset(gameinfo.icon_sprite)
 			),
 		Placeable:new(gameinfo.address)
 	}))

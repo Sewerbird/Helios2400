@@ -23,7 +23,7 @@ end
 function GameViewer:changeTo ()
 	self.Systems.Render = RenderableSystem:new(self.Registry, self.mapViews:current())
 	self.Systems.Interface = InterfaceableSystem:new(self.Registry, self.mapViews:current())
-	self.Systems.Selection = SelectableSystem:new(self.Registry, self.mapViews:current())
+	self.Systems.Selection = SelectableSystem:new(self.Registry, self.mapViews:current(), "CURSOR_1")
 end
 
 function GameViewer:draw ()
