@@ -88,4 +88,11 @@ function Polygon:getVertex ( idx )
 	}
 end
 
+function Polygon:getDimensions ()
+	return {
+		w = self.w,
+		h = self.h
+	}
+end
+
 return Polygon

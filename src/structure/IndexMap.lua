@@ -31,7 +31,7 @@ function IndexMap:addAddress(address, neighborAddresses, placeableIds)
 	self.addressbook[address] = Location:new(address, neighborAddresses, placeableIds)
 	if placeableIds ~= nil then
 		for i = 1, #placeableIds do
-			self:addPlaceable(placeableIds[i],address)
+			if placeableIds[i] ~= nil then self:addPlaceable(placeableIds[i],address) end
 		end
 	end
 end
@@ -61,7 +61,6 @@ function IndexMap:getPlaceablesAt(addressId)
 end
 
 function IndexMap:findPlaceableAddress(placeableId)
-	print('found placeable address for ' .. tostring(placeableId) ..': ' .. tostring(self.placeables_index[placeableId]))
 	return self.placeables_index[placeableId]
 end
 

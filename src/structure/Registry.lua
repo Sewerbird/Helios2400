@@ -2,7 +2,7 @@
 local class = require 'lib/30log'
 local Registry = class('Registry', {
 	registry = {},
-	historicCounter = 1
+	historicCounter = 0
 })
 
 function Registry:init ( )
@@ -25,6 +25,14 @@ end
 
 function Registry:get ( tgtObjectId )
 	return self.registry[tgtObjectId]
+end
+
+function Registry:summarize ( )
+	print("Registry has " .. #self.registry .. " entries ")
+end
+
+function Registry:getCount ()
+	return #self.registry
 end
 
 return Registry
