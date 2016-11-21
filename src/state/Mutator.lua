@@ -4,6 +4,9 @@ local Mutator = class('Mutator', {
 
 })
 
+function Mutator:init ( )
+end
+
 function Mutator:apply ( )
 end
 
