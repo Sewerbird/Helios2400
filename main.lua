@@ -27,7 +27,9 @@ function love.load()
   Global = {
     PubSub = PubSub:new(),
     Registry = Registry:new(),
-    Assets = Assets
+    Assets = Assets,
+    TickAccumulator = 0,
+    TickRate = 0.1
   }
   Global.MutatorBus = MutatorBus:new(Global.Registry)
 
@@ -42,20 +44,18 @@ function love.load()
   
 end
 
-local tickAccumulator = 0
-
 function love.update( dt )
   if collectgarbage('count') > GOAL_MEMORY then error('Using too much memory mate!') end
 
   --Debug mouse-to-hex output
   if not Global.PAUSE then
-    tickAccumulator = tickAccumulator + dt
-    if tickAccumulator > 0.1 then
-      tickAccumulator = tickAccumulator - 0.1
+    Global.TickAccumulator = Global.TickAccumulator + dt
+    if Global.TickAccumulator > Global.TickRate then
+      Global.TickAccumulator = Global.TickAccumulator - Global.TickRate
       local val = math.random()
-      Global.PubSub:publish('hurt',{percent = val})
+      Global.PubSub:publish('tick',{percent = val})
+      my_viewer.Systems.Render:update(dt)
     end
-    my_viewer.Systems.Render:update(dt)
   end
 
   --Profiling stuff
