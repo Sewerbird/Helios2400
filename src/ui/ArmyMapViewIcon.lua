@@ -67,7 +67,7 @@ ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
         Renderable:new(
           Polygon:new({ w = 50 * (gameinfo.curr_hp / gameinfo.max_hp), h=5}),
           nil,
-          {100,200,100}):bindstate('polygon', nil, 'hurt', function(this, cmp, msg) 
+          {100,200,100}):bindstate('polygon', nil, 'tick', function(this, cmp, msg) 
             cmp.polygon = Polygon:new({w = 50 * (msg.percent), h=5}) 
           end),
         Stateful:new(gamestate)
@@ -78,7 +78,7 @@ ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
           nil,
           nil,
           nil,
-          "0:00"):bindstate('text', nil, 'hurt', function(this, cmp, msg) 
+          "0:00"):bindstate('text', nil, 'tick', function(this, cmp, msg) 
             cmp.text = math.floor(100 * msg.percent) .. "% @" .. registry:get(gamestate):getComponent("GameInfo").address
           end),
         Stateful:new(gamestate)

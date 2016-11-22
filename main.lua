@@ -20,20 +20,17 @@ end
 function love.load()
   print("Time to play!")
 
-  Assets = AssetLoader:new()
-  Assets:loadAssets()
-  Assets:printAllAssets()
-
   Global = {
     PubSub = PubSub:new(),
     Registry = Registry:new(),
-    Assets = Assets,
+    Assets = AssetLoader:new():loadAssets(),
     TickAccumulator = 0,
     TickRate = 0.1
   }
   Global.MutatorBus = MutatorBus:new(Global.Registry)
+  SceneGraph = Loader:new(Global):debugLoad()
 
-  my_viewer = GameViewer:new(Global.Registry, Loader:new():debugLoad())
+  my_viewer = GameViewer:new(Global.Registry, SceneGraph)
 
   --Profiling stuff
   ProFi:start()

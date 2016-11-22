@@ -24,23 +24,18 @@ local TileMapViewIcon = require 'src/ui/TileMapViewIcon'
 local class = require 'lib/30log'
 
 local Loader = class("Loader", {
+  loadContext = nil
 	
 })
 
+function Loader:init(context)
+  self.loadContext = context
+end
+
 function Loader:debugLoad ()
-  local Assets = Global.Assets
-  local Debug_Spritesheet = Assets:getAsset("DEBUG_TILESET_1")
-  local Grass_Hex_Quad = Assets:getAsset("TILE_GRASS_1")
-  local Water_Hex_Quad = Assets:getAsset("TILE_WATER_1")
-  local Arctic_Hex_Quad = Assets:getAsset("TILE_ARCTIC_1")
-  local Space_Hex_Quad = Assets:getAsset("TILE_SPACE_1")
-  local Planet_1_Quad = Assets:getAsset("TILE_PLANET_1")
-  local Planet_2_Quad = Assets:getAsset("TILE_PLANET_2")
-  local City_Quad = Assets:getAsset("CITY_1")
-  local Debug_Ship_Quad = Assets:getAsset("SHIP_1")
-  local Debug_Troop_Quad = Assets:getAsset("TROOP_1")
-  local Debug_Cursor_Quad = Assets:getAsset("CURSOR_1")
-  local Debug_Spaceship_Quad = Assets:getAsset("SPACE_SHIP_1")
+
+  --[[ Load Assets & Play some music because why not ]]--
+  local Assets = self.loadContext.Assets
 
   local music = Assets:getAsset("RITUAL_1")
   music:setLooping(true)
