@@ -4,6 +4,7 @@ local Addressable = require 'src/component/Addressable'
 local Placeable = require 'src/component/Placeable'
 local Interfaceable = require 'src/component/Interfaceable'
 local Transform = require 'src/component/Transform'
+local Stateful = require 'src/component/Stateful'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 local GameObject = require 'src/GameObject'
 local Polygon = require 'src/datatype/Polygon'
@@ -11,7 +12,8 @@ local Sprite = require 'src/datatype/Sprite'
 
 local CityMapViewIcon = {}
 
-CityMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo)
+CityMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
+	local gameinfo = registry:get(gamestate):getComponent("GameInfo")
 	local City_Touch_Delegate = TouchDelegate:new()
 	City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
 		if this.component.gob:hasComponent('Placeable') then
@@ -27,6 +29,7 @@ CityMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo)
 			Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 			Global.Assets:getAsset(gameinfo.icon_sprite)
 			),
+		Stateful:new(gamestate),
 		Placeable:new(gameinfo.address)
 	}))
 	debug_city_label = registry:add(GameObject:new('Name', {
@@ -35,7 +38,8 @@ CityMapViewIcon.new = function(self, registry, scenegraph, map, gameinfo)
 			Polygon:new({ w=84, h=13 }),
 			nil,
 			{120,120,200,200},
-			gameinfo.city_name)
+			gameinfo.city_name),
+		Stateful:new(gamestate)
 	}))
 	scenegraph:attach(debug_city, nil)
 	scenegraph:attach(debug_city_label, debug_city)
