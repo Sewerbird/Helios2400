@@ -1,5 +1,8 @@
 --Registry.lua
 local class = require 'lib/30log'
+local Tserial = require 'lib/Tserial'
+local GameObject = require 'src/GameObject'
+local GameInfo = require 'src/component/GameInfo'
 local Registry = class('Registry', {
 	registry = {},
 	historicCounter = 0

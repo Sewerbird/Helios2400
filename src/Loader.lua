@@ -43,8 +43,12 @@ function Loader:debugLoad ()
   music:play()
 
 
+
   --[[ Generate the Game State ]]--
+
   local debug_gamestate = Global.Registry--TODO: make this with a Registry:new();
+  self:loadGame('gen_1',debug_gamestate)
+  --[[
   local city_names = {'New Moroni', 'Tiangong', 'Elonia', 'Neokyoto', 'Al Kicab', 'Choaswell', 'Atraapool', 'Efrimirie', 'Droawona'}
   local joffset = 0
   local num_rows = 12
@@ -100,6 +104,9 @@ function Loader:debugLoad ()
       Earth_Map:addAddress(hex_info.address, hex_info.neighbors, {oCity, oArmy})
     end
   end
+  ]]--
+
+  --self:saveGame('gen_1',debug_gamestate)
 
   --[[Instantiate Tilemap View ]]--
   local SceneGraph = IndexTree:new();
@@ -121,6 +128,27 @@ function Loader:debugLoad ()
   local Earth_View = MapView:new(debug_gamestate, SceneGraph, Earth_Map, Earth_Tiles, Earth_Cities, Earth_Units)
 
   return SceneGraph
+end
+
+function Loader:saveGame ( name, gamestateRegistry)
+  local serialized_gamestate = {}
+  for i = 1, #gamestateRegistry.registry do
+    local obj = gamestateRegistry.registry[i]
+    if obj:hasComponent("GameInfo") then
+      table.insert(serialized_gamestate, obj:getComponent("GameInfo"):serialize())
+    end
+  end
+  love.filesystem.write((name .. '.sav'), Tserial.pack(serialized_gamestate))
+end
+
+function Loader:loadGame( name, registry)
+  local contents, size = love.filesystem.read((name .. '.sav'))
+  local raw_save = Tserial.unpack(contents)
+  for i = 1, #raw_save do
+    local obj = GameInfo:reify(raw_save[i])
+    print(inspect(obj))
+    registry:add(obj)
+  end
 end
 
 return Loader

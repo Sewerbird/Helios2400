@@ -59,3 +59,5 @@ function Tserial.unpack(s, safe)
 	Tserial.table = nil
 	return t, result
 end
+
+return Tserial
