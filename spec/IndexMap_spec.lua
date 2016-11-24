@@ -45,4 +45,19 @@ describe('IndexMap', function ()
 		assert.are.same(mym:getNeighbors('a'),{'1','2','3','4','5','6'})
 		assert.are.same(mym:getNeighbors('3'),{'a','2','4'})
 	end)
+
+	it('should initialize correctly with 5x5 grid of addresses', function ()
+		local myMap = IndexMap:new()
+		local width = 5
+		for i=1,width do
+			for j=1,width do
+				local neighborAddresses = {}
+				if i > 1 then table.insert(neighborAddresses, "AD" .. i - 1 .. j) end
+				if j > 1 then table.insert(neighborAddresses, "AD" .. i .. j - 1) end
+				if i < width then table.insert(neighborAddresses, "AD" .. i + 1 .. j) end
+				if j < width then table.insert(neighborAddresses, "AD" .. i  .. j + 1) end
+				myMap:addAddress("AD" .. i .. j, neighborAddresses, {}, {})
+			end
+		end
+	end)
 end)
