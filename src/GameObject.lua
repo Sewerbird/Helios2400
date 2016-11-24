@@ -36,4 +36,12 @@ function GameObject:getComponents ()
 	return self.components
 end
 
+function GameObject:getInfo()
+	local result = "{" .. self.description .. "}["
+	for k,v in pairs(self.components) do
+		result = result .. "(" .. (k or "nil") .. ")"
+	end
+	return result .. "]"
+end
+
 return GameObject
