@@ -105,6 +105,7 @@ function Loader:debugLoad ()
         personel_cnt = math.floor(math.random() * 10),
         assault_rating = 4,
         defense_rating = 3,
+        mov_type = "ground",
         address = hex_info.address,
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
       } or nil
