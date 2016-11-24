@@ -102,7 +102,6 @@ function AssetLoader:getAsset(assetId)
 	if self.assets[assetId] == nil then 
 		error(self.errorPrefix .. assetId .. " is not loaded or incorrect")
 	end
-
 	return self.assets[assetId]
 end
 

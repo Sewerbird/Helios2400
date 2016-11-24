@@ -19,8 +19,8 @@ love.graphics = {}
 
 love.graphics.newQuad = function() 
 	return {
-		x = 2,
-		y = 2
+		x = 354,
+		y = 292
 	} 
 end
 
@@ -30,10 +30,10 @@ love.graphics.newImage = function() return
 			return 354, 292
 		end,
 		getWidth = function() 
-			return 2
+			return 354
 		end,
 		getHeight = function() 
-			return 2
+			return 292
 		end
 	}
 end
