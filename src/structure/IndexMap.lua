@@ -8,14 +8,16 @@ local IndexMap = class("IndexMap",{
 local Location = class("Location",{
 	address = nil,
 	placeables = {},
-	neighbors = {}
+	neighbors = {},
+	terrain_info = {}
 })
 
-function Location:init(address, neighbors)
+function Location:init(address, neighbors, terrain_info)
 	if address == nil then error('Tried to create location with nil address') end
 	self.address = address
 	self.placeables = {}
 	self.neighbors = neighbors or {}
+	self.terrain_info = terrain_info
 end
 
 function IndexMap:getNeighbors(addressId)
@@ -27,8 +29,8 @@ function IndexMap:addNeighborsRelation(addressA, addressB)
 	table.insert(self.addressbook[addressB].neighbors,addressA)
 end
 
-function IndexMap:addAddress(address, neighborAddresses, placeableIds)
-	self.addressbook[address] = Location:new(address, neighborAddresses, placeableIds)
+function IndexMap:addAddress(address, neighborAddresses, terrainInfo, placeableIds)
+	self.addressbook[address] = Location:new(address, neighborAddresses, terrainInfo, placeableIds)
 	if placeableIds ~= nil then
 		for i = 1, #placeableIds do
 			if placeableIds[i] ~= nil then self:addPlaceable(placeableIds[i],address) end
