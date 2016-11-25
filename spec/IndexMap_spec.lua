@@ -10,13 +10,13 @@ describe('IndexMap', function ()
 	it('should load and link addresses correctly', function ()
 		local mym = IndexMap:new()
 
-		mym:addAddress('a',{'1','2','3','4','5','6'})
-		mym:addAddress('1',{'a','2','6'})
-		mym:addAddress('2',{'a','1','3'})
-		mym:addAddress('3',{'a','2','4'},nil,{'objA'})
-		mym:addAddress('4',{'a','3','5'},nil,{'objB'})
-		mym:addAddress('5',{'a','4','6'})
-		mym:addAddress('6',{'a','5','1'})
+		mym:addAddress('a',0,0,{'1','2','3','4','5','6'})
+		mym:addAddress('1',0,0,{'a','2','6'})
+		mym:addAddress('2',0,0,{'a','1','3'})
+		mym:addAddress('3',0,0,{'a','2','4'},nil,{'objA'})
+		mym:addAddress('4',0,0,{'a','3','5'},nil,{'objB'})
+		mym:addAddress('5',0,0,{'a','4','6'})
+		mym:addAddress('6',0,0,{'a','5','1'})
 
 		local placed
 
@@ -56,8 +56,9 @@ describe('IndexMap', function ()
 				if j > 1 then table.insert(neighborAddresses, "AD" .. i .. j - 1) end
 				if i < width then table.insert(neighborAddresses, "AD" .. i + 1 .. j) end
 				if j < width then table.insert(neighborAddresses, "AD" .. i  .. j + 1) end
-				myMap:addAddress("AD" .. i .. j, neighborAddresses, {}, {})
+				myMap:addAddress("AD" .. i .. j, i ,j , neighborAddresses, {}, {})
 			end
 		end
+		myMap:findPath("AD23","AD45")
 	end)
 end)

@@ -1,5 +1,8 @@
 local class = require 'lib/30log'
 inspect = require 'lib/inspect'
+require 'lib/astar'
+local maphandler = require 'src/structure/MapHandler'
+
 local IndexMap = class("IndexMap",{
 	addressbook = {},
 	placeables_index = {}
@@ -12,25 +15,35 @@ local Location = class("Location",{
 	terrain_info = {}
 })
 
-function Location:init(address, neighbors, terrain_info)
+function Location:init(address, x, y, neighbors, terrain_info)
 	if address == nil then error('Tried to create location with nil address') end
 	self.address = address
 	self.placeables = {}
 	self.neighbors = neighbors or {}
 	self.terrain_info = terrain_info
+	self.x = x
+	self.y = y
+end
+
+function Location:__tostring()
+	return "Location " .. self.address .. "(" .. self.x .. "," .. self.y .. ")[" .. #self.neighbors .. "]"
 end
 
 function IndexMap:getNeighbors(addressId)
 	return self.addressbook[addressId].neighbors
 end	
 
+function IndexMap:init()
+	self.as = AStar(maphandler:new())
+end
+
 function IndexMap:addNeighborsRelation(addressA, addressB)
 	table.insert(self.addressbook[addressA].neighbors,addressB)
 	table.insert(self.addressbook[addressB].neighbors,addressA)
 end
 
-function IndexMap:addAddress(address, neighborAddresses, terrainInfo, placeableIds)
-	self.addressbook[address] = Location:new(address, neighborAddresses, terrainInfo, placeableIds)
+function IndexMap:addAddress(address, x, y, neighborAddresses, terrainInfo, placeableIds)
+	self.addressbook[address] = Location:new(address, x, y, neighborAddresses, terrainInfo, placeableIds)
 	if placeableIds ~= nil then
 		for i = 1, #placeableIds do
 			if placeableIds[i] ~= nil then self:addPlaceable(placeableIds[i],address) end
@@ -75,6 +88,11 @@ function IndexMap:movePlaceable(placeableId, srcAddressId, dstAddressId)
 		self:removePlaceable(placeableId, srcAddressId)
 		self:addPlaceable(placeableId, dstAddressId)
 	end
+end
+
+function IndexMap:findPath(fromId, toId)
+	print("finding path ",fromId, toId)
+	self.as:findPath(self.addressbook[fromId],self.addressbook[toId])
 end
 
 function IndexMap:summarizeAddress(addressId)
