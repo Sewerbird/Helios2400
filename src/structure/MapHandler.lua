@@ -35,13 +35,15 @@ require 'lib/middleclass'
 
 local Handler = class('Handler')
 
-function Handler:initialize()
+function Handler:initialize(indexMap)
+	self.indexMap = indexMap
 end
 
 function Handler:getNode(location)
   -- Here you make sure the requested node is valid (i.e. on the map, not blocked)
   -- if the location is not valid, return nil, otherwise return a new Node object
-  return Node(location, 1, location.x * 10000 + location.y)
+  if not self.indexMap:getLocation(location.x,location.y) then return nil end
+  return Node(location, self.indexMap:getLocation(location.x,location.y).terrain_info.land, location.x * 10000 + location.y)
 end
 
 function Handler:locationsAreEqual(a, b)

@@ -34,7 +34,7 @@ function IndexMap:getNeighbors(addressId)
 end	
 
 function IndexMap:init()
-	self.as = AStar(maphandler:new())
+	self.as = AStar(maphandler:new(self))
 end
 
 function IndexMap:addNeighborsRelation(addressA, addressB)
@@ -98,8 +98,8 @@ function IndexMap:summarizeAddress(addressId)
 	return "Address '" .. addressId .. "' contains " .. inspect(self:getPlaceablesAt(addressId)) .. " and borders " .. inspect(self:getNeighbors(addressId))
 end
 
-function IndexMap:getLocation(location)
-	return self.addressbook[location]
+function IndexMap:getLocation(x,y)
+	return self.addressbook["AD" .. x .. y]
 end
 
 return IndexMap

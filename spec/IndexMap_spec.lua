@@ -61,10 +61,22 @@ describe('IndexMap', function ()
 					if i - 1 >= 1 and j + 1 <= width then table.insert(neighborAddresses, "AD" .. i - 1  .. j + 1) end
 					if i + 1 <= width and j + 1 <= width then table.insert(neighborAddresses, "AD" .. i + 1  .. j + 1) end
 				end
-				myMap:addAddress("AD" .. i .. j, i ,j , neighborAddresses, {}, {})
+				local terrain_info = {
+          			land = math.random(7),
+					sea = math.random(8),
+					aero = math.random(4),
+					hover = math.random(6),
+					space = math.random(3),
+					reentry = math.random(10),
+					toxic = false,--math.random() > 0.8,
+					vacuum = false,--math.random() > 0.8,
+					shielded = false,--math.random() > 0.8,
+			        }
+				myMap:addAddress("AD" .. i .. j, i ,j , neighborAddresses, terrain_info, {})
 			end
 		end
-		local path = myMap:findPath(myMap:getLocation("AD23"),myMap:getLocation("AD45"))
+		local path = myMap:findPath(myMap:getLocation(2,3),myMap:getLocation(4,5))
 		print(path)
+		print(path:getTotalMoveCost())
 	end)
 end)
