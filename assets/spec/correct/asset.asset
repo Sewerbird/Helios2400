@@ -1,0 +1,25 @@
+{
+	assetId = "TEST_ASSET_CORRECT",
+	assetType = "spriteSheet",
+	assetPath = "spec/test_asset.png",
+	data = {
+		{
+			assetId = "TEST_ASSET_CORRECT_IMAGE",
+			assetType = "sprite",
+			x = 0,
+			y = 0,
+			width = 84,
+			height = 73
+		},
+		{
+			assetId = "TEST_ASSET_CORRECT_ANIMATION",
+			assetType = "animation",
+			x = 0,
+			y = 219,
+			frameWidth = 84,
+			frameHeight = 73,
+			amountOfFrames = 3,
+			frameTime = 0.3
+		}
+	}
+}

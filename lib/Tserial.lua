@@ -52,6 +52,7 @@ end
 function Tserial.unpack(s, safe)
 	if safe then s = string.match(s, "(%b{})") end
 	assert(type(s) == "string", "Can only Tserial.unpack strings.")
+	if loadstring == nil then loadstring = load end
 	local f, result = loadstring("Tserial.table="..s)
 	if not safe then assert(f,result) elseif not f then return nil, result end
 	result = f()

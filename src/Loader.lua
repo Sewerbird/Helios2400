@@ -47,7 +47,6 @@ function Loader:debugLoad ()
   music:setVolume(BG_MUSIC_VOL)
   music:play()
 
-
   --[[ Generate the Game State ]]--
   local debug_gamestate = Global.Registry--TODO: make this with a Registry:new();
   local city_names = {'New Moroni', 'Tiangong', 'Elonia', 'Neokyoto', 'Al Kicab', 'Choaswell', 'Atraapool', 'Efrimirie', 'Droawona'}
