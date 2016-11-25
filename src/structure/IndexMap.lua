@@ -91,7 +91,6 @@ function IndexMap:movePlaceable(placeableId, srcAddressId, dstAddressId)
 end
 
 function IndexMap:findPath(fromId, toId)
-	print("finding path ",fromId, toId)
 	return self.as:findPath(fromId,toId)
 end
 

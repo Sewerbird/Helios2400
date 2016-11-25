@@ -136,13 +136,11 @@ function AStar:_handleNode(node, goal)
 end
 
 function AStar:findPath(fromlocation, tolocation)
-  print("AStar findpath",fromlocation,tolocation)
   self.open = {}
   self.closed = {}
   
   local goal = tolocation
   local fnode = self.mh:getNode(fromlocation)
-  print("AStar findpath",goal,fnode)
 
   local nextNode = nil
 
