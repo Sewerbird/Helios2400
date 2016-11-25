@@ -43,6 +43,14 @@ function Path:getTotalMoveCost()
   return self.totalCost
 end
 
+function Path:__tostring()
+  local result = "Path["
+  for i,v in ipairs(self.nodes) do
+    result = result .. v:__tostring() .. ","
+  end
+  return result .. "]"
+end
+
 Node = class('Node')
 function Node:initialize(location, mCost, lid, parent)
   self.location = location -- Where is the node located
@@ -54,6 +62,10 @@ end
 
 function Node.__eq(a, b)
   return a.lid == b.lid
+end
+
+function Node:__tostring()
+  return "N{" .. self.location.x .. "," ..self.location.y .. "}"
 end
 
 AStar = class('AStar')
@@ -124,11 +136,13 @@ function AStar:_handleNode(node, goal)
 end
 
 function AStar:findPath(fromlocation, tolocation)
+  print("AStar findpath",fromlocation,tolocation)
   self.open = {}
   self.closed = {}
   
   local goal = tolocation
   local fnode = self.mh:getNode(fromlocation)
+  print("AStar findpath",goal,fnode)
 
   local nextNode = nil
 

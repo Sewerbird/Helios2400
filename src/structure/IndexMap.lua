@@ -92,11 +92,15 @@ end
 
 function IndexMap:findPath(fromId, toId)
 	print("finding path ",fromId, toId)
-	self.as:findPath(self.addressbook[fromId],self.addressbook[toId])
+	return self.as:findPath(fromId,toId)
 end
 
 function IndexMap:summarizeAddress(addressId)
 	return "Address '" .. addressId .. "' contains " .. inspect(self:getPlaceablesAt(addressId)) .. " and borders " .. inspect(self:getNeighbors(addressId))
+end
+
+function IndexMap:getLocation(location)
+	return self.addressbook[location]
 end
 
 return IndexMap

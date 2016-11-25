@@ -1,5 +1,6 @@
 inspect = require 'lib/inspect'
 IndexMap = require 'src/structure/IndexMap' 
+Location = 
 
 describe('IndexMap', function ()
 	it('should initialize correctly', function ()
@@ -59,6 +60,7 @@ describe('IndexMap', function ()
 				myMap:addAddress("AD" .. i .. j, i ,j , neighborAddresses, {}, {})
 			end
 		end
-		myMap:findPath("AD23","AD45")
+		local path = myMap:findPath(myMap:getLocation("AD23"),myMap:getLocation("AD45"))
+		print(path)
 	end)
 end)

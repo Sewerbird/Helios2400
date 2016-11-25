@@ -41,8 +41,8 @@ end
 function Handler:getNode(location)
   -- Here you make sure the requested node is valid (i.e. on the map, not blocked)
   -- if the location is not valid, return nil, otherwise return a new Node object
-  print("@@@",location)
-  return Node(location, 1, location.y * #self.tiles[1] + location.x)
+  print("@@@@",location)
+  return Node(location, 1, location.x * 10000 + location.y)
 end
 
 function Handler:locationsAreEqual(a, b)
@@ -62,7 +62,7 @@ function Handler:getAdjacentNodes(curnode, dest)
   local cl = curnode.location
   local dl = dest
   
-  print(curnode)
+  print("AD",curnode, cl , dl)
 
   local n = false
   
@@ -91,7 +91,8 @@ end
 
 function Handler:_handleNode(x, y, fromnode, destx, desty)
   -- Fetch a Node for the given location and set its parameters
-  local n = self:getNode(vector(x, y))
+  print("handling ", x, y, fromnode, destx, desty)
+  local n = self:getNode({x = x,y = y})
 
   if n ~= nil then
     local dx = math.max(x, destx) - math.min(x, destx)
