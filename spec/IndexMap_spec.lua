@@ -53,10 +53,14 @@ describe('IndexMap', function ()
 		for i=1,width do
 			for j=1,width do
 				local neighborAddresses = {}
-				if i > 1 then table.insert(neighborAddresses, "AD" .. i - 1 .. j) end
-				if j > 1 then table.insert(neighborAddresses, "AD" .. i .. j - 1) end
-				if i < width then table.insert(neighborAddresses, "AD" .. i + 1 .. j) end
-				if j < width then table.insert(neighborAddresses, "AD" .. i  .. j + 1) end
+				if i - 1 >= 1 then table.insert(neighborAddresses, "AD" .. i - 1 .. j) end
+				if j - 1 >= 1 then table.insert(neighborAddresses, "AD" .. i .. j - 1) end
+				if i + 1 <= width then table.insert(neighborAddresses, "AD" .. i + 1 .. j) end
+				if j + 1 <= width then table.insert(neighborAddresses, "AD" .. i  .. j + 1) end
+				if j % 2 == 0 then 
+					if i - 1 >= 1 and j + 1 <= width then table.insert(neighborAddresses, "AD" .. i - 1  .. j + 1) end
+					if i + 1 <= width and j + 1 <= width then table.insert(neighborAddresses, "AD" .. i + 1  .. j + 1) end
+				end
 				myMap:addAddress("AD" .. i .. j, i ,j , neighborAddresses, {}, {})
 			end
 		end

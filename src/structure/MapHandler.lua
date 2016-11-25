@@ -55,37 +55,45 @@ function Handler:locationsAreEqual(a, b)
 end
 
 function Handler:getAdjacentNodes(curnode, dest)
-  -- Given a node, return a table containing all adjacent nodes
-  -- The code here works for a 2d tile-based game but could be modified
-  -- for other types of node graphs
-  local result = {}
-  local cl = curnode.location
-  local dl = dest
-  
-  print("AD",curnode, cl , dl)
+	-- Given a node, return a table containing all adjacent nodes
+	-- The code here works for a 2d tile-based game but could be modified
+	-- for other types of node graphs
+	local result = {}
+	local cl = curnode.location
+	local dl = dest
 
-  local n = false
-  
-  n = self:_handleNode(cl.x + 1, cl.y, curnode, dl.x, dl.y)
-  if n then
-    table.insert(result, n)
-  end
+	print("AD",curnode, cl , dl)
 
-  n = self:_handleNode(cl.x - 1, cl.y, curnode, dl.x, dl.y)
-  if n then
-    table.insert(result, n)
-  end
+	local n = false
 
-  n = self:_handleNode(cl.x, cl.y + 1, curnode, dl.x, dl.y)
-  if n then
-    table.insert(result, n)
-  end
+	n = self:_handleNode(cl.x , cl.y - 1, curnode, dl.x, dl.y)
+	if n then
+		table.insert(result, n)
+	end
+	n = self:_handleNode(cl.x , cl.y + 1, curnode, dl.x, dl.y)
+	if n then
+		table.insert(result, n)
+	end
+	n = self:_handleNode(cl.x - 1, cl.y, curnode, dl.x, dl.y)
+	if n then
+		table.insert(result, n)
+	end
+	n = self:_handleNode(cl.x + 1, cl.y, curnode, dl.x, dl.y)
+	if n then
+		table.insert(result, n)
+	end
 
-  n = self:_handleNode(cl.x, cl.y - 1, curnode, dl.x, dl.y)
-  if n then
-    table.insert(result, n)
-  end
-  
+	if cl.y % 2 == 0 then 
+		n = self:_handleNode(cl.x - 1, cl.y + 1, curnode, dl.x, dl.y)
+		if n then
+			table.insert(result, n)
+		end
+		n = self:_handleNode(cl.x + 1, cl.y + 1, curnode, dl.x, dl.y)
+		if n then
+			table.insert(result, n)
+		end
+	end
+
   return result
 end
 
