@@ -30,16 +30,15 @@ function Component:getSiblingComponent ( type )
 	end
 end
 
-function Component:bindstate(field, obj, topic, fn)
-	if field == nil then return self end
-
-	if obj ~= nil then
-		self[field] = obj
-	end
+function Component:bindstate(registry, init_with, topic, fn)
 	
-	if topic == nil or fn == nil then return self end
+	if registry == nil or topic == nil or fn == nil then return self end
 
-	self["_"..field] = StateBinding:new(self, topic, fn)
+	self["_"..self.name] = StateBinding:new(registry, self, topic, fn)
+
+	if init_with ~= nil then
+		self["_"..self.name].fn(self["_"..self.name],self,init_with)
+	end
 
 	return self
 end

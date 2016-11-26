@@ -3,18 +3,23 @@ local class = require 'lib/30log'
 local Tserial = require 'lib/Tserial'
 local GameObject = require 'src/GameObject'
 local GameInfo = require 'src/component/GameInfo'
+local PubSub = require 'src/PubSub'
+
 local Registry = class('Registry', {
 	registry = {},
+	pubsub = nil,
 	historicCounter = 0
 })
 
 function Registry:init ( )
+	self.pubsub = PubSub:new()
 end
 
 function Registry:add ( tgtObject )
 	assert(tgtObject ~= nil, 'tgtObject being registered is nil')
 
 	tgtObject.uid = self.historicCounter + 1
+	tgtObject.registry = self
 	self.historicCounter = self.historicCounter + 1
 
 	if self.registry[tgtObject.uid] ~= nil then
@@ -38,6 +43,18 @@ function Registry:getIdsByPool ( pool )
 		end
 	end
 	return poolIds
+end
+
+function Registry:getGameObjects ()
+	return pairs(self.registry)
+end
+
+function Registry:publish(topic, message)
+	self.pubsub:publish(topic, message)
+end
+
+function Registry:subscribe(topic, callback)
+	self.pubsub:subscribe(topic, callback)
 end
 
 function Registry:summarize ( )

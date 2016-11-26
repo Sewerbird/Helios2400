@@ -12,7 +12,7 @@ local Sprite = require 'src/datatype/Sprite'
 
 local CityMapViewIcon = {}
 
-CityMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
+CityMapViewIcon.new = function(this, registry, scenegraph, map, gamestate)
 	local gameinfo = registry:get(gamestate):getComponent("GameInfo")
 	local City_Touch_Delegate = TouchDelegate:new()
 	City_Touch_Delegate:setHandler('onTouch', function(this, x, y)

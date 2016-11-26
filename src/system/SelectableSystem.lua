@@ -25,11 +25,11 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 	    Placeable:new()
 	}))
 
-	local unsubSelect= Global.PubSub:subscribe("select", function (this, msg)
+	local unsubSelect= self.registry:subscribe("select", function (this, msg)
 		self:select(msg.uid)
 	end)
 
-	local unsubMoveTo = Global.PubSub:subscribe("moveTo", function (this, msg)
+	local unsubMoveTo = self.registry:subscribe("moveTo", function (this, msg)
 		self:moveSelectedTo(msg.uid, msg.address)
 	end)
 end
@@ -83,7 +83,7 @@ function SelectableSystem:moveSelectedTo (tgtGameObjectId, tgtAddress)
 				srcObj:getComponent('Placeable').address, 
 				dstObj:getComponent('Addressable').address, 
 				0)
-			Global.PubSub:publish("IMMEDIATE_MUTATE", mutMove)
+			self.registry:publish("IMMEDIATE_MUTATE", mutMove)
 		else
 			self:select(tgtGameObjectId)
 		end

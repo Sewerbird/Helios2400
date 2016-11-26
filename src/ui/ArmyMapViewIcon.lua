@@ -13,12 +13,12 @@ local Sprite = require 'src/datatype/Sprite'
 
 local ArmyMapViewIcon = {}
 
-ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
+ArmyMapViewIcon.new = function(this, registry, scenegraph, map, gamestate)
       local gameinfo = registry:get(gamestate):getComponent("GameInfo")
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
-          Global.PubSub:publish("select",{uid = this.component.gob.uid})
+          registry:publish("select",{uid = this.component.gob.uid})
           print('Clicked on a unit (' .. this.component.gob.uid .. ')! Is situated at address:' .. map:summarizeAddress(this.component:getSiblingComponent('Placeable').address))
           return true
         end
@@ -26,7 +26,7 @@ ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
       debug_army = registry:add(GameObject:new('Army', {
         Transform:new(
           gameinfo.worldspace_coord[1],
-          gameinfo.worldspace_coord[2]):bindstate('transform', nil, gamestate, function(this, cmp, msg)
+          gameinfo.worldspace_coord[2]):bindstate(registry, nil, gamestate, function(this, cmp, msg)
             local new_xy = registry:get(msg.destination_info):getComponent("GameInfo").worldspace_coord
             cmp.x = new_xy[1]
             cmp.y = new_xy[2]
@@ -67,7 +67,7 @@ ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
         Renderable:new(
           Polygon:new({ w = 50 * (gameinfo.curr_hp / gameinfo.max_hp), h=5}),
           nil,
-          {100,200,100}):bindstate('polygon', nil, 'tick', function(this, cmp, msg) 
+          {100,200,100}):bindstate(registry, {percent = 0.5}, 'tick', function(this, cmp, msg) 
             cmp.polygon = Polygon:new({w = 50 * (msg.percent), h=5}) 
           end),
         Stateful:new(gamestate)
@@ -78,7 +78,7 @@ ArmyMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
           nil,
           nil,
           nil,
-          "0:00"):bindstate('text', nil, 'tick', function(this, cmp, msg) 
+          "0:00"):bindstate(registry, nil, 'tick', function(this, cmp, msg) 
             cmp.text = math.floor(100 * msg.percent) .. "% @" .. registry:get(gamestate):getComponent("GameInfo").address
           end),
         Stateful:new(gamestate)

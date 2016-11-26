@@ -32,10 +32,10 @@ function Loader:init(context)
   self.loadContext = context
 end
 
-function Loader:debugGenerateMap ()
+function Loader:debugGenerateMap ( save_name )
   --[[ Generate the Game State ]]--
 
-  local debug_gamestate = Global.Registry--TODO: make this with a Registry:new();
+  local debug_gamestate = Registry:new()--TODO: make this with a Registry:new();
   local city_names = {'New Moroni', 'Tiangong', 'Elonia', 'Neokyoto', 'Al Kicab', 'Choaswell', 'Atraapool', 'Efrimirie', 'Droawona'}
   local joffset = 0
   local num_rows = 12
@@ -92,7 +92,7 @@ function Loader:debugGenerateMap ()
     end
   end
   
-  self:saveGame('gen_'..math.floor(math.random()*1000) ,debug_gamestate)
+  self:saveGame( save_name ,debug_gamestate)
 end
 
 function Loader:debugLoad ()
@@ -107,7 +107,7 @@ function Loader:debugLoad ()
 
   --[[ Generate the Game State ]]--
 
-  local debug_gamestate = Global.Registry--TODO: make this with a Registry:new();
+  local debug_gamestate = self.loadContext.Registry--TODO: make this with a Registry:new();
   self:loadGame('default',debug_gamestate)
 
   --[[Instantiate Tilemap View ]]--
@@ -137,8 +137,7 @@ end
 
 function Loader:saveGame ( name, gamestateRegistry)
   local serialized_gamestate = {}
-  for i = 1, #gamestateRegistry.registry do
-    local obj = gamestateRegistry.registry[i]
+  for i, obj in gamestateRegistry:getGameObjects() do
     if obj:hasComponent("GameInfo") then
       table.insert(serialized_gamestate, obj:getComponent("GameInfo"):serialize())
     end

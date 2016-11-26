@@ -21,7 +21,6 @@ function love.load()
   print("Time to play!")
 
   Global = {
-    PubSub = PubSub:new(),
     Registry = Registry:new(),
     Assets = AssetLoader:new():loadAssets("assets/"),
     TickAccumulator = 0,
@@ -50,7 +49,7 @@ function love.update( dt )
     if Global.TickAccumulator > Global.TickRate then
       Global.TickAccumulator = Global.TickAccumulator - Global.TickRate
       local val = math.random()
-      Global.PubSub:publish('tick',{percent = val})
+      Global.Registry:publish('tick',{percent = val})
       my_viewer.Systems.Render:update(dt)
     end
   end

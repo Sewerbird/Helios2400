@@ -7,12 +7,13 @@ local StateBinding = class('StateBinding',{
 	IS_LIVE = true
 })
 
-function StateBinding:init ( target, topic, fn)
+function StateBinding:init ( registry, target, topic, fn)
+	self.registry = registry
 	self.target = target
 	self.topic = topic
 	self.fn = fn
 
-	self.unsub = Global.PubSub:subscribe(topic, function (this, msg)
+	self.unsub = registry:subscribe(topic, function (this, msg)
 		self:fn(self.target, msg)
 	end)
 end
