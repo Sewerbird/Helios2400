@@ -32,21 +32,10 @@ function Loader:init(context)
   self.loadContext = context
 end
 
-function Loader:debugLoad ()
-
-  --[[ Load Assets & Play some music because why not ]]--
-  local Assets = self.loadContext.Assets
-
-  local music = Assets:getAsset("RITUAL_1")
-  music:setLooping(true)
-  music:setVolume(BG_MUSIC_VOL)
-  music:play()
-
+function Loader:debugGenerateMap ()
   --[[ Generate the Game State ]]--
 
   local debug_gamestate = Global.Registry--TODO: make this with a Registry:new();
-  self:loadGame('gen_1',debug_gamestate)
-  --[[
   local city_names = {'New Moroni', 'Tiangong', 'Elonia', 'Neokyoto', 'Al Kicab', 'Choaswell', 'Atraapool', 'Efrimirie', 'Droawona'}
   local joffset = 0
   local num_rows = 12
@@ -102,15 +91,33 @@ function Loader:debugLoad ()
       Earth_Map:addAddress(hex_info.address, hex_info.neighbors, {oCity, oArmy})
     end
   end
-  ]]--
+  
+  self:saveGame('gen_'..math.floor(math.random()*1000) ,debug_gamestate)
+end
 
-  --self:saveGame('gen_1',debug_gamestate)
+function Loader:debugLoad ()
+
+  --[[ Load Assets & Play some music because why not ]]--
+  local Assets = self.loadContext.Assets
+
+  local music = Assets:getAsset("RITUAL_1")
+  music:setLooping(true)
+  music:setVolume(BG_MUSIC_VOL)
+  music:play()
+
+  --[[ Generate the Game State ]]--
+
+  local debug_gamestate = Global.Registry--TODO: make this with a Registry:new();
+  self:loadGame('gen_1',debug_gamestate)
 
   --[[Instantiate Tilemap View ]]--
   local SceneGraph = IndexTree:new();
   local Earth_Tiles = {}
   local Earth_Cities = {}
   local Earth_Units = {}
+
+  local Earth_Map = IndexMap:new()
+  Earth_Map:load(debug_gamestate);
 
   for key, obj in ipairs(debug_gamestate.registry) do
     local tgt = obj:getComponent("GameInfo")
@@ -144,7 +151,6 @@ function Loader:loadGame( name, registry)
   local raw_save = Tserial.unpack(contents)
   for i = 1, #raw_save do
     local obj = GameInfo:reify(raw_save[i])
-    print(inspect(obj))
     registry:add(obj)
   end
 end

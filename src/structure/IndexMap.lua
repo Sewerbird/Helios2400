@@ -18,6 +18,40 @@ function Location:init(address, neighbors)
 	self.neighbors = neighbors or {}
 end
 
+function IndexMap:load(registry)
+	local hexes = {}
+	local armies = {}
+	local cities = {}
+
+	for i, id in ipairs(registry:getIdsByPool("GameInfo")) do
+		local obj = registry:get(id)
+		if obj.description == "gsHex" then
+			table.insert(hexes, obj)
+		elseif obj.description == "gsCity" then
+			table.insert(cities, obj)
+		elseif obj.description == "gsArmy" then
+			table.insert(armies, obj)
+		end
+	end
+
+	for i, obj in ipairs(hexes) do
+		local my_cities = {}
+		local my_armies = {}
+		local hex = obj:getComponent("GameInfo")
+		self:addAddress(hex.address, hex.neighbors)
+		for j, city in ipairs(cities) do
+			if city.address == hex.address then
+				self:addPlaceable(city.uid, hex.address)
+			end
+		end
+		for j, army in ipairs(armies) do
+			if army.address == hex.address then
+				self:addPlaceable(army.uid, hex.address)
+			end
+		end
+	end
+end
+
 function IndexMap:getNeighbors(addressId)
 	return self.addressbook[addressId].neighbors
 end	

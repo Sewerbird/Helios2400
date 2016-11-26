@@ -30,6 +30,16 @@ function Registry:get ( tgtObjectId )
 	return self.registry[tgtObjectId]
 end
 
+function Registry:getIdsByPool ( pool )
+	local poolIds = {}
+	for i, v in ipairs(self.registry) do
+		if v:hasComponent(pool) then
+			table.insert(poolIds, i)
+		end
+	end
+	return poolIds
+end
+
 function Registry:summarize ( )
 	print("Registry has " .. #self.registry .. " entries ")
 end
