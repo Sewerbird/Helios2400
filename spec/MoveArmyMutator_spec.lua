@@ -1,8 +1,8 @@
 --MoveArmyMutator_spec.lua
-local MoveArmyMutator = require 'src/state/mutator/MoveArmyMutator'
+local MoveArmyMutator = require 'src/mutate/mutator/MoveArmyMutator'
 local GameInfo = require 'src/component/GameInfo'
 local GameObject = require 'src/GameObject'
-local Registry = require 'src/structure/Registry'
+local Registry = require 'src/Registry'
 local PubSub = require 'src/PubSub'
 local inspect = require 'lib/inspect'
 

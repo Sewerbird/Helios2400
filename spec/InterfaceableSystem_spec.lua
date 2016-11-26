@@ -1,6 +1,6 @@
 inspect = require 'lib/inspect'
 InterfaceableSystem = require 'src/system/InterfaceableSystem' 
-Registry = require 'src/structure/Registry'
+Registry = require 'src/Registry'
 
 describe('InterfaceableSystem', function ()
 	it('should initialize correctly', function ()

@@ -14,7 +14,7 @@ local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
 local Animation = require 'src/datatype/Animation'
 local HexCoord = require 'src/datatype/HexCoord'
-local Registry = require 'src/structure/Registry'
+local Registry = require 'src/Registry'
 local IndexTree = require 'src/structure/IndexTree'
 local IndexMap = require 'src/structure/IndexMap'
 local MapView = require 'src/ui/MapView'
@@ -24,30 +24,17 @@ local TileMapViewIcon = require 'src/ui/TileMapViewIcon'
 local class = require 'lib/30log'
 
 local Loader = class("Loader", {
+  loadContext = nil
 	
 })
 
-function Loader:debugLoad ()
-  local Assets = Global.Assets
-  local Debug_Spritesheet = Assets:getAsset("DEBUG_TILESET_1")
-  local Grass_Hex_Quad = Assets:getAsset("TILE_GRASS_1")
-  local Water_Hex_Quad = Assets:getAsset("TILE_WATER_1")
-  local Arctic_Hex_Quad = Assets:getAsset("TILE_ARCTIC_1")
-  local Space_Hex_Quad = Assets:getAsset("TILE_SPACE_1")
-  local Planet_1_Quad = Assets:getAsset("TILE_PLANET_1")
-  local Planet_2_Quad = Assets:getAsset("TILE_PLANET_2")
-  local City_Quad = Assets:getAsset("CITY_1")
-  local Debug_Ship_Quad = Assets:getAsset("SHIP_1")
-  local Debug_Troop_Quad = Assets:getAsset("TROOP_1")
-  local Debug_Cursor_Quad = Assets:getAsset("CURSOR_1")
-  local Debug_Spaceship_Quad = Assets:getAsset("SPACE_SHIP_1")
+function Loader:init(context)
+  self.loadContext = context
+end
 
-  local music = Assets:getAsset("RITUAL_1")
-  music:setLooping(true)
-  music:setVolume(BG_MUSIC_VOL)
-  music:play()
-
+function Loader:debugGenerateMap ()
   --[[ Generate the Game State ]]--
+
   local debug_gamestate = Global.Registry--TODO: make this with a Registry:new();
   local city_names = {'New Moroni', 'Tiangong', 'Elonia', 'Neokyoto', 'Al Kicab', 'Choaswell', 'Atraapool', 'Efrimirie', 'Droawona'}
   local joffset = 0
@@ -104,12 +91,33 @@ function Loader:debugLoad ()
       Earth_Map:addAddress(hex_info.address, hex_info.neighbors, {oCity, oArmy})
     end
   end
+  
+  self:saveGame('gen_'..math.floor(math.random()*1000) ,debug_gamestate)
+end
+
+function Loader:debugLoad ()
+
+  --[[ Load Assets & Play some music because why not ]]--
+  local Assets = self.loadContext.Assets
+
+  local music = Assets:getAsset("RITUAL_1")
+  music:setLooping(true)
+  music:setVolume(BG_MUSIC_VOL)
+  music:play()
+
+  --[[ Generate the Game State ]]--
+
+  local debug_gamestate = Global.Registry--TODO: make this with a Registry:new();
+  self:loadGame('default',debug_gamestate)
 
   --[[Instantiate Tilemap View ]]--
   local SceneGraph = IndexTree:new();
   local Earth_Tiles = {}
   local Earth_Cities = {}
   local Earth_Units = {}
+
+  local Earth_Map = IndexMap:new()
+  Earth_Map:load(debug_gamestate);
 
   for key, obj in ipairs(debug_gamestate.registry) do
     local tgt = obj:getComponent("GameInfo")
@@ -125,6 +133,26 @@ function Loader:debugLoad ()
   local Earth_View = MapView:new(debug_gamestate, SceneGraph, Earth_Map, Earth_Tiles, Earth_Cities, Earth_Units)
 
   return SceneGraph
+end
+
+function Loader:saveGame ( name, gamestateRegistry)
+  local serialized_gamestate = {}
+  for i = 1, #gamestateRegistry.registry do
+    local obj = gamestateRegistry.registry[i]
+    if obj:hasComponent("GameInfo") then
+      table.insert(serialized_gamestate, obj:getComponent("GameInfo"):serialize())
+    end
+  end
+  love.filesystem.write((name .. '.sav'), Tserial.pack(serialized_gamestate))
+end
+
+function Loader:loadGame( name, registry)
+  local contents, size = love.filesystem.read((name .. '.sav'))
+  local raw_save = Tserial.unpack(contents)
+  for i = 1, #raw_save do
+    local obj = GameInfo:reify(raw_save[i])
+    registry:add(obj)
+  end
 end
 
 return Loader

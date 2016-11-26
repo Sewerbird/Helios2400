@@ -7,8 +7,8 @@ local AssetLoader = require 'src/AssetLoader'
 local Loader = require 'src/Loader'
 local GameViewer = require 'src/ui/GameViewer'
 local PubSub = require 'src/PubSub'
-local Registry = require 'src/structure/Registry'
-local MutatorBus = require 'src/state/MutatorBus'
+local Registry = require 'src/Registry'
+local MutatorBus = require 'src/mutate/MutatorBus'
 local my_viewer
 
 --TODO: move this into a util lib
@@ -20,20 +20,17 @@ end
 function love.load()
   print("Time to play!")
 
-  Assets = AssetLoader:new()
-  Assets:loadAssets("assets/")
-  Assets:printAllAssets()
-
   Global = {
     PubSub = PubSub:new(),
     Registry = Registry:new(),
-    Assets = Assets,
+    Assets = AssetLoader:new():loadAssets("assets/"),
     TickAccumulator = 0,
     TickRate = 0.1
   }
   Global.MutatorBus = MutatorBus:new(Global.Registry)
+  SceneGraph = Loader:new(Global):debugLoad()
 
-  my_viewer = GameViewer:new(Global.Registry, Loader:new():debugLoad())
+  my_viewer = GameViewer:new(Global.Registry, SceneGraph)
 
   --Profiling stuff
   ProFi:start()

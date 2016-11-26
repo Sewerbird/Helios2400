@@ -1,6 +1,6 @@
 --MoveArmyMutator.lua
 local class = require 'lib/30log'
-local Mutator = require 'src/state/Mutator'
+local Mutator = require 'src/mutate/Mutator'
 local MoveArmyMutator = Mutator:extend('MoveArmyMutator', {
 	origin_address = nil,
 	destination_address = nil,

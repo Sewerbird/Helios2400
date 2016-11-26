@@ -7,7 +7,7 @@ local Placeable = require 'src/component/Placeable'
 local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
 
-local MoveArmyMutator = require 'src/state/mutator/MoveArmyMutator'
+local MoveArmyMutator = require 'src/mutate/mutator/MoveArmyMutator'
 
 local SelectableSystem = System:extend({
 	current_selection = nil,

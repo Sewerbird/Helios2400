@@ -1,5 +1,5 @@
 inspect = require 'lib/inspect'
-Registry = require 'src/structure/Registry' 
+Registry = require 'src/Registry' 
 GameObject = require 'src/GameObject'
 
 describe('Registry', function ()

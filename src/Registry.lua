@@ -1,5 +1,8 @@
 --Registry.lua
 local class = require 'lib/30log'
+local Tserial = require 'lib/Tserial'
+local GameObject = require 'src/GameObject'
+local GameInfo = require 'src/component/GameInfo'
 local Registry = class('Registry', {
 	registry = {},
 	historicCounter = 0
@@ -25,6 +28,16 @@ end
 
 function Registry:get ( tgtObjectId )
 	return self.registry[tgtObjectId]
+end
+
+function Registry:getIdsByPool ( pool )
+	local poolIds = {}
+	for i, v in ipairs(self.registry) do
+		if v:hasComponent(pool) then
+			table.insert(poolIds, i)
+		end
+	end
+	return poolIds
 end
 
 function Registry:summarize ( )
