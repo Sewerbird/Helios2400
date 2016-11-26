@@ -14,7 +14,7 @@ local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
 local Animation = require 'src/datatype/Animation'
 local HexCoord = require 'src/datatype/HexCoord'
-local Registry = require 'src/structure/Registry'
+local Registry = require 'src/Registry'
 local IndexTree = require 'src/structure/IndexTree'
 local IndexMap = require 'src/structure/IndexMap'
 local MapView = require 'src/ui/MapView'
@@ -108,7 +108,7 @@ function Loader:debugLoad ()
   --[[ Generate the Game State ]]--
 
   local debug_gamestate = Global.Registry--TODO: make this with a Registry:new();
-  self:loadGame('gen_1',debug_gamestate)
+  self:loadGame('default',debug_gamestate)
 
   --[[Instantiate Tilemap View ]]--
   local SceneGraph = IndexTree:new();

@@ -7,8 +7,8 @@ local AssetLoader = require 'src/AssetLoader'
 local Loader = require 'src/Loader'
 local GameViewer = require 'src/ui/GameViewer'
 local PubSub = require 'src/PubSub'
-local Registry = require 'src/structure/Registry'
-local MutatorBus = require 'src/state/MutatorBus'
+local Registry = require 'src/Registry'
+local MutatorBus = require 'src/mutate/MutatorBus'
 local my_viewer
 
 --TODO: move this into a util lib

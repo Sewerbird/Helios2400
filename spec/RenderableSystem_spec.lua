@@ -1,6 +1,6 @@
 inspect = require 'lib/inspect'
 RenderableSystem = require 'src/system/RenderableSystem' 
-Registry = require 'src/structure/Registry'
+Registry = require 'src/Registry'
 
 describe('RenderableSystem', function ()
 	it('should initialize correctly', function ()
