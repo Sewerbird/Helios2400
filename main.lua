@@ -21,7 +21,7 @@ function love.load()
   print("Time to play!")
 
   Assets = AssetLoader:new()
-  Assets:loadAssets()
+  Assets:loadAssets("assets/")
   Assets:printAllAssets()
 
   Global = {
