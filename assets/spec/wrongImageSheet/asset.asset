@@ -1,0 +1,5 @@
+{
+	assetId = "TEST_ASSET_WRONG",
+	assetType = "spriteSheet",
+	assetPath = "spec/test_asset.png"
+}
