@@ -40,12 +40,14 @@ function IndexMap:load(registry)
 		local hex = obj:getComponent("GameInfo")
 		self:addAddress(hex.address, hex.neighbors)
 		for j, city in ipairs(cities) do
-			if city.address == hex.address then
+			local myc = city:getComponent("GameInfo")
+			if myc.address == hex.address then
 				self:addPlaceable(city.uid, hex.address)
 			end
 		end
 		for j, army in ipairs(armies) do
-			if army.address == hex.address then
+			local mya = army:getComponent("GameInfo")
+			if mya.address == hex.address then
 				self:addPlaceable(army.uid, hex.address)
 			end
 		end
