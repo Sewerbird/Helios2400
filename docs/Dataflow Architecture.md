@@ -2,6 +2,8 @@
 
 Helios2400 uses a entity-component-system architecture, with significant use of a message bus.
 
+![Architecture](https://github.com/Sewerbird/Helios2400/blob/master/docs/game_architecture.png)
+
 ## Registry
 
 The Registry is concerned with the actual 'data' of a game: the stuff you would store in a database of values. This includes things like what art asset a terrain tile uses, the attack rating of an army, the health of a unit, the position of a planet, and so on. Helios2400 utilizes entities (GameObjects) made up of components to organize the data:
