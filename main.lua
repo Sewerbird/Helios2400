@@ -23,7 +23,7 @@ function love.load()
   Global = {
     PubSub = PubSub:new(),
     Registry = Registry:new(),
-    Assets = AssetLoader:new():loadAssets(),
+    Assets = AssetLoader:new():loadAssets("assets/"),
     TickAccumulator = 0,
     TickRate = 0.1
   }
