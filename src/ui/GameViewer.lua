@@ -12,18 +12,33 @@ local GameViewer = class("GameViewer", {
 	mapViews = nil
 })
 
-function GameViewer:init ( registry, mapViews )
+function GameViewer:init ( registry, mapScenes )
 
 	self.Registry = registry
-	self.mapViews = Ring:new(mapViews)
+	self.mapViews = Ring:new()
+	for i, scene in ipairs(mapScenes) do
+		local view = {
+			sceneGraph = scene,
+			render = RenderableSystem:new(self.Registry, scene),
+			interface = InterfaceableSystem:new(self.Registry, scene),
+			selection = SelectableSystem:new(self.Registry, scene, "CURSOR_1")
+		}
+		self.mapViews:add(view)
+	end
 	self:changeTo()
 
 end
 
 function GameViewer:changeTo ()
-	self.Systems.Render = RenderableSystem:new(self.Registry, self.mapViews:current())
-	self.Systems.Interface = InterfaceableSystem:new(self.Registry, self.mapViews:current())
-	self.Systems.Selection = SelectableSystem:new(self.Registry, self.mapViews:current(), "CURSOR_1")
+	self.Systems.Render = self.mapViews:current().render
+	self.Systems.Interface = self.mapViews:current().interface
+	self.Systems.Selection = self.mapViews:current().selection
+end
+
+function GameViewer:nextView ()
+	print('next!')
+	self.mapViews:next()
+	self:changeTo()
 end
 
 function GameViewer:draw ()

@@ -39,8 +39,6 @@ function SelectableSystem:select ( gameObjectId )
 		local tgtObj = self.registry:get(self.current_selection)
 		local cursor = self.registry:get(self.selected_unit_cursor_object)
 		self.targetCollection:detach(self.selected_unit_cursor_object, self.current_selection)
-		--tgtObj:getComponent('Selectable'):deselect()
-
 	end
 	if self.current_selection == gameObjectId then 
 		self.current_selection = nil
@@ -52,7 +50,6 @@ function SelectableSystem:select ( gameObjectId )
 		local tgtObj = self.registry:get(self.current_selection)
 		self.targetCollection:attach(self.selected_unit_cursor_object, self.current_selection)
 		self:centerCursor(tgtObj)
-		--tgtObj:getComponent('Selectable'):select()
 	end
 end
 

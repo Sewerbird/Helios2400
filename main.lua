@@ -27,9 +27,9 @@ function love.load()
     TickRate = 0.1
   }
   Global.MutatorBus = MutatorBus:new(Global.Registry)
-  SceneGraph = Loader:new(Global):debugLoad()
+  EarthSceneGraph, SpaceSceneGraph = Loader:new(Global):debugLoad()
 
-  my_viewer = GameViewer:new(Global.Registry, SceneGraph)
+  my_viewer = GameViewer:new(Global.Registry, {EarthSceneGraph})--, SpaceSceneGraph})
 
   --Profiling stuff
   ProFi:start()
@@ -109,6 +109,7 @@ function love.touchreleased( id, x, y, pressure )
 end
 
 function love.keypressed( key )
+  my_viewer:nextView()
   my_viewer.Systems.Interface:onKeypress(key)
 end
 

@@ -72,6 +72,7 @@ function IndexTree:attach ( attacheeId, attachToId )
 
 	if attachToId ~= nil then 
 		table.insert(self.nodes[attacheeId].parents,attachToId)
+		print(tostring(self.nodes[attachToId]) .. '::' .. attachToId)
 		table.insert(self.nodes[attachToId].children,attacheeId)
 	end
 end
