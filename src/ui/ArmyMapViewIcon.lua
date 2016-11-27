@@ -15,7 +15,6 @@ local ArmyMapViewIcon = {}
 
 ArmyMapViewIcon.new = function(this, registry, scenegraph, map, gamestate)
       local gameinfo = registry:getComponent(gamestate, "GameInfo")
-      print(inspect(gameinfo,{depth=3}))
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then

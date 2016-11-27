@@ -37,7 +37,6 @@ function Component:bindTo( topic, fn, init_with )
 		end
 		self.registry:bind(self, topic, fn, init_with)
 	else
-		print("Deferring component binding " .. tostring(self.name) .. ' to ' .. topic)
 		table.insert(self.deferred_bindings,{topic = topic, fn = fn, init_with = init_with})
 	end
 

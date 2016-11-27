@@ -26,7 +26,7 @@ function Registry:add ( tgtObject )
 	self.historicCounter = self.historicCounter + 1
 
 	if self.registry[tgtObject.uid] ~= nil then
-		print('Registry object with uid already exists ' .. tgtObject.uid) --TODO; fails for now if we have a uid collision. Perhaps do a smart-update in the future
+		error('Registry object with uid already exists ' .. tgtObject.uid) --TODO; fails for now if we have a uid collision. Perhaps do a smart-update in the future
 	else
 		self.registry[tgtObject.uid] = tgtObject
 		for key, component in pairs(tgtObject:getComponents()) do
