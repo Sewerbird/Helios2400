@@ -45,6 +45,10 @@ function IndexTree:getParent ( targetId )
 	end
 end
 
+function IndexTree:has (targetId)
+	return self.nodes[targetId]
+end
+
 function IndexTree:getParents ( targetId )
 	return self.nodes[targetId].parents
 end

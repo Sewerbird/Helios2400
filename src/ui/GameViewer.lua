@@ -36,7 +36,6 @@ function GameViewer:changeTo ()
 end
 
 function GameViewer:nextView ()
-	print('next!')
 	self.mapViews:next()
 	self:changeTo()
 end

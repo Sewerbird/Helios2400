@@ -68,7 +68,7 @@ Thanks goes to [Coderbunker](http://www.coderbunker.com/) for support in finding
 
 ### Music
 
-"Ritual" **Kevin MacLeod** (incompetech.com)
+"Ritual" , "Floating Cities" **Kevin MacLeod** (incompetech.com)
 Licensed under Creative Commons: By Attribution 3.0 License
 http://creativecommons.org/licenses/by/3.0/
 

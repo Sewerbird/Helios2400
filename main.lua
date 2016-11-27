@@ -29,7 +29,7 @@ function love.load()
   Global.MutatorBus = MutatorBus:new(Global.Registry)
   EarthSceneGraph, SpaceSceneGraph = Loader:new(Global):debugLoad()
 
-  my_viewer = GameViewer:new(Global.Registry, {EarthSceneGraph})--, SpaceSceneGraph})
+  my_viewer = GameViewer:new(Global.Registry, {SpaceSceneGraph,EarthSceneGraph})
 
   --Profiling stuff
   ProFi:start()

@@ -26,11 +26,15 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 	}))
 
 	local unsubSelect= self.registry:subscribe("select", function (this, msg)
-		self:select(msg.uid)
+		if self.targetCollection:has(msg.uid) then
+			self:select(msg.uid)
+		end
 	end)
 
 	local unsubMoveTo = self.registry:subscribe("moveTo", function (this, msg)
-		self:moveSelectedTo(msg.uid, msg.address)
+		if self.targetCollection:has(msg.uid) then
+			self:moveSelectedTo(msg.uid, msg.address)
+		end
 	end)
 end
 
