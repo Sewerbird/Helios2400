@@ -14,7 +14,8 @@ local Sprite = require 'src/datatype/Sprite'
 local ArmyMapViewIcon = {}
 
 ArmyMapViewIcon.new = function(this, registry, scenegraph, map, gamestate)
-      local gameinfo = registry:get(gamestate):getComponent("GameInfo")
+      local gameinfo = registry:getComponent(gamestate, "GameInfo")
+      print(inspect(gameinfo,{depth=3}))
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
@@ -25,12 +26,13 @@ ArmyMapViewIcon.new = function(this, registry, scenegraph, map, gamestate)
       end)
       debug_army = registry:add(GameObject:new('Army', {
         Transform:new(
-          gameinfo.worldspace_coord[1],
-          gameinfo.worldspace_coord[2]):bindstate(registry, nil, gamestate, function(this, cmp, msg)
-            local new_xy = registry:get(msg.destination_info):getComponent("GameInfo").worldspace_coord
+          gameinfo.worldspace_coord[1], 
+          gameinfo.worldspace_coord[2]
+          ):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
+            local new_xy = registry:getComponent(msg.destination_info, "GameInfo").worldspace_coord
             cmp.x = new_xy[1]
             cmp.y = new_xy[2]
-          end),
+        end),
         Interfaceable:new(
           Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73, 0,37}),
           Unit_Touch_Delegate),
@@ -67,9 +69,9 @@ ArmyMapViewIcon.new = function(this, registry, scenegraph, map, gamestate)
         Renderable:new(
           Polygon:new({ w = 50 * (gameinfo.curr_hp / gameinfo.max_hp), h=5}),
           nil,
-          {100,200,100}):bindstate(registry, {percent = 0.5}, 'tick', function(this, cmp, msg) 
-            cmp.polygon = Polygon:new({w = 50 * (msg.percent), h=5}) 
-          end),
+          {100,200,100}):bindTo("tick", function (this, cmp, msg) 
+            cmp.polygon = Polygon:new({w = 50 * msg.percent, h = 5})
+        end),
         Stateful:new(gamestate)
       }))
       debug_army_timer = registry:add(GameObject:new('Timer', {
@@ -78,9 +80,10 @@ ArmyMapViewIcon.new = function(this, registry, scenegraph, map, gamestate)
           nil,
           nil,
           nil,
-          "0:00"):bindstate(registry, nil, 'tick', function(this, cmp, msg) 
-            cmp.text = math.floor(100 * msg.percent) .. "% @" .. registry:get(gamestate):getComponent("GameInfo").address
-          end),
+          gameinfo.address
+          ):bindTo(gamestate .. "_GameInfo", function(this, cmp, msg) 
+          cmp.text = registry:getComponent(gamestate,"GameInfo").address
+        end),
         Stateful:new(gamestate)
       }))
       scenegraph:attach(debug_army,nil)

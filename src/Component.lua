@@ -1,10 +1,10 @@
 --Component.lua
 local class = require 'lib/30log'
-local StateBinding = require 'src/datatype/StateBinding'
 
 local Component = class('Component', {
 	gid = nil,
-	gob = nil
+	gob = nil,
+	deferred_bindings = {}
 })
 
 function Component:init ()
@@ -30,18 +30,18 @@ function Component:getSiblingComponent ( type )
 	end
 end
 
-function Component:bindstate(registry, init_with, topic, fn)
-	
-	if registry == nil or topic == nil or fn == nil then return self end
-
-	self["_"..self.name] = StateBinding:new(registry, self, topic, fn)
-
-	if init_with ~= nil then
-		self["_"..self.name].fn(self["_"..self.name],self,init_with)
+function Component:bindTo( topic, fn, init_with )
+	if self.registry ~= nil then
+		if self.gob.registry == nil or topic == nil or fn == nil then 
+			error('Trying to bind ' .. self.name .. ' without required arguments...')
+		end
+		self.registry:bind(self, topic, fn, init_with)
+	else
+		print("Deferring component binding " .. tostring(self.name) .. ' to ' .. topic)
+		table.insert(self.deferred_bindings,{topic = topic, fn = fn, init_with = init_with})
 	end
 
 	return self
 end
-
 
 return Component

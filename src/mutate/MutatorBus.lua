@@ -47,7 +47,9 @@ end
 function MutatorBus:playNext ()
 	local mutation = self.bus:pop()
 	mutation:apply(self.registry)
-	self.history:push(mutation)
+	if not mutation.throwaway then
+		self.history:push(mutation)
+	end
 end
 
 function MutatorBus:playAll ()

@@ -7,6 +7,7 @@ local Mutator = class('Mutator', {
 
 function Mutator:init ( target )
 	self.tgt = target
+	self.throwaway = false
 end
 
 function Mutator:apply ( )

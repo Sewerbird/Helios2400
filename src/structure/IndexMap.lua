@@ -23,8 +23,7 @@ function IndexMap:load(registry)
 	local armies = {}
 	local cities = {}
 
-	for i, id in ipairs(registry:getIdsByPool("GameInfo")) do
-		local obj = registry:get(id)
+	for id, obj in registry:getGameObjects("GameInfo") do
 		if obj.description == "gsHex" then
 			table.insert(hexes, obj)
 		elseif obj.description == "gsCity" then
