@@ -1,7 +1,6 @@
 local class = require 'lib/30log'
 inspect = require 'lib/inspect'
 local AStar = require 'src/structure/Astar'
-local maphandler = require 'src/structure/MapHandler'
 
 local IndexMap = class("IndexMap",{
 	addressbook = {},
