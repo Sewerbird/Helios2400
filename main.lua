@@ -44,7 +44,7 @@ function love.update( dt )
   if collectgarbage('count') > GOAL_MEMORY then error('Using too much memory mate!') end
 
   --Debug mouse-to-hex output
-  if not Global.PAUSE then
+  if not Global.PAUSE and not Global.PAUSE_UPDATES then
     Global.TickAccumulator = Global.TickAccumulator + dt
     if Global.TickAccumulator > Global.TickRate then
       Global.TickAccumulator = Global.TickAccumulator - Global.TickRate
@@ -109,7 +109,8 @@ function love.touchreleased( id, x, y, pressure )
 end
 
 function love.keypressed( key )
-  my_viewer:nextView()
+  --Global.PAUSE_UPDATES = not Global.PAUSE_UPDATES
+  --my_viewer:nextView()
   my_viewer.Systems.Interface:onKeypress(key)
 end
 

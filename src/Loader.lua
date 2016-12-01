@@ -32,10 +32,7 @@ function Loader:init(context)
   self.loadContext = context
 end
 
-function Loader:debugGenerateMap ( save_name )
-  --[[ Generate the Game State ]]--
-
-  local debug_gamestate = Registry:new()--TODO: make this with a Registry:new();
+function Loader:debugGenerateEarthMap (debug_gamestate)
   local city_names = {'New Moroni', 'Tiangong', 'Elonia', 'Neokyoto', 'Al Kicab', 'Choaswell', 'Atraapool', 'Efrimirie', 'Droawona'}
   local joffset = 0
   local num_rows = 12
@@ -93,6 +90,9 @@ function Loader:debugGenerateMap ( save_name )
       --Earth_Map:addAddress(hex_info.address, hex_info.neighbors, {oCity, oArmy})
     end
   end
+end
+
+function Loader:debugGenerateSpaceMap (debug_gamestate)
 
   --Space Map
   local space_hexes = {
@@ -148,8 +148,17 @@ function Loader:debugGenerateMap ( save_name )
   for i, v in ipairs(space_hexes) do
     debug_gamestate:add(GameObject:new('gsHex',{GameInfo:new(v)}))
   end
-  
-  self:saveGame( save_name ,debug_gamestate)
+end
+
+function Loader:debugGenerateMap ( save_name )
+  --[[ Generate the Game State ]]--
+
+  local debug_gamestate = Registry:new()--TODO: make this with a Registry:new();
+
+  self:debugGenerateEarthMap(debug_gamestate)
+  self:debugGenerateSpaceMap(debug_gamestate)
+
+  self:saveGame(save_name, debug_gamestate)
 end
 
 function Loader:debugLoad ()
@@ -181,7 +190,9 @@ function Loader:debugLoad ()
   local Space_Units = {}
 
   local Earth_Map = IndexMap:new()
-  Earth_Map:load(debug_gamestate);
+  local Space_Map = IndexMap:new()
+  Earth_Map:load(debug_gamestate,'Earth');
+  Space_Map:load(debug_gamestate,'Space');
 
   local desiredMap = "Space"
   for key, obj in ipairs(debug_gamestate.registry) do
