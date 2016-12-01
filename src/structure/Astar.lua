@@ -10,8 +10,7 @@ function Astar:init(indexMap)
 	self.indexMap = indexMap
 end
 
-function Astar:findPath(fromAddress,toAddress)
-	print("finding path from ", fromAddress, "to", toAddress)
+function Astar:findPath(fromAddress, toAddress, moveType)
 	-- The set of nodes already evaluated.
 	local closed = {}
 	-- The set of currently discovered nodes still to be evaluated.
@@ -41,7 +40,7 @@ function Astar:findPath(fromAddress,toAddress)
     			table.insert(path,currentAddress)
     			currentAddress = cameFrom[currentAddress]
     		end
-    		return path
+    		return path, gScore[toAddress]
     	end
 
     	table.insert(closed,currentAddress)
@@ -53,8 +52,8 @@ function Astar:findPath(fromAddress,toAddress)
     	local neighbors = self:getNeighbors(currentAddress)
     	for i,neighbor in ipairs(neighbors) do
     		if not tableContains(closed,neighbor) then
-	    		local distStartNeighbor = gScore[currentAddress] + self:moveDifficult(neighbor,nil)
-	    		if not tableContains(open,neighbor) or then
+	    		local distStartNeighbor = gScore[currentAddress] + self:moveDifficult(neighbor,moveType)
+	    		if not tableContains(open,neighbor) then
 	    			table.insert(open,neighbor)
 		    		cameFrom[neighbor] = currentAddress
 	    			fScore[neighbor] = distStartNeighbor + COST_ESTIMATE
@@ -80,17 +79,16 @@ function tableContains(table, element)
 end
 
 function Astar:getNeighbors(address)
-	return self.indexMap:getNeighbors(address)
+	return self.indexMap:getNeighbors(address) or {}
 end
 
 function Astar:moveDifficult(address,moveType)
-	return self.indexMap:getTerrainInfo(address)["land"]
+	return self.indexMap:getTerrainInfo(address)[moveType or "land"]
 end
 
 function Astar.lowestFscore(fScore,within)
 	local lowest = nil
 	for k,v in pairs(within) do
-		--print("@@@@",lowest,fScore[v],fScore[lowest])
 		if lowest == nil then lowest = v 
 		elseif fScore[v] < fScore[lowest] then lowest = v end
 	end

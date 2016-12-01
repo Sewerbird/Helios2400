@@ -46,10 +46,13 @@ describe('IndexMap', function ()
 		assert.are.same(mym:getNeighbors('a'),{'1','2','3','4','5','6'})
 		assert.are.same(mym:getNeighbors('3'),{'a','2','4'})
 	end)
+end)
 
-	it('should initialize correctly with 5x5 grid of addresses', function ()
+describe('IndexMap pathfinding', function ()
+
+	function buildGrid()
 		local myMap = IndexMap:new()
-		local width = 5
+		local width = 9
 		for i=1,width do
 			for j=1,width do
 				local neighborAddresses = {}
@@ -75,10 +78,43 @@ describe('IndexMap', function ()
 				myMap:addAddress("AD" .. i .. j, i ,j , neighborAddresses, terrain_info, {})
 			end
 		end
-		local path = myMap:findPath("AD23","AD45")
-		for i,v in ipairs(path) do
-			print(i,v)
-		end
+		return myMap
+	end
+
+	it('should initialize correctly with 9x9 grid of hexagonal connected addresses', function ()
+		buildGrid();
+	end)
+
+	it('should find a path across the whole map', function ()
+		local myMap = buildGrid();
+		local path, cost = myMap:findPath("AD11","AD99")
 		assert.are_not.equal(path,nil)
 	end)
+
+	it('should be able to use all movement types', function ()
+		local myMap = buildGrid();
+		local path, cost = myMap:findPath("AD11","AD99","land")
+		assert.are_not.equal(path,nil)
+		path, cost = myMap:findPath("AD11","AD99","sea")
+		assert.are_not.equal(path,nil)
+		path, cost = myMap:findPath("AD11","AD99","aero")
+		assert.are_not.equal(path,nil)
+		path, cost = myMap:findPath("AD11","AD99","hover")
+		assert.are_not.equal(path,nil)
+		path, cost = myMap:findPath("AD11","AD99","space")
+		assert.are_not.equal(path,nil)
+		path, cost = myMap:findPath("AD11","AD99","reentry")
+		assert.are_not.equal(path,nil)
+	end)
+
+	it('should return a nil if goal or starting point doesn\'t exist', function()
+		local myMap = buildGrid();
+		path, cost = myMap:findPath("ADxx","AD34","space")
+		assert.are.equal(path,nil)
+		path, cost = myMap:findPath("AD34","ADuu","space")
+		assert.are.equal(path,nil)
+		path, cost = myMap:findPath("ADpp","ADrr","space")
+		assert.are.equal(path,nil)
+	end)
+
 end)

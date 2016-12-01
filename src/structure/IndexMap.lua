@@ -30,7 +30,7 @@ function Location:__tostring()
 end
 
 function IndexMap:getNeighbors(addressId)
-	return self.addressbook[addressId].neighbors
+	if self.addressbook[addressId] then return self.addressbook[addressId].neighbors end
 end	
 
 function IndexMap:getTerrainInfo(addressId)
@@ -94,8 +94,8 @@ function IndexMap:movePlaceable(placeableId, srcAddressId, dstAddressId)
 	end
 end
 
-function IndexMap:findPath(fromId, toId)
-	return self.as:findPath(fromId,toId)
+function IndexMap:findPath(fromId, toId, moveType)
+	return self.as:findPath(fromId, toId, moveType)
 end
 
 function IndexMap:summarizeAddress(addressId)
