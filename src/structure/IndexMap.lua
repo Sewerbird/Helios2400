@@ -1,6 +1,6 @@
 local class = require 'lib/30log'
 inspect = require 'lib/inspect'
-require 'lib/astar'
+local AStar = require 'src/structure/Astar'
 local maphandler = require 'src/structure/MapHandler'
 
 local IndexMap = class("IndexMap",{
@@ -33,8 +33,12 @@ function IndexMap:getNeighbors(addressId)
 	return self.addressbook[addressId].neighbors
 end	
 
+function IndexMap:getTerrainInfo(addressId)
+	return self.addressbook[addressId].terrain_info
+end
+
 function IndexMap:init()
-	self.as = AStar(maphandler:new(self))
+	self.as = AStar(self)
 end
 
 function IndexMap:addNeighborsRelation(addressA, addressB)

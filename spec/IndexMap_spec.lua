@@ -75,8 +75,10 @@ describe('IndexMap', function ()
 				myMap:addAddress("AD" .. i .. j, i ,j , neighborAddresses, terrain_info, {})
 			end
 		end
-		local path = myMap:findPath(myMap:getLocation(2,3),myMap:getLocation(4,5))
-		print(path)
-		print(path:getTotalMoveCost())
+		local path = myMap:findPath("AD23","AD45")
+		for i,v in ipairs(path) do
+			print(i,v)
+		end
+		assert.are_not.equal(path,nil)
 	end)
 end)
