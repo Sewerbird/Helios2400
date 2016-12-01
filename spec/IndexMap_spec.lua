@@ -81,7 +81,7 @@ describe('IndexMap pathfinding', function ()
 		return myMap
 	end
 
-	it('should initialize correctly with 9x9 grid of hexagonal connected addresses', function ()
+	it('should initialize correctly with 9x9 grid of hexagonal connected addresses without error', function ()
 		buildGrid();
 	end)
 
@@ -93,7 +93,9 @@ describe('IndexMap pathfinding', function ()
 
 	it('should be able to use all movement types', function ()
 		local myMap = buildGrid();
-		local path, cost = myMap:findPath("AD11","AD99","land")
+		local path, cost = myMap:findPath("AD11","AD99")
+		assert.are_not.equal(path,nil)
+		 path, cost = myMap:findPath("AD11","AD99","land")
 		assert.are_not.equal(path,nil)
 		path, cost = myMap:findPath("AD11","AD99","sea")
 		assert.are_not.equal(path,nil)
