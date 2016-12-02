@@ -81,12 +81,7 @@ function SelectableSystem:pathTo(fromId, tgtAddress)
 		local curObj = self.registry:get(self.current_selection)
 		local fromAddress = curObj:getComponent('Placeable').address
 		local toAddress = tgtAddress.address
-		print('##',fromAddress,toAddress)
 		self.path = tgtAddress.gob:getComponent('Addressable').map:findPath(fromAddress,toAddress)
-		print("path")
-		for k,v in ipairs(self.path) do
-			print(k,v)
-		end
 	end
 	-- body
 end
