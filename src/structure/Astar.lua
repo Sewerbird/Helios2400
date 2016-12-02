@@ -4,7 +4,6 @@ local Astar = class('Astar',{
 })
 
 COST_ESTIMATE = 1
-INF = 1/0
 
 function Astar:init(indexMap)
 	self.indexMap = indexMap
@@ -56,8 +55,8 @@ function Astar:findPath(fromAddress, toAddress, moveType)
 	    		if not tableContains(open,neighbor) then
 	    			table.insert(open,neighbor)
 		    		cameFrom[neighbor] = currentAddress
-	    			fScore[neighbor] = distStartNeighbor + COST_ESTIMATE
-	    			gScore[neighbor] = distStartNeighbor
+	    			fScore[neighbor] = math.huge
+	    			gScore[neighbor] = math.huge
 	    		elseif not (distStartNeighbor > gScore[neighbor]) then
 		    		cameFrom[neighbor] = currentAddress
 		    		gScore[neighbor] = distStartNeighbor

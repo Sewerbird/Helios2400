@@ -14,18 +14,16 @@ local Location = class("Location",{
 	terrain_info = {}
 })
 
-function Location:init(address, x, y, neighbors, terrain_info)
+function Location:init(address, neighbors, terrain_info)
 	if address == nil then error('Tried to create location with nil address') end
 	self.address = address
 	self.placeables = {}
 	self.neighbors = neighbors or {}
 	self.terrain_info = terrain_info
-	self.x = x
-	self.y = y
 end
 
 function Location:__tostring()
-	return "Location " .. self.address .. "(" .. self.x .. "," .. self.y .. ")[" .. #self.neighbors .. "]"
+	return "Location " .. self.address .. "[" .. #self.neighbors .. "]"
 end
 
 function IndexMap:getNeighbors(addressId)
@@ -45,8 +43,8 @@ function IndexMap:addNeighborsRelation(addressA, addressB)
 	table.insert(self.addressbook[addressB].neighbors,addressA)
 end
 
-function IndexMap:addAddress(address, x, y, neighborAddresses, terrainInfo, placeableIds)
-	self.addressbook[address] = Location:new(address, x, y, neighborAddresses, terrainInfo, placeableIds)
+function IndexMap:addAddress(address, neighborAddresses, terrainInfo, placeableIds)
+	self.addressbook[address] = Location:new(address, neighborAddresses, terrainInfo, placeableIds)
 	if placeableIds ~= nil then
 		for i = 1, #placeableIds do
 			if placeableIds[i] ~= nil then self:addPlaceable(placeableIds[i],address) end
@@ -99,10 +97,6 @@ end
 
 function IndexMap:summarizeAddress(addressId)
 	return "Address '" .. addressId .. "' contains " .. inspect(self:getPlaceablesAt(addressId)) .. " and borders " .. inspect(self:getNeighbors(addressId))
-end
-
-function IndexMap:getLocation(x,y)
-	return self.addressbook["AD" .. x .. y]
 end
 
 return IndexMap
