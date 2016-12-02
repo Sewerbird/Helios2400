@@ -144,12 +144,11 @@ function IndexMap:findAccessibleAddresses(fromId, maxCost, moveType)
 		end
 	end
 
-	print("result:")
 	local returnResult = {}
 	for k,v in pairs(result) do
-		print(k)
 		table.insert(returnResult,k)
 	end
+
 	return result
 end
 
