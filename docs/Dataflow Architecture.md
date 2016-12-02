@@ -32,7 +32,7 @@ Modifications originating from outside the Registry may only come from those res
 2. The mutator's `apply()` function is applied to the Registry, resulting in state changes
 3. The mutator object is then pushed onto the Bus' History stack
 4. At some point in the future, the mutator may be popped off the History stack
-5. If this occurs, the mutator's `rollback()` function is applied ot the Registry, undoing its changes
+5. If this occurs, the mutator's `rollback()` function is applied to the Registry, undoing its changes
 6. Finally, a `rollback`ed mutator is placed at the head of the Queue.
 
 ## Message Bus
