@@ -29,6 +29,10 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 		self:select(msg.uid)
 	end)
 
+	local unsubPathTo = Global.PubSub:subscribe("pathTo", function (this, msg)
+		self:pathTo(msg.uid, msg.address)
+	end)
+
 	local unsubMoveTo = Global.PubSub:subscribe("moveTo", function (this, msg)
 		self:moveSelectedTo(msg.uid, msg.address)
 	end)
@@ -38,6 +42,9 @@ function SelectableSystem:select ( gameObjectId )
 	if self.current_selection ~= nil then 
 		local tgtObj = self.registry:get(self.current_selection)
 		local cursor = self.registry:get(self.selected_unit_cursor_object)
+		if tgtObj:hasComponent('Moveable') then
+			print("yaaay")
+		end
 		self.targetCollection:detach(self.selected_unit_cursor_object, self.current_selection)
 		--tgtObj:getComponent('Selectable'):deselect()
 
@@ -67,6 +74,21 @@ function SelectableSystem:centerCursor ( gameObject )
 		local cursorpoly = cursor:getComponent('Renderable').polygon
 		cursor:getComponent('Transform'):translate( tgtRenderable.polygon.w/2 - cursorpoly.w/2 ,  tgtRenderable.polygon.h/2 - cursorpoly.h/2)
 	end
+end
+
+function SelectableSystem:pathTo(fromId, tgtAddress)
+	if self.current_selection ~= nil then
+		local curObj = self.registry:get(self.current_selection)
+		local fromAddress = curObj:getComponent('Placeable').address
+		local toAddress = tgtAddress.address
+		print('##',fromAddress,toAddress)
+		self.path = tgtAddress.gob:getComponent('Addressable').map:findPath(fromAddress,toAddress)
+		print("path")
+		for k,v in ipairs(self.path) do
+			print(k,v)
+		end
+	end
+	-- body
 end
 
 function SelectableSystem:moveSelectedTo (tgtGameObjectId, tgtAddress)

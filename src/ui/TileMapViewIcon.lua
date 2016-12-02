@@ -13,12 +13,14 @@ local Sprite = require 'src/datatype/Sprite'
 local TileMapViewIcon = {}
 
 TileMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
+	print(registry,map)
 	local gameinfo = registry:get(gamestate):getComponent("GameInfo")
 	local Hex_Touch_Delegate = TouchDelegate:new();
 	Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
 		if this.component.gob:hasComponent('Addressable') then
 			local addr = this.component.gob:getComponent('Addressable')
-			Global.PubSub:publish("moveTo",{uid = this.component.gob.uid, address = addr})
+			Global.PubSub:publish("pathTo",{uid = this.component.gob.uid, address = addr})
+			--Global.PubSub:publish("moveTo",{uid = this.component.gob.uid, address = addr})
 		end
 	end)
 	local debug_tile = registry:add(GameObject:new('Tile',{
@@ -31,7 +33,7 @@ TileMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
 			Global.Assets:getAsset(gameinfo.terrain_sprite)
 			),
 		Stateful:new(gamestate),
-		Addressable:new(gameinfo.address)
+		Addressable:new(gameinfo.address, map)
 	}))
 	return debug_tile
 end
