@@ -1,5 +1,7 @@
 local class = require 'lib/30log'
 inspect = require 'lib/inspect'
+local AStar = require 'src/structure/Astar'
+
 local IndexMap = class("IndexMap",{
 	addressbook = {},
 	placeables_index = {}
@@ -8,14 +10,20 @@ local IndexMap = class("IndexMap",{
 local Location = class("Location",{
 	address = nil,
 	placeables = {},
-	neighbors = {}
+	neighbors = {},
+	terrain_info = {}
 })
 
-function Location:init(address, neighbors)
+function Location:init(address, neighbors, terrain_info)
 	if address == nil then error('Tried to create location with nil address') end
 	self.address = address
 	self.placeables = {}
 	self.neighbors = neighbors or {}
+	self.terrain_info = terrain_info
+end
+
+function Location:__tostring()
+	return "Location " .. self.address .. "[" .. #self.neighbors .. "]"
 end
 
 function IndexMap:load(registry)
@@ -55,16 +63,24 @@ function IndexMap:load(registry)
 end
 
 function IndexMap:getNeighbors(addressId)
-	return self.addressbook[addressId].neighbors
+	if self.addressbook[addressId] then return self.addressbook[addressId].neighbors end
 end	
+
+function IndexMap:getTerrainInfo(addressId)
+	return self.addressbook[addressId].terrain_info
+end
+
+function IndexMap:init()
+	self.as = AStar(self)
+end
 
 function IndexMap:addNeighborsRelation(addressA, addressB)
 	table.insert(self.addressbook[addressA].neighbors,addressB)
 	table.insert(self.addressbook[addressB].neighbors,addressA)
 end
 
-function IndexMap:addAddress(address, neighborAddresses, placeableIds)
-	self.addressbook[address] = Location:new(address, neighborAddresses, placeableIds)
+function IndexMap:addAddress(address, neighborAddresses, terrainInfo, placeableIds)
+	self.addressbook[address] = Location:new(address, neighborAddresses, terrainInfo, placeableIds)
 	if placeableIds ~= nil then
 		for i = 1, #placeableIds do
 			if placeableIds[i] ~= nil then self:addPlaceable(placeableIds[i],address) end
@@ -109,6 +125,10 @@ function IndexMap:movePlaceable(placeableId, srcAddressId, dstAddressId)
 		self:removePlaceable(placeableId, srcAddressId)
 		self:addPlaceable(placeableId, dstAddressId)
 	end
+end
+
+function IndexMap:findPath(fromId, toId, moveType)
+	return self.as:findPath(fromId, toId, moveType)
 end
 
 function IndexMap:summarizeAddress(addressId)
