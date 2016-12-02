@@ -131,6 +131,28 @@ function IndexMap:findPath(fromId, toId, moveType)
 	return self.as:findPath(fromId, toId, moveType)
 end
 
+function IndexMap:findAccessibleAddresses(fromId, maxCost, moveType)
+	local result = {}
+	result[fromId] = 1
+	for i,neighbor in ipairs(self.addressbook[fromId].neighbors) do
+		local moveCost = self.addressbook[neighbor].terrain_info[moveType or "land"]
+		if  moveCost <= maxCost then
+			local toAdd = self:findAccessibleAddresses(neighbor, maxCost - moveCost, moveType)
+			for k,v in pairs(toAdd) do
+				result[k] = 1
+			end
+		end
+	end
+
+	print("result:")
+	local returnResult = {}
+	for k,v in pairs(result) do
+		print(k)
+		table.insert(returnResult,k)
+	end
+	return result
+end
+
 function IndexMap:summarizeAddress(addressId)
 	return "Address '" .. addressId .. "' contains " .. inspect(self:getPlaceablesAt(addressId)) .. " and borders " .. inspect(self:getNeighbors(addressId))
 end

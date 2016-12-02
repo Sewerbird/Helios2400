@@ -1,6 +1,36 @@
 inspect = require 'lib/inspect'
 IndexMap = require 'src/structure/IndexMap' 
-Location = 
+
+function buildGrid()
+	local myMap = IndexMap:new()
+	local width = 9
+	for i=1,width do
+		for j=1,width do
+			local neighborAddresses = {}
+			if i - 1 >= 1 then table.insert(neighborAddresses, "AD" .. i - 1 .. j) end
+			if j - 1 >= 1 then table.insert(neighborAddresses, "AD" .. i .. j - 1) end
+			if i + 1 <= width then table.insert(neighborAddresses, "AD" .. i + 1 .. j) end
+			if j + 1 <= width then table.insert(neighborAddresses, "AD" .. i  .. j + 1) end
+			if j % 2 == 0 then 
+				if i - 1 >= 1 and j + 1 <= width then table.insert(neighborAddresses, "AD" .. i - 1  .. j + 1) end
+				if i + 1 <= width and j + 1 <= width then table.insert(neighborAddresses, "AD" .. i + 1  .. j + 1) end
+			end
+			local terrain_info = {
+      			land = math.random(7),
+				sea = math.random(8),
+				aero = math.random(4),
+				hover = math.random(6),
+				space = math.random(3),
+				reentry = math.random(10),
+				toxic = false,--math.random() > 0.8,
+				vacuum = false,--math.random() > 0.8,
+				shielded = false,--math.random() > 0.8,
+		        }
+			myMap:addAddress("AD" .. i .. j, neighborAddresses, terrain_info, {})
+		end
+	end
+	return myMap
+end
 
 describe('IndexMap', function ()
 	it('should initialize correctly', function ()
@@ -46,44 +76,13 @@ describe('IndexMap', function ()
 		assert.are.same(mym:getNeighbors('a'),{'1','2','3','4','5','6'})
 		assert.are.same(mym:getNeighbors('3'),{'a','2','4'})
 	end)
-end)
-
-describe('IndexMap pathfinding', function ()
-
-	function buildGrid()
-		local myMap = IndexMap:new()
-		local width = 9
-		for i=1,width do
-			for j=1,width do
-				local neighborAddresses = {}
-				if i - 1 >= 1 then table.insert(neighborAddresses, "AD" .. i - 1 .. j) end
-				if j - 1 >= 1 then table.insert(neighborAddresses, "AD" .. i .. j - 1) end
-				if i + 1 <= width then table.insert(neighborAddresses, "AD" .. i + 1 .. j) end
-				if j + 1 <= width then table.insert(neighborAddresses, "AD" .. i  .. j + 1) end
-				if j % 2 == 0 then 
-					if i - 1 >= 1 and j + 1 <= width then table.insert(neighborAddresses, "AD" .. i - 1  .. j + 1) end
-					if i + 1 <= width and j + 1 <= width then table.insert(neighborAddresses, "AD" .. i + 1  .. j + 1) end
-				end
-				local terrain_info = {
-          			land = math.random(7),
-					sea = math.random(8),
-					aero = math.random(4),
-					hover = math.random(6),
-					space = math.random(3),
-					reentry = math.random(10),
-					toxic = false,--math.random() > 0.8,
-					vacuum = false,--math.random() > 0.8,
-					shielded = false,--math.random() > 0.8,
-			        }
-				myMap:addAddress("AD" .. i .. j, neighborAddresses, terrain_info, {})
-			end
-		end
-		return myMap
-	end
 
 	it('should initialize correctly with 9x9 grid of hexagonal connected addresses without error', function ()
 		buildGrid();
 	end)
+end)
+
+describe('IndexMap pathfinding', function ()
 
 	it('should find a path across the whole map', function ()
 		local myMap = buildGrid();
@@ -126,5 +125,38 @@ describe('IndexMap pathfinding', function ()
 		path, cost = myMap:findPath("ADpp","ADrr","space")
 		assert.falsy(path)
 	end)
+
+end)
+
+describe('IndexMap accessible addresses', function ()
+	local myMap = buildGrid();
+
+	it('should return a set of tiles within reach', function()
+		myMap:findAccessibleAddresses("AD45", 5, "land")
+	end)
+
+	it('should return only starting tile if movecost is 0', function()
+		
+	end)
+
+	it('should work with different movement types', function()
+
+	end)
+
+	it('should return an empty set when the starting address doesn\'t exist', function()
+
+	end)
+
+	it('should not return duplicate entries', function()
+		local addresses = myMap:findAccessibleAddresses("AD45","land",7)
+		for i,v in ipairs(addresses) do
+			for i2,v2 in ipairs(addresses) do
+				if not (i == i2) then
+					assert.falsy(v == v2)
+				end
+			end
+		end
+	end)
+
 
 end)
