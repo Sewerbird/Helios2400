@@ -10,9 +10,11 @@ local GameObject = require 'src/GameObject'
 local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
 
-local TileMapViewIcon = {}
+local TileMapViewIcon = class("TileMapViewIcon",{
+	root = nil
+})
 
-TileMapViewIcon.new = function(this, registry, scenegraph, map, gamestate)
+function TileMapViewIcon:init (registry, scenegraph, map, gamestate)
 	local gameinfo = registry:get(gamestate):getComponent("GameInfo")
 	local Hex_Touch_Delegate = TouchDelegate:new();
 	Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
@@ -21,7 +23,7 @@ TileMapViewIcon.new = function(this, registry, scenegraph, map, gamestate)
 			registry:publish("moveTo",{uid = this.component.gob.uid, address = addr})
 		end
 	end)
-	local debug_tile = registry:add(GameObject:new('Tile',{
+	self.root = registry:add(GameObject:new('Tile',{
 		Transform:new(gameinfo.worldspace_coord[1],gameinfo.worldspace_coord[2]),
 		Interfaceable:new(
 			Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
@@ -33,7 +35,6 @@ TileMapViewIcon.new = function(this, registry, scenegraph, map, gamestate)
 		Stateful:new(gamestate),
 		Addressable:new(gameinfo.address)
 	}))
-	return debug_tile
 end
 
 return TileMapViewIcon

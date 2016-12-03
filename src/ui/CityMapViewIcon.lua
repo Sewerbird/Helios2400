@@ -10,9 +10,11 @@ local GameObject = require 'src/GameObject'
 local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
 
-local CityMapViewIcon = {}
+local CityMapViewIcon = class("CityMapViewIcon", {
+	root = nil
+})
 
-CityMapViewIcon.new = function(this, registry, scenegraph, map, gamestate)
+function CityMapViewIcon:init(registry, scenegraph, map, gamestate)
 	local gameinfo = registry:get(gamestate):getComponent("GameInfo")
 	local City_Touch_Delegate = TouchDelegate:new()
 	City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
@@ -44,7 +46,7 @@ CityMapViewIcon.new = function(this, registry, scenegraph, map, gamestate)
 	scenegraph:attach(debug_city, nil)
 	scenegraph:attach(debug_city_label, debug_city)
 
-	return debug_city
+	self.root = debug_city
 end
 
 return CityMapViewIcon

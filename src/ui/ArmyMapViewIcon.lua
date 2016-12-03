@@ -11,9 +11,11 @@ local GameObject = require 'src/GameObject'
 local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
 
-local ArmyMapViewIcon = {}
+local ArmyMapViewIcon = class("ArmyMapViewIcon",{
+	root = nil
+})
 
-ArmyMapViewIcon.new = function(this, registry, scenegraph, map, gamestate)
+function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
       local gameinfo = registry:getComponent(gamestate, "GameInfo")
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
@@ -89,7 +91,7 @@ ArmyMapViewIcon.new = function(this, registry, scenegraph, map, gamestate)
       scenegraph:attach(debug_army_bg, debug_army)
       scenegraph:attachAll({debug_army_sprite, debug_army_name, debug_army_health, debug_army_timer}, debug_army_bg)
 
-	return debug_army
+   	self.root = debug_army
 end
 
 return ArmyMapViewIcon

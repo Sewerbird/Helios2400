@@ -44,9 +44,15 @@ function MapView:init( registry, scenegraph, tiles, cities, units )
   scenegraph:attach(Map_View)
   scenegraph:attachAll({Map_Layer,UI_Layer}, Map_View)
   scenegraph:attachAll({Tile_Layer,City_Layer,Unit_Layer}, Map_Layer)
-  scenegraph:attachAll(tiles, Tile_Layer)
-  scenegraph:attachAll(cities, City_Layer)
-  scenegraph:attachAll(units, Unit_Layer)
+  for i, tile in ipairs(tiles) do
+    scenegraph:attach(tile.root, Tile_Layer)
+  end
+  for i, city in ipairs(cities) do
+    scenegraph:attach(city.root, City_Layer)
+  end
+  for i, unit in ipairs(units) do
+    scenegraph:attach(unit.root, Unit_Layer)
+  end
 
 end
 
