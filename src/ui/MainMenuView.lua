@@ -7,13 +7,16 @@ local Polygon = require 'src/datatype/Polygon'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 
 local MainMenuView = class("MainMenuView", {
-	root = nil
+	root = nil,
+	is_attached = false,
+	scenegraph = nil
 })
 
 function MainMenuView:init (registry, scenegraph)
 	self.root = registry:add(GameObject:new("mmv_root", {
 		Transform:new(0,0)
 	}))
+	self.scenegraph = scenegraph
 
 	local save_button_handler = TouchDelegate:new()
 	save_button_handler:setHandler('onTouch', function(this, x, y)
@@ -25,8 +28,12 @@ function MainMenuView:init (registry, scenegraph)
 	end)
 	local return_button_handler = TouchDelegate:new()
 	return_button_handler:setHandler('onTouch', function(this, x, y)
+		self.scenegraph:detach(self.root)
+		self.is_attached = false
 		print('Button pressed: return')
 	end)
+	local switch_next_handler = TouchDelegate:new()
+	local switch_prev_handler = TouchDelegate:new()
 
 	local Block_Below_Delegate = TouchDelegate:new()
 	Block_Below_Delegate:setHandler('onTouch', function(this, x, y)
@@ -107,12 +114,60 @@ function MainMenuView:init (registry, scenegraph)
 			return_button_handler)
 		}))
 
+	local view_switcher_panel = registry:add(GameObject:new("mmv_switcher_panel",{
+		Transform:new(50,260),
+		Renderable:new(
+			Polygon:new({w = 300, h = 90}),
+			nil,
+			{200,100,200},
+			nil)
+		}))
 
-	scenegraph:attach(self.root, nil)
-	scenegraph:attachAll({gray_out, bg_rect}, self.root)
-	scenegraph:attachAll({title_panel, saveload_panel}, bg_rect)
-	scenegraph:attachAll({save_btn, load_btn, return_btn}, saveload_panel)
-	scenegraph:detach(self.root)
+	local switch_next_btn = registry:add(GameObject:new("mmv_switchnext_btn",{
+		Transform:new(10,10),
+		Renderable:new(
+			Polygon:new({w = 280, h = 30}),
+			nil,
+			{150,100,180},
+			"next"),
+		Interfaceable:new(
+			Polygon:new({w = 280, h = 30}),
+			switch_next_handler)
+		}))
+
+	local switch_prev_btn = registry:add(GameObject:new("mmv_switchprev_btn",{
+		Transform:new(10,50),
+		Renderable:new(
+			Polygon:new({w = 280, h = 30}),
+			nil,
+			{150,100,180},
+			"prev"),
+		Interfaceable:new(
+			Polygon:new({w = 280, h = 30}),
+			switch_prev_handler)
+		}))
+
+
+	self.scenegraph:attach(self.root, nil)
+	self.scenegraph:attachAll({gray_out, bg_rect}, self.root)
+	self.scenegraph:attachAll({title_panel, saveload_panel, view_switcher_panel}, bg_rect)
+	self.scenegraph:attachAll({save_btn, load_btn, return_btn}, saveload_panel)
+	self.scenegraph:attachAll({switch_next_btn, switch_prev_btn}, view_switcher_panel)
+	self.scenegraph:detach(self.root)
+end
+
+function MainMenuView:show( attachTo )
+	if not self.is_attached then
+		self.scenegraph:attach(self.root, attachTo)
+		self.is_attached = true
+	end
+end
+
+function MainMenuView:hide()
+	if self.is_attached then
+		self.scenegraph:detach(self.root)
+		self.is_attached = false
+	end
 end
 
 return MainMenuView

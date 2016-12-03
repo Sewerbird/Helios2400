@@ -35,7 +35,7 @@ function Graph:init ( nodes, edges, isCyclic )
 	self.isCyclic = isCyclic or false
 
 	for i, v in ipairs(self.nodes) do
-		self:addNode(v)
+		self:addNode(uid, v)
 	end
 	for i, v in ipairs(self.edges) do
 		self:addEdge(v.src, v.tgt, v.obj)

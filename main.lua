@@ -5,7 +5,7 @@ debugGraph = require 'lib/debugGraph'
 
 local AssetLoader = require 'src/AssetLoader'
 local Loader = require 'src/Loader'
-local GameViewer = require 'src/ui/GameViewer'
+local Viewer = require 'src/ui/Viewer'
 local PubSub = require 'src/PubSub'
 local Registry = require 'src/Registry'
 local MutatorBus = require 'src/mutate/MutatorBus'
@@ -29,7 +29,7 @@ function love.load()
   Global.MutatorBus = MutatorBus:new(Global.Registry)
   EarthSceneGraph, SpaceSceneGraph = Loader:new(Global):debugLoad()
 
-  my_viewer = GameViewer:new(Global.Registry, {SpaceSceneGraph,EarthSceneGraph})
+  my_viewer = Viewer:new(Global.Registry, {SpaceSceneGraph,EarthSceneGraph})
 
   --Profiling stuff
   ProFi:start()
@@ -109,8 +109,9 @@ function love.touchreleased( id, x, y, pressure )
 end
 
 function love.keypressed( key )
-  --Global.PAUSE_UPDATES = not Global.PAUSE_UPDATES
-  --my_viewer:nextView()
+  if key == 'n' then
+    my_viewer:nextView()
+  end
   my_viewer.Systems.Interface:onKeypress(key)
 end
 

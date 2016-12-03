@@ -218,8 +218,8 @@ function Loader:debugLoad ()
     end
   end
 
-  local Earth_View = MapView:new(debug_gamestate, EarthSceneGraph, Earth_Map, Earth_Tiles, Earth_Cities, Earth_Units)
-  local Space_View = MapView:new(debug_gamestate, SpaceSceneGraph, Space_Map, Space_Tiles, Space_Cities, Space_Units)
+  local Earth_View = MapView:new(debug_gamestate, EarthSceneGraph, Earth_Tiles, Earth_Cities, Earth_Units)
+  local Space_View = MapView:new(debug_gamestate, SpaceSceneGraph, Space_Tiles, Space_Cities, Space_Units)
 
   return EarthSceneGraph, SpaceSceneGraph
 end
