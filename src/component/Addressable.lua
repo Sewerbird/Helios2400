@@ -3,13 +3,11 @@
 local Component = require 'src/Component'
 local Addressable = Component:extend('Addressable', {
 	name = 'Addressable',
-	address = nil,
-	map = nil
+	address = nil
 })
 
-function Addressable:init ( address, map)
+function Addressable:init ( address)
 	self.address = address
-	self.map = map
 end
 
 return Addressable

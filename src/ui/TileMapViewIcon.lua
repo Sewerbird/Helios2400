@@ -19,7 +19,7 @@ TileMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
 	Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
 		if this.component.gob:hasComponent('Addressable') then
 			local addr = this.component.gob:getComponent('Addressable')
-			Global.PubSub:publish("pathTo",{uid = this.component.gob.uid, address = addr})
+			Global.PubSub:publish("pathTo",{uid = this.component.gob.uid, address = addr, map = map})
 			--Global.PubSub:publish("moveTo",{uid = this.component.gob.uid, address = addr})
 		end
 	end)

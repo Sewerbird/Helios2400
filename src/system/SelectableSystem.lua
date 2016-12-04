@@ -11,7 +11,9 @@ local MoveArmyMutator = require 'src/mutate/mutator/MoveArmyMutator'
 
 local SelectableSystem = System:extend({
 	current_selection = nil,
-	selected_unit_cursor_object = nil
+	selected_unit_cursor_object = nil,
+	path = nil,
+	path_overlays = {}
 })
 
 function SelectableSystem:init (registry, targetCollection, cursor_sprite)
@@ -24,13 +26,15 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 	      ),
 	    Placeable:new()
 	}))
+	self.path_overlays = {}
 
 	local unsubSelect= Global.PubSub:subscribe("select", function (this, msg)
 		self:select(msg.uid)
 	end)
 
 	local unsubPathTo = Global.PubSub:subscribe("pathTo", function (this, msg)
-		self:pathTo(msg.uid, msg.address)
+		self:pathTo(msg.uid, msg.address, msg.map)
+		self:displayPathOverlay(msg.map)
 	end)
 
 	local unsubMoveTo = Global.PubSub:subscribe("moveTo", function (this, msg)
@@ -65,6 +69,7 @@ end
 
 function SelectableSystem:resetCursor ()
 	self.registry:get(self.selected_unit_cursor_object):getComponent('Transform'):teleport(0,0)
+	self:clearPathOverlay()
 end
 
 function SelectableSystem:centerCursor ( gameObject )
@@ -76,12 +81,51 @@ function SelectableSystem:centerCursor ( gameObject )
 	end
 end
 
-function SelectableSystem:pathTo(fromId, tgtAddress)
+function SelectableSystem:displayPathOverlay (map)
+	if not self.path then return end
+	self:clearPathOverlay()
+	for i, pathpoint in ipairs(self.path) do
+		local s = self.registry:getIdsByPool("Addressable", function(obj)
+			local transform = obj:getComponent("Transform")
+			local renObj = obj:getComponent("Renderable")
+			local addObj = obj:getComponent("Addressable")
+			if renObj and addObj.address == pathpoint then
+				return true
+			end
+		end)[1]
+		if s then
+			local sobjTrans = self.registry:get(s)
+			local overlay = self.registry:add(GameObject:new('Cursor',{
+				Transform:new(sobjTrans.x,sobjTrans.y),
+			    Renderable:new(
+			      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
+			      Global.Assets:getAsset("CURSOR_1")
+			      ),
+			    Placeable:new()
+			}))
+			table.insert(self.path_overlays, overlay)
+			self.targetCollection:attach(overlay,s)
+		end
+	end
+end
+
+function SelectableSystem:clearPathOverlay ()
+	if self.path_overlays then
+		for i, overlay in ipairs(self.path_overlays) do
+			self.targetCollection:detach(overlay)
+			self.registry:remove(overlay)
+		end
+		self.path_overlays = {}
+	end
+end
+
+function SelectableSystem:pathTo(fromId, tgtAddress, map)
 	if self.current_selection ~= nil then
 		local curObj = self.registry:get(self.current_selection)
 		local fromAddress = curObj:getComponent('Placeable').address
 		local toAddress = tgtAddress.address
-		self.path = tgtAddress.gob:getComponent('Addressable').map:findPath(fromAddress,toAddress)
+		self.path = map:findPath(fromAddress, toAddress)
+		print("Path: " .. inspect(self.path))
 	end
 	-- body
 end

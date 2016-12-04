@@ -26,14 +26,21 @@ function Registry:add ( tgtObject )
 	return tgtObject.uid
 end
 
+function Registry:remove ( tgtUid )
+	self.registry[tgtUid] = nil
+end
+
 function Registry:get ( tgtObjectId )
 	return self.registry[tgtObjectId]
 end
 
-function Registry:getIdsByPool ( pool )
+function Registry:getIdsByPool ( pool, fn)
 	local poolIds = {}
+	if fn == nil then
+		fn = function () return true end
+	end
 	for i, v in ipairs(self.registry) do
-		if v:hasComponent(pool) then
+		if v:hasComponent(pool) and fn(v) then
 			table.insert(poolIds, i)
 		end
 	end
