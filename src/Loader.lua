@@ -37,7 +37,6 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
   local joffset = 0
   local num_rows = 12
   local num_cols = 24
-  --local Earth_Map = IndexMap:new()
 
   for i = 1 , num_cols do --x
     for j = 1 , num_rows do
@@ -57,7 +56,18 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
           'Earth' .. HexCoord:new(i-1,j):toString(),
           'Earth' .. HexCoord:new(i+1,j):toString()
         },
-        worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
+        worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset},
+        terrain_info = {
+          land = math.random(7),
+          sea = math.random(8),
+          aero = math.random(4),
+          hover = math.random(6),
+          space = math.random(3),
+          reentry = math.random(10),
+          toxic = false,--math.random() > 0.8,
+          vacuum = false,--math.random() > 0.8,
+          shielded = false,--math.random() > 0.8,
+        }
       }
       local city_info = (hex == "TILE_GRASS_1" and math.random() < 0.15) and {
         city_name = city_names[math.floor(math.random()*#city_names)+1],
@@ -79,6 +89,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
         assault_rating = 4,
         defense_rating = 3,
         map = 'Earth',
+        mov_type = "ground",
         address = hex_info.address,
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
       } or nil
@@ -87,7 +98,6 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
       local oCity = city_info and debug_gamestate:add(GameObject:new('gsCity',{GameInfo:new(city_info)})) or nil
       local oArmy = army_info and debug_gamestate:add(GameObject:new('gsArmy',{GameInfo:new(army_info)})) or nil
 
-      --Earth_Map:addAddress(hex_info.address, hex_info.neighbors, {oCity, oArmy})
     end
   end
 end

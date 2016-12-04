@@ -2,7 +2,8 @@
 local class = require 'lib/30log'
 local inspect = require 'lib/inspect'
 local IndexTree = class("IndexTree", {
-	nodes = {}
+	nodes = {},
+	root = nil
 })
 
 local Node = class("Node", {
@@ -15,7 +16,15 @@ function Node:init ( nid )
 	self.parents = {}
 end
 
+function IndexTree:init ()
+end
+
+function IndexTree:setRoot ( nid )
+	self.root = nid
+end
+
 function IndexTree:getRoot ( targetId )
+	if self.root then return self.root end
 	--TODO: Only works if IndexTree is a singleton tree
 
 	--assert(#self.nodes > 0, 'no nodes in tree to be a root')

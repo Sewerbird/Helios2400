@@ -39,7 +39,7 @@ function MapView:init( registry, scenegraph, tiles, cities, units )
     end
   end)
   Map_View_Touch_Delegate:setHandler('onKeypress', function(this, btn)
-    print('key pressed on map view: ' .. btn .. ' while showing_main_menu == ' .. tostring(showing_main_menu))
+    print('key pressed on map view: ' .. btn .. ' while showing_main_menu == ' .. tostring(Main_Menu_View.is_attached))
     if btn == 'escape' then
       if Main_Menu_View.is_attached then
         Main_Menu_View:hide()
@@ -68,6 +68,8 @@ function MapView:init( registry, scenegraph, tiles, cities, units )
   for i, unit in ipairs(units) do
     scenegraph:attach(unit.root, Unit_Layer)
   end
+
+  scenegraph:setRoot(Map_View)
 
 end
 
