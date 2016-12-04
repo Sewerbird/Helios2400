@@ -27,6 +27,14 @@ function Viewer:init ( registry, mapScenes )
 	end
 	self:changeTo()
 
+	registry:subscribe("ui/debug_prevscene", function() 
+		self:prevView() 
+	end)
+
+	registry:subscribe("ui/debug_nextscene", function()
+		self:nextView()
+	end)
+
 end
 
 function Viewer:changeTo ()
@@ -37,6 +45,11 @@ end
 
 function Viewer:nextView ()
 	self.mapViews:next()
+	self:changeTo()
+end
+
+function Viewer:prevView ()
+	self.mapViews:previous()
 	self:changeTo()
 end
 

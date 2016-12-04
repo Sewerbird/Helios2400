@@ -1,4 +1,5 @@
 --TileMapViewIcon.lua
+local class = require 'lib/30log'
 local Renderable = require 'src/component/Renderable'
 local Addressable = require 'src/component/Addressable'
 local Placeable = require 'src/component/Placeable'
