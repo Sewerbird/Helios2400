@@ -4,19 +4,19 @@ local Queue = require 'src/structure/Queue'
 local Stack = require 'src/structure/Stack'
 
 local MutatorBus = class('MutatorBus', {
-	gamestate = nil,
+	registry = nil,
 	history = Stack:new(),
 	rewound = Stack:new(),
 	bus = Queue:new()
 })
 
-function MutatorBus:init (state)
-	self.gamestate = state
+function MutatorBus:init (registry)
+	self.registry = registry
 	self.bus = Queue:new()
 	self.rewound = Stack:new()
 	self.history = Stack:new()
 
-	Global.PubSub:subscribe("IMMEDIATE_MUTATE", function (this, msg)
+	self.registry:subscribe("IMMEDIATE_MUTATE", function (this, msg)
 		self:queue(msg)
 		self:playAll()
 	end)
@@ -40,14 +40,16 @@ end
 
 function MutatorBus:stepBack ( )
 	local mutation = self.history:pop()
-	mutation:rollback(self.gamestate, Global.PubSub)
+	mutation:rollback(self.registry)
 	self.rewound:push(mutation)
 end
 
 function MutatorBus:playNext ()
 	local mutation = self.bus:pop()
-	mutation:apply(self.gamestate, Global.PubSub)
-	self.history:push(mutation)
+	mutation:apply(self.registry)
+	if not mutation.throwaway then
+		self.history:push(mutation)
+	end
 end
 
 function MutatorBus:playAll ()

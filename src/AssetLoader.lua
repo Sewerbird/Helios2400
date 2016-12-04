@@ -21,7 +21,6 @@ function AssetLoader:loadAssets(rootPath)
 			self:loadAsset(asset)
 		end
 	end
-	self:printAllAssets()
 	return self
 end
 

@@ -25,12 +25,16 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 	    Placeable:new()
 	}))
 
-	local unsubSelect= Global.PubSub:subscribe("select", function (this, msg)
-		self:select(msg.uid)
+	local unsubSelect= self.registry:subscribe("select", function (this, msg)
+		if self.targetCollection:has(msg.uid) then
+			self:select(msg.uid)
+		end
 	end)
 
-	local unsubMoveTo = Global.PubSub:subscribe("moveTo", function (this, msg)
-		self:moveSelectedTo(msg.uid, msg.address)
+	local unsubMoveTo = self.registry:subscribe("moveTo", function (this, msg)
+		if self.targetCollection:has(msg.uid) then
+			self:moveSelectedTo(msg.uid, msg.address)
+		end
 	end)
 end
 
@@ -39,8 +43,6 @@ function SelectableSystem:select ( gameObjectId )
 		local tgtObj = self.registry:get(self.current_selection)
 		local cursor = self.registry:get(self.selected_unit_cursor_object)
 		self.targetCollection:detach(self.selected_unit_cursor_object, self.current_selection)
-		--tgtObj:getComponent('Selectable'):deselect()
-
 	end
 	if self.current_selection == gameObjectId then 
 		self.current_selection = nil
@@ -52,7 +54,6 @@ function SelectableSystem:select ( gameObjectId )
 		local tgtObj = self.registry:get(self.current_selection)
 		self.targetCollection:attach(self.selected_unit_cursor_object, self.current_selection)
 		self:centerCursor(tgtObj)
-		--tgtObj:getComponent('Selectable'):select()
 	end
 end
 
@@ -83,7 +84,7 @@ function SelectableSystem:moveSelectedTo (tgtGameObjectId, tgtAddress)
 				srcObj:getComponent('Placeable').address, 
 				dstObj:getComponent('Addressable').address, 
 				0)
-			Global.PubSub:publish("IMMEDIATE_MUTATE", mutMove)
+			self.registry:publish("IMMEDIATE_MUTATE", mutMove)
 		else
 			self:select(tgtGameObjectId)
 		end

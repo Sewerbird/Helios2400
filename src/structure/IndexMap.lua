@@ -26,18 +26,18 @@ function Location:__tostring()
 	return "Location " .. self.address .. "[" .. #self.neighbors .. "]"
 end
 
-function IndexMap:load(registry)
+function IndexMap:load(registry, map)
 	local hexes = {}
 	local armies = {}
 	local cities = {}
 
-	for i, id in ipairs(registry:getIdsByPool("GameInfo")) do
-		local obj = registry:get(id)
-		if obj.description == "gsHex" then
+	for id, obj in registry:getGameObjects("GameInfo") do
+    	local tgt = obj:getComponent("GameInfo")
+		if obj.description == "gsHex" and tgt.map == map then
 			table.insert(hexes, obj)
-		elseif obj.description == "gsCity" then
+		elseif obj.description == "gsCity" and tgt.map == map then
 			table.insert(cities, obj)
-		elseif obj.description == "gsArmy" then
+		elseif obj.description == "gsArmy" and tgt.map == map then
 			table.insert(armies, obj)
 		end
 	end
