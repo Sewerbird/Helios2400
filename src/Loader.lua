@@ -205,7 +205,7 @@ function Loader:debugLoad ()
   Space_Map:load(debug_gamestate,'Space');
 
   local desiredMap = "Space"
-  for key, obj in ipairs(debug_gamestate.registry) do
+  for key, obj in pairs(debug_gamestate.registry) do
     local tgt = obj:getComponent("GameInfo")
     if obj.description == 'gsHex' then
       if tgt.map == 'Earth' then
