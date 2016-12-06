@@ -236,10 +236,8 @@ end
 
 function Loader:saveGame ( name, gamestateRegistry)
   local serialized_gamestate = {}
-  for i, obj in gamestateRegistry:getGameObjects() do
-    if obj:hasComponent("GameInfo") then
-      table.insert(serialized_gamestate, obj:getComponent("GameInfo"):serialize())
-    end
+  for i, obj in gamestateRegistry:getGameObjects("GameInfo") do
+    table.insert(serialized_gamestate, obj:getComponent("GameInfo"):serialize())
   end
   love.filesystem.write((name .. '.sav'), Tserial.pack(serialized_gamestate))
 end
@@ -247,8 +245,8 @@ end
 function Loader:loadGame( name, registry)
   local contents, size = love.filesystem.read((name .. '.sav'))
   local raw_save = Tserial.unpack(contents)
-  for i = 1, #raw_save do
-    local obj = GameInfo:reify(raw_save[i])
+  for i, v in pairs(raw_save) do
+    local obj = GameInfo:reify(v)
     registry:add(obj)
   end
 end

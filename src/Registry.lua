@@ -5,6 +5,7 @@ local GameObject = require 'src/GameObject'
 local GameInfo = require 'src/component/GameInfo'
 local PubSub = require 'src/PubSub'
 local Graph = require 'src/structure/Graph'
+local UUID = require 'lib/uuid'
 
 local Registry = class('Registry', {
 	bind_graph = nil,
@@ -101,7 +102,11 @@ function Registry:summarize ( )
 end
 
 function Registry:getCount ()
-	return #self.registry
+	local cnt = 0
+	for i, v in pairs(self.registry) do
+		cnt = cnt + 1
+	end
+	return cnt
 end
 
 return Registry
