@@ -245,8 +245,8 @@ end
 function Loader:loadGame( name, registry)
   local contents, size = love.filesystem.read((name .. '.sav'))
   local raw_save = Tserial.unpack(contents)
-  for i = 1, #raw_save do
-    local obj = GameInfo:reify(raw_save[i])
+  for i, v in pairs(raw_save) do
+    local obj = GameInfo:reify(v)
     registry:add(obj)
   end
 end
