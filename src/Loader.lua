@@ -72,6 +72,8 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
         }
       }
       local city_info = (hex == "TILE_GRASS_1" and math.random() < 0.15) and {
+        owner = playerInfo.player_name,
+        turns_owned = {[playerInfo.player_name] = 1},
         city_name = city_names[math.floor(math.random()*#city_names)+1],
         map = 'Earth',
         address = hex_info.address,

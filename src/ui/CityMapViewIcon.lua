@@ -17,6 +17,7 @@ local CityMapViewIcon = class("CityMapViewIcon", {
 
 function CityMapViewIcon:init(registry, scenegraph, map, gamestate)
 	local gameinfo = registry:get(gamestate):getComponent("GameInfo")
+    local playerinfo = registry:findComponent("GameInfo", {player_name = gameinfo.owner})
 	local City_Touch_Delegate = TouchDelegate:new()
 	City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
 		if this.component.gob:hasComponent('Placeable') then
@@ -40,7 +41,7 @@ function CityMapViewIcon:init(registry, scenegraph, map, gamestate)
 		Renderable:new(
 			Polygon:new({ w=84, h=13 }),
 			nil,
-			{120,120,200,200},
+			playerinfo and playerinfo.midtone_color or {120,120,200,200},
 			gameinfo.city_name),
 		Stateful:new(gamestate)
 	}))
