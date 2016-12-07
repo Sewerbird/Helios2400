@@ -51,7 +51,6 @@ end
 
 function Registry:findComponent(poolType, where)
 	for i, v in ipairs(self:getGameObjects(poolType)) do
-		print('inside loop with ' .. i)
 		local isOkay = true
 		local component = v:getComponent(poolType)
 		for key, value in pairs(where) do
