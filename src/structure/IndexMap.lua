@@ -31,7 +31,7 @@ function IndexMap:load(registry, map)
 	local armies = {}
 	local cities = {}
 
-	for id, obj in registry:getGameObjects("GameInfo") do
+	for id, obj in pairs(registry:getGameObjects("GameInfo")) do
     	local tgt = obj:getComponent("GameInfo")
 		if obj.description == "gsHex" and tgt.map == map then
 			table.insert(hexes, obj)

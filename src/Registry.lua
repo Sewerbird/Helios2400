@@ -49,6 +49,23 @@ function Registry:get ( tgtObjectId )
 	return self.registry[tgtObjectId]
 end
 
+function Registry:findComponent(poolType, where)
+	for i, v in ipairs(self:getGameObjects(poolType)) do
+		print('inside loop with ' .. i)
+		local isOkay = true
+		local component = v:getComponent(poolType)
+		for key, value in pairs(where) do
+			if not (component[key] == value) then 
+				isOkay = false 
+			end
+		end
+		if isOkay then
+			return component
+		end
+	end
+	return nil
+end
+
 function Registry:getComponent ( tgtObjectUID, poolType )
 	local obj = self.registry[tgtObjectUID]
 	if not obj then error("Object " .. tostring(tgtObjectUID) .. " not found trying to get its " .. tostring(poolType)) end
@@ -56,17 +73,17 @@ function Registry:getComponent ( tgtObjectUID, poolType )
 	return self.registry[tgtObjectUID]:getComponent(poolType)
 end
 
-function Registry:getGameObjects ( pool_filter )
+function Registry:getGameObjects ( pool_filter)
 	if pool_filter then
 		local filtered = {}
 		for i, v in pairs(self.registry) do
 			if v:hasComponent(pool_filter) then
-				filtered[i] = v
+				table.insert(filtered, v)
 			end
 		end
-		return pairs(filtered)
+		return filtered
 	else
-		return pairs(self.registry)
+		return self.registry
 	end
 end
 

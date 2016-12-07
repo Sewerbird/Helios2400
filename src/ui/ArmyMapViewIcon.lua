@@ -18,6 +18,7 @@ local ArmyMapViewIcon = class("ArmyMapViewIcon",{
 
 function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
       local gameinfo = registry:getComponent(gamestate, "GameInfo")
+      local playerinfo = registry:findComponent("GameInfo", {player_name = gameinfo.owner})
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
@@ -47,7 +48,7 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
         Renderable:new(
           Polygon:new({ w = 50, h = 50}),
           nil,
-          gameinfo.team_color),
+          playerinfo.midtone_color),
         Stateful:new(gamestate)
       }))
       debug_army_sprite = registry:add(GameObject:new('Troop', {
@@ -71,7 +72,7 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
         Renderable:new(
           Polygon:new({ w = 50 * (gameinfo.curr_hp / gameinfo.max_hp), h=5}),
           nil,
-          {100,200,100}):bindTo("tick", function (this, cmp, msg) 
+          playerinfo.highlight_color):bindTo("tick", function (this, cmp, msg) 
             cmp.polygon = Polygon:new({w = 50 * msg.percent, h = 5})
         end),
         Stateful:new(gamestate)

@@ -37,13 +37,15 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
   local joffset = 0
   local num_rows = 12
   local num_cols = 24
+  local players = debug_gamestate:getGameObjects("GameInfo")
 
   for i = 1 , num_cols do --x
     for j = 1 , num_rows do
       if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
       local ioffset = (i-1) * -21
       local hex = (j==1 or j==num_rows) and "TILE_ARCTIC_1" or ((math.random() < 0.3) and "TILE_GRASS_1" or "TILE_WATER_1")
-
+      local player = math.random(1,#players)
+      local playerInfo = players[player]:getComponent('GameInfo')
       local hex_info = {
         map = 'Earth',
         address = 'Earth' .. HexCoord:new(i,j):toString(),
@@ -77,14 +79,14 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
       } or nil
       local army_info = (hex == "TILE_GRASS_1" and math.random() < 0.13) and {
-        team_color = (math.random() > 0.5) and {60,60,200,200} or {200,60,60,200},
+        owner = playerInfo.player_name,
         icon_sprite = "TROOP_1",
         curr_hp = math.floor(math.random() * 100),
         max_hp = 100,
         max_move = 10,
         curr_move = 10,
         army_type = 'stealth',
-        army_name = (math.floor(math.random()*10)) .. "th Army",
+        army_name = playerInfo.player_name,
         personel_cnt = math.floor(math.random() * 10),
         assault_rating = 4,
         defense_rating = 3,
@@ -163,7 +165,32 @@ end
 function Loader:debugGenerateMap ( save_name )
   --[[ Generate the Game State ]]--
 
-  local debug_gamestate = Registry:new()--TODO: make this with a Registry:new();
+  local debug_gamestate = Registry:new()
+
+  debug_gamestate:add(GameObject:new('gsPlayer',{
+    GameInfo:new({
+      player_name = 'Eastasia',
+      highlight_color = {20,200,200},
+      midtone_color = {20,130,150},
+      shadow_color = {5,80,100}
+    })
+  }))
+  debug_gamestate:add(GameObject:new('gsPlayer',{
+    GameInfo:new({
+      player_name = 'Oceania',
+      highlight_color = {80,150,230},
+      midtone_color = {60,100,180},
+      shadow_color = {30,50,120}
+    })
+  }))
+  debug_gamestate:add(GameObject:new('gsPlayer',{
+    GameInfo:new({
+      player_name = 'Eurasia',
+      highlight_color = {220,100,100},
+      midtone_color = {160,60,60},
+      shadow_color = {120,30,30}
+    })
+  }))
 
   self:debugGenerateEarthMap(debug_gamestate)
   self:debugGenerateSpaceMap(debug_gamestate)
@@ -236,7 +263,7 @@ end
 
 function Loader:saveGame ( name, gamestateRegistry)
   local serialized_gamestate = {}
-  for i, obj in gamestateRegistry:getGameObjects("GameInfo") do
+  for i, obj in pairs(gamestateRegistry:getGameObjects("GameInfo")) do
     table.insert(serialized_gamestate, obj:getComponent("GameInfo"):serialize())
   end
   love.filesystem.write((name .. '.sav'), Tserial.pack(serialized_gamestate))
