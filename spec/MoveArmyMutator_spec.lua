@@ -61,7 +61,7 @@ describe('MoveArmyMutator', function()
 
 		assert.are.same(testRegistry:get(testObjectRef):getComponent('GameInfo').address, "sad_place")
 		assert.are.same(testRegistry:get(testObjectRef):getComponent('GameInfo').curr_move, 5)
-		assert.spy(testRegistry.pubsub.publish).was.called_with(match._, match.is_equal(testObjectRef .. '_GameInfo'), match.has_values(
+		assert.spy(testRegistry.pubsub.publish).was.called_with(match._, match.is_equal(testObjectRef .. ':moved'), match.has_values(
 			{
 				subject = "moved",
 				origin_info = "meow",
@@ -76,7 +76,7 @@ describe('MoveArmyMutator', function()
 
 		assert.are.same(testRegistry:get(testObjectRef):getComponent('GameInfo').address, "happy_place")
 		assert.are.same(testRegistry:get(testObjectRef):getComponent('GameInfo').curr_move, 10)
-		assert.spy(testRegistry.pubsub.publish).was.called_with(match._, match.is_equal(testObjectRef .. '_GameInfo'), match.has_values(
+		assert.spy(testRegistry.pubsub.publish).was.called_with(match._, match.is_equal(testObjectRef .. ':moved'), match.has_values(
 			{
 				subject = "moved",
 				origin_info = "meow",

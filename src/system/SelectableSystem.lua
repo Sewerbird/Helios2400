@@ -76,7 +76,6 @@ function SelectableSystem:moveSelectedTo (tgtGameObjectId, tgtAddress)
 		local dstObj = self.registry:get(tgtGameObjectId)
 
 		if srcObj:hasComponent('Moveable') and srcObj:hasComponent('Placeable') and dstObj:hasComponent('Addressable') then
-			--TODO: make this generate a mutator instead
 			local mutMove = MoveArmyMutator:new(
 				srcObj:getComponent('Stateful').ref, 
 				srcObj:getComponent('Stateful').ref,
