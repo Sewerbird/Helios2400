@@ -51,6 +51,14 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
           playerinfo.midtone_color),
         Stateful:new(gamestate)
       }))
+      debug_army_bg_shadow = registry:add(GameObject:new('Army_BGb', {
+        Transform:new(0, 0),
+        Renderable:new(
+          Polygon:new({0,0 , 3,3 , 3,45 , 45,45 , 50,50 , 0,50}),
+          nil,
+          playerinfo.shadow_color),
+        Stateful:new(gamestate)
+      }))
       debug_army_sprite = registry:add(GameObject:new('Troop', {
         Transform:new(3,5),
         Renderable:new(
@@ -77,6 +85,7 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
         end),
         Stateful:new(gamestate)
       }))
+      --[[
       debug_army_timer = registry:add(GameObject:new('Timer', {
         Transform:new(0,15),
         Renderable:new(
@@ -88,10 +97,10 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
           cmp.text = registry:getComponent(gamestate,"GameInfo").address
         end),
         Stateful:new(gamestate)
-      }))
+      }))]]
       scenegraph:attach(debug_army,nil)
       scenegraph:attach(debug_army_bg, debug_army)
-      scenegraph:attachAll({debug_army_sprite, debug_army_name, debug_army_health, debug_army_timer}, debug_army_bg)
+      scenegraph:attachAll({debug_army_bg_shadow, debug_army_sprite, debug_army_name, debug_army_health--[[, debug_army_timer]]}, debug_army_bg)
 
    	self.root = debug_army
 end
