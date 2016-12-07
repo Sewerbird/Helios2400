@@ -82,6 +82,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
       } or nil
       local army_info = (hex == "TILE_GRASS_1" and math.random() < 0.13) and {
         owner = playerInfo.player_name,
+        turns_owned = {[playerInfo.player_name] = 1},
         icon_sprite = "TROOP_1",
         curr_hp = math.floor(math.random() * 100),
         max_hp = 100,
