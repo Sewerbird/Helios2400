@@ -46,9 +46,6 @@ function IndexMap:load(registry, map)
 		local my_cities = {}
 		local my_armies = {}
 		local hex = obj:getComponent("GameInfo")
-		for k,v in pairs(hex) do
-			print(k,v)
-		end
 		self:addAddress(hex.address, hex.neighbors,terrain_info)
 		for j, city in ipairs(cities) do
 			local myc = city:getComponent("GameInfo")

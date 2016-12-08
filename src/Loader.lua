@@ -37,7 +37,6 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
   local joffset = 0
   local num_rows = 12
   local num_cols = 24
-
   for i = 1 , num_cols do --x
     for j = 1 , num_rows do
       if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
@@ -51,8 +50,8 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
         neighbors = {
           'Earth' .. HexCoord:new(i,j-1):toString(),
           'Earth' .. HexCoord:new(i,j+1):toString(),
-          (j % 2 == 0) and 'Earth' .. HexCoord:new(i-1,j+1):toString() or 'Earth' .. HexCoord:new(i-1,j-1):toString(),
-          (j % 2 == 0) and 'Earth' .. HexCoord:new(i+1,j+1):toString() or 'Earth' .. HexCoord:new(i+1,j-1):toString(),
+          (i % 2 == 0) and 'Earth' .. HexCoord:new(i-1,j+1):toString() or 'Earth' .. HexCoord:new(i-1,j-1):toString(),
+          (i % 2 == 0) and 'Earth' .. HexCoord:new(i+1,j+1):toString() or 'Earth' .. HexCoord:new(i+1,j-1):toString(),
           'Earth' .. HexCoord:new(i-1,j):toString(),
           'Earth' .. HexCoord:new(i+1,j):toString()
         },
