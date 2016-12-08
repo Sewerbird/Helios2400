@@ -57,7 +57,7 @@ function Astar:findPath(fromAddress, toAddress, moveType)
 		    		cameFrom[neighbor] = currentAddress
 	    			fScore[neighbor] = math.huge
 	    			gScore[neighbor] = math.huge
-	    		elseif not (distStartNeighbor > gScore[neighbor]) then
+	    		elseif not (distStartNeighbor >= gScore[neighbor]) then
 		    		cameFrom[neighbor] = currentAddress
 		    		gScore[neighbor] = distStartNeighbor
 		    		fScore[neighbor] = gScore[neighbor] + COST_ESTIMATE
