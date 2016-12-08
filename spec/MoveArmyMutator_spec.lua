@@ -55,13 +55,13 @@ describe('MoveArmyMutator', function()
 			"sad_place",
 			5)
 
-      	spy.on(testPubSub, "publish")
+      	spy.on(testRegistry.pubsub, "publish")
 
-		mut:apply(testRegistry,testPubSub)
+		mut:apply(testRegistry)
 
 		assert.are.same(testRegistry:get(testObjectRef):getComponent('GameInfo').address, "sad_place")
 		assert.are.same(testRegistry:get(testObjectRef):getComponent('GameInfo').curr_move, 5)
-		assert.spy(testPubSub.publish).was.called_with(match._, testObjectRef, match.has_values(
+		assert.spy(testRegistry.pubsub.publish).was.called_with(match._, match.is_equal(testObjectRef .. '_GameInfo'), match.has_values(
 			{
 				subject = "moved",
 				origin_info = "meow",
@@ -71,12 +71,12 @@ describe('MoveArmyMutator', function()
 				move_cost = 5
 			}))
 
-		testPubSub.publish:clear()
-		mut:rollback(testRegistry,testPubSub)
+		testRegistry.pubsub.publish:clear()
+		mut:rollback(testRegistry)
 
 		assert.are.same(testRegistry:get(testObjectRef):getComponent('GameInfo').address, "happy_place")
 		assert.are.same(testRegistry:get(testObjectRef):getComponent('GameInfo').curr_move, 10)
-		assert.spy(testPubSub.publish).was.called_with(match._, testObjectRef, match.has_values(
+		assert.spy(testRegistry.pubsub.publish).was.called_with(match._, match.is_equal(testObjectRef .. '_GameInfo'), match.has_values(
 			{
 				subject = "moved",
 				origin_info = "meow",

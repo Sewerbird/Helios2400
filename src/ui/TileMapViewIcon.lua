@@ -1,4 +1,5 @@
 --TileMapViewIcon.lua
+local class = require 'lib/30log'
 local Renderable = require 'src/component/Renderable'
 local Addressable = require 'src/component/Addressable'
 local Placeable = require 'src/component/Placeable'
@@ -10,20 +11,21 @@ local GameObject = require 'src/GameObject'
 local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
 
-local TileMapViewIcon = {}
+local TileMapViewIcon = class("TileMapViewIcon",{
+	root = nil
+})
 
-TileMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
-	print(registry,map)
+function TileMapViewIcon:init (registry, scenegraph, map, gamestate)
 	local gameinfo = registry:get(gamestate):getComponent("GameInfo")
 	local Hex_Touch_Delegate = TouchDelegate:new();
 	Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
 		if this.component.gob:hasComponent('Addressable') then
 			local addr = this.component.gob:getComponent('Addressable')
-			Global.PubSub:publish("pathTo",{uid = this.component.gob.uid, address = addr, map = map})
-			--Global.PubSub:publish("moveTo",{uid = this.component.gob.uid, address = addr})
+			registry:publish("pathTo",{uid = this.component.gob.uid, address = addr, map = map})
+			--registry:publish("moveTo",{uid = this.component.gob.uid, address = addr})
 		end
 	end)
-	local debug_tile = registry:add(GameObject:new('Tile',{
+	self.root = registry:add(GameObject:new('Tile',{
 		Transform:new(gameinfo.worldspace_coord[1],gameinfo.worldspace_coord[2]),
 		Interfaceable:new(
 			Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
@@ -35,7 +37,6 @@ TileMapViewIcon.new = function(self, registry, scenegraph, map, gamestate)
 		Stateful:new(gamestate),
 		Addressable:new(gameinfo.address, map)
 	}))
-	return debug_tile
 end
 
 return TileMapViewIcon

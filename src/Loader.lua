@@ -32,15 +32,11 @@ function Loader:init(context)
   self.loadContext = context
 end
 
-function Loader:debugGenerateMap ()
-  --[[ Generate the Game State ]]--
-
-  local debug_gamestate = Global.Registry--TODO: make this with a Registry:new();
+function Loader:debugGenerateEarthMap (debug_gamestate)
   local city_names = {'New Moroni', 'Tiangong', 'Elonia', 'Neokyoto', 'Al Kicab', 'Choaswell', 'Atraapool', 'Efrimirie', 'Droawona'}
   local joffset = 0
   local num_rows = 12
   local num_cols = 24
-  local Earth_Map = IndexMap:new()
 
   for i = 1 , num_cols do --x
     for j = 1 , num_rows do
@@ -75,6 +71,7 @@ function Loader:debugGenerateMap ()
       }
       local city_info = (hex == "TILE_GRASS_1" and math.random() < 0.15) and {
         city_name = city_names[math.floor(math.random()*#city_names)+1],
+        map = 'Earth',
         address = hex_info.address,
         icon_sprite = "CITY_1",
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
@@ -91,6 +88,7 @@ function Loader:debugGenerateMap ()
         personel_cnt = math.floor(math.random() * 10),
         assault_rating = 4,
         defense_rating = 3,
+        map = 'Earth',
         mov_type = "ground",
         address = hex_info.address,
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
@@ -100,11 +98,77 @@ function Loader:debugGenerateMap ()
       local oCity = city_info and debug_gamestate:add(GameObject:new('gsCity',{GameInfo:new(city_info)})) or nil
       local oArmy = army_info and debug_gamestate:add(GameObject:new('gsArmy',{GameInfo:new(army_info)})) or nil
 
-      Earth_Map:addAddress(hex_info.address, hex_info.neighbors, hex_info.terrain_info, {oCity, oArmy})
     end
   end
-  
-  self:saveGame('gen_'..math.floor(math.random()*1000) ,debug_gamestate)
+end
+
+function Loader:debugGenerateSpaceMap (debug_gamestate)
+
+  --Space Map
+  local space_hexes = {
+    {
+      map = 'Space',
+      address = 'Space_Earth_Planet',
+      terrain_sprite = "TILE_PLANET_1",
+      neighbors = {
+        'Space_Earth_LowPrograde',
+        'Space_Earth_LowRetrograde'
+        },
+      worldspace_coord = {0,0}
+    },
+    {
+      map = 'Space',
+      address = 'Space_Earth_LowPrograde',
+      terrain_sprite = "TILE_SPACE_1",
+      neighbors = {
+        'Space_Earth_Planet',
+        'Space_Luna_LowRetrograde'
+      },
+      worldspace_coord = {100,0}
+    },
+    {
+      map = 'Space',
+      address = 'Space_Earth_LowRetrograde',
+      terrain_sprite = "TILE_SPACE_1",
+      neighbors = {
+        'Space_Earth_Planet',
+      },
+      worldspace_coord = {-100,0}
+    },
+    {
+      map = 'Space',
+      address = 'Space_Luna_LowRetrograde',
+      terrain_sprite = "TILE_SPACE_1",
+      neighbors = {
+        'Space_Earth_LowPrograde',
+        'Space_Luna_'
+      },
+      worldspace_coord = {200,0}
+    },
+    {
+      map = 'Space',
+      address = 'Space_Earth_LowPrograde',
+      terrain_sprite = "TILE_PLANET_2",
+      neighbors = {
+        'Space_Luna_LowRetrograde'
+      },
+      worldspace_coord = {300,0}
+    }
+  }
+  for i, v in ipairs(space_hexes) do
+    debug_gamestate:add(GameObject:new('gsHex',{GameInfo:new(v)}))
+  end
+end
+
+function Loader:debugGenerateMap ( save_name )
+  --[[ Generate the Game State ]]--
+
+  local debug_gamestate = Registry:new()--TODO: make this with a Registry:new();
+
+  self:debugGenerateEarthMap(debug_gamestate)
+  self:debugGenerateSpaceMap(debug_gamestate)
+
+  self:saveGame(save_name, debug_gamestate)
 end
 
 function Loader:debugLoad ()
@@ -112,48 +176,68 @@ function Loader:debugLoad ()
   --[[ Load Assets & Play some music because why not ]]--
   local Assets = self.loadContext.Assets
 
-  local music = Assets:getAsset("RITUAL_1")
+  local music = Assets:getAsset("MUSIC_FLOATING_CITIES")
   music:setLooping(true)
   music:setVolume(BG_MUSIC_VOL)
   music:play()
 
   --[[ Generate the Game State ]]--
 
-  local debug_gamestate = Global.Registry--TODO: make this with a Registry:new();
+  local debug_gamestate = self.loadContext.Registry--TODO: make this with a Registry:new();
+  self:debugGenerateMap('default')
   self:loadGame('default',debug_gamestate)
 
   --[[Instantiate Tilemap View ]]--
-  local SceneGraph = IndexTree:new();
+
+  local EarthSceneGraph = IndexTree:new();
   local Earth_Tiles = {}
   local Earth_Cities = {}
   local Earth_Units = {}
 
-  local Earth_Map = IndexMap:new()
-  Earth_Map:load(debug_gamestate);
+  local SpaceSceneGraph = IndexTree:new();
+  local Space_Tiles = {}
+  local Space_Cities = {}
+  local Space_Units = {}
 
-  for key, obj in ipairs(debug_gamestate.registry) do
+  local Earth_Map = IndexMap:new()
+  local Space_Map = IndexMap:new()
+  Earth_Map:load(debug_gamestate,'Earth');
+  Space_Map:load(debug_gamestate,'Space');
+
+  local desiredMap = "Space"
+  for key, obj in pairs(debug_gamestate.registry) do
     local tgt = obj:getComponent("GameInfo")
     if obj.description == 'gsHex' then
-      table.insert(Earth_Tiles, TileMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,key))
+      if tgt.map == 'Earth' then
+        table.insert(Earth_Tiles, TileMapViewIcon:new(debug_gamestate,EarthSceneGraph,Earth_Map,key))
+      elseif tgt.map == 'Space' then
+        table.insert(Space_Tiles, TileMapViewIcon:new(debug_gamestate,SpaceSceneGraph,Space_Map,key))
+      end
     elseif obj.description == 'gsCity' then
-      table.insert(Earth_Cities, CityMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,key))
+      if tgt.map == 'Earth' then
+        table.insert(Earth_Cities, CityMapViewIcon:new(debug_gamestate,EarthSceneGraph,Earth_Map,key))
+      elseif tgt.map == 'Space' then
+        table.insert(Space_Cities, CityMapViewIcon:new(debug_gamestate,SpaceSceneGraph,Space_Map,key))
+      end
     elseif obj.description == 'gsArmy' then
-      table.insert(Earth_Units, ArmyMapViewIcon:new(debug_gamestate,SceneGraph,Earth_Map,key))
+      if tgt.map == 'Earth' then
+        table.insert(Earth_Units, ArmyMapViewIcon:new(debug_gamestate,EarthSceneGraph,Earth_Map,key))
+      elseif tgt.map == 'Space' then
+        table.insert(Space_Units, ArmyMapViewIcon:new(debug_gamestate,SpaceSceneGraph,Space_Map,key))
+      end
     end
   end
 
-  local Earth_View = MapView:new(debug_gamestate, SceneGraph, Earth_Map, Earth_Tiles, Earth_Cities, Earth_Units)
+  local Earth_View = MapView:new(debug_gamestate, EarthSceneGraph, Earth_Tiles, Earth_Cities, Earth_Units)
+  local Space_View = MapView:new(debug_gamestate, SpaceSceneGraph, Space_Tiles, Space_Cities, Space_Units)
 
-  return SceneGraph
+  return EarthSceneGraph, SpaceSceneGraph
 end
 
 function Loader:saveGame ( name, gamestateRegistry)
   local serialized_gamestate = {}
-  for i = 1, #gamestateRegistry.registry do
-    local obj = gamestateRegistry.registry[i]
-    if obj:hasComponent("GameInfo") then
-      table.insert(serialized_gamestate, obj:getComponent("GameInfo"):serialize())
-    end
+  for i, obj in gamestateRegistry:getGameObjects("GameInfo") do
+    table.insert(serialized_gamestate, obj:getComponent("GameInfo"):serialize())
   end
   love.filesystem.write((name .. '.sav'), Tserial.pack(serialized_gamestate))
 end
@@ -161,8 +245,8 @@ end
 function Loader:loadGame( name, registry)
   local contents, size = love.filesystem.read((name .. '.sav'))
   local raw_save = Tserial.unpack(contents)
-  for i = 1, #raw_save do
-    local obj = GameInfo:reify(raw_save[i])
+  for i, v in pairs(raw_save) do
+    local obj = GameInfo:reify(v)
     registry:add(obj)
   end
 end

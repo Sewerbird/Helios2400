@@ -57,7 +57,10 @@ function RenderableSystem:drawHeirarchy ( root )
 			local r, g, b, a = love.graphics.getColor()
 			love.graphics.setColor(renderable.backgroundcolor)
 			love.graphics.setLineWidth(3)
-			love.graphics.polygon('fill', renderable.polygon.vertices)
+			local tris = love.math.triangulate(renderable.polygon.vertices)
+			for i, v in ipairs(tris) do
+				love.graphics.polygon('fill', v)
+			end
 			love.graphics.setColor({r,g,b,a})
 		end
 		if renderable.text ~= nil then

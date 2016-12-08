@@ -19,14 +19,13 @@ function Ring:add (...)
 		end
 	end
 
-  if self.cursor == nil then return self:next() end
+  if self.cursor == nil then self.cursor = 1 end
   
   return view
 end
 
 function Ring:next ()
 	if #(self.elements) == 0 then return nil end
-	if cursor == nil then self.cursor = 0 end
 	self.cursor = self.cursor + 1
 	if self.cursor > #(self.elements) then self.cursor = 1 end
 	return self.elements[self.cursor]

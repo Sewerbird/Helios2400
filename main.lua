@@ -5,7 +5,7 @@ debugGraph = require 'lib/debugGraph'
 
 local AssetLoader = require 'src/AssetLoader'
 local Loader = require 'src/Loader'
-local GameViewer = require 'src/ui/GameViewer'
+local Viewer = require 'src/ui/Viewer'
 local PubSub = require 'src/PubSub'
 local Registry = require 'src/Registry'
 local MutatorBus = require 'src/mutate/MutatorBus'
@@ -21,16 +21,15 @@ function love.load()
   print("Time to play!")
 
   Global = {
-    PubSub = PubSub:new(),
     Registry = Registry:new(),
     Assets = AssetLoader:new():loadAssets("assets/"),
     TickAccumulator = 0,
     TickRate = 0.1
   }
   Global.MutatorBus = MutatorBus:new(Global.Registry)
-  SceneGraph = Loader:new(Global):debugLoad()
+  EarthSceneGraph, SpaceSceneGraph = Loader:new(Global):debugLoad()
 
-  my_viewer = GameViewer:new(Global.Registry, SceneGraph)
+  my_viewer = Viewer:new(Global.Registry, {SpaceSceneGraph,EarthSceneGraph})
 
   --Profiling stuff
   ProFi:start()
@@ -45,12 +44,12 @@ function love.update( dt )
   if collectgarbage('count') > GOAL_MEMORY then error('Using too much memory mate!') end
 
   --Debug mouse-to-hex output
-  if not Global.PAUSE then
+  if not Global.PAUSE and not Global.PAUSE_UPDATES then
     Global.TickAccumulator = Global.TickAccumulator + dt
     if Global.TickAccumulator > Global.TickRate then
       Global.TickAccumulator = Global.TickAccumulator - Global.TickRate
       local val = math.random()
-      Global.PubSub:publish('tick',{percent = val})
+      Global.Registry:publish('tick',{percent = val})
       my_viewer.Systems.Render:update(dt)
     end
   end
@@ -110,6 +109,9 @@ function love.touchreleased( id, x, y, pressure )
 end
 
 function love.keypressed( key )
+  if key == 'n' then
+    my_viewer:nextView()
+  end
   my_viewer.Systems.Interface:onKeypress(key)
 end
 
