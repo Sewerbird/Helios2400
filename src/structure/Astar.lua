@@ -36,7 +36,6 @@ function Astar:findPath(fromAddress, toAddress, moveType)
     		currentAddress = cameFrom[toAddress]
     		local path = {toAddress}
     		while not(currentAddress == nil) do
-                print('@@@@',gScore[currentAddress])
     			table.insert(path,currentAddress)
     			currentAddress = cameFrom[currentAddress]
     		end

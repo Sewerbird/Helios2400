@@ -46,7 +46,7 @@ function IndexMap:load(registry, map)
 		local my_cities = {}
 		local my_armies = {}
 		local hex = obj:getComponent("GameInfo")
-		self:addAddress(hex.address, hex.neighbors,terrain_info)
+		self:addAddress(hex.address, hex.neighbors,hex.terrain_info)
 		for j, city in ipairs(cities) do
 			local myc = city:getComponent("GameInfo")
 			if myc.address == hex.address then
@@ -67,18 +67,7 @@ function IndexMap:getNeighbors(addressId)
 end	
 
 function IndexMap:getTerrainInfo(addressId)
-	return {	--TODO read this out of gameinfo
-          land = math.random(7),
-          sea = math.random(8),
-          aero = math.random(4),
-          hover = math.random(6),
-          space = math.random(3),
-          reentry = math.random(10),
-          toxic = false,--math.random() > 0.8,
-          vacuum = false,--math.random() > 0.8,
-          shielded = false,--math.random() > 0.8,
-        }
-	--return self.addressbook[addressId].terrain_info
+	return self.addressbook[addressId].terrain_info
 end
 
 function IndexMap:init()
