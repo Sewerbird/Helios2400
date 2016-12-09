@@ -56,9 +56,9 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
           hover = math.random(6),
           space = math.random(3),
           reentry = math.random(10),
-          toxic = false,--math.random() > 0.8,
-          vacuum = false,--math.random() > 0.8,
-          shielded = false,--math.random() > 0.8,
+          toxic = math.random() > 0.95,
+          vacuum = math.random() > 0.95,
+          shielded = math.random() > 0.95,
         }
       }
 
@@ -114,7 +114,6 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
 end
 
 function Loader.inBounds(x, y, xBound, yBound)
-  print(x,y,xBound,yBound)
   return x > 0 and y > 0 and x <= xBound and y <= yBound
 end
 
