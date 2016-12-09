@@ -52,7 +52,7 @@ function Astar:findPath(fromAddress, toAddress, moveType)
     	local neighbors = self:getNeighbors(currentAddress)
     	for i,neighbor in ipairs(neighbors) do
     		if not tableContains(closed,neighbor) then
-                local distStartNeighbor = gScore[currentAddress] + self:moveDifficult(neighbor,moveType)
+                local distStartNeighbor = gScore[currentAddress] + self:moveDifficulty(neighbor,moveType)
                 local contained = true
                 if not tableContains(open,neighbor) then
                     contained = false
@@ -84,7 +84,7 @@ function Astar:getNeighbors(address)
 	return self.indexMap:getNeighbors(address) or {}
 end
 
-function Astar:moveDifficult(address,moveType)
+function Astar:moveDifficulty(address,moveType)
 	return self.indexMap:getTerrainInfo(address)[moveType or "land"]
 end
 
