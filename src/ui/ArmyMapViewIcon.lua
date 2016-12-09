@@ -7,6 +7,7 @@ local Moveable = require 'src/component/Moveable'
 local Interfaceable = require 'src/component/Interfaceable'
 local Transform = require 'src/component/Transform'
 local Stateful = require 'src/component/Stateful'
+local GameInfo = require 'src/component/GameInfo'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 local GameObject = require 'src/GameObject'
 local Polygon = require 'src/datatype/Polygon'
@@ -40,7 +41,8 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
           Unit_Touch_Delegate),
         Stateful:new(gamestate),
         Placeable:new(gameinfo.address),
-        Moveable:new()
+        Moveable:new(),
+        GameInfo:new(gameinfo)
       }))
       debug_army_bg = registry:add(GameObject:new('Army_BG', {
         Transform:new((84-50)/2, (73-50)/2),

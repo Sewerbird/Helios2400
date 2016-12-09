@@ -50,9 +50,6 @@ function SelectableSystem:select ( gameObjectId )
 	if self.current_selection ~= nil then 
 		local tgtObj = self.registry:get(self.current_selection)
 		local cursor = self.registry:get(self.selected_unit_cursor_object)
-		if tgtObj:hasComponent('Moveable') then
-			print("yaaay")
-		end
 		self.targetCollection:detach(self.selected_unit_cursor_object, self.current_selection)
 	end
 	if self.current_selection == gameObjectId then 
@@ -125,7 +122,8 @@ function SelectableSystem:pathTo(fromId, tgtAddress, map)
 		local curObj = self.registry:get(self.current_selection)
 		local fromAddress = curObj:getComponent('Placeable').address
 		local toAddress = tgtAddress.address
-		self.path = map:findPath(fromAddress, toAddress)
+		local move_type = curObj:getComponent('GameInfo').mov_type
+		self.path = map:findPath(fromAddress, toAddress, move_type)
 		print("Path: " .. inspect(self.path))
 	end
 	-- body

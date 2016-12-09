@@ -87,6 +87,12 @@ end
 function Astar:moveDifficulty(address,moveType)
     local ti = self.indexMap:getTerrainInfo(address)
     if ti.toxic or ti.vacuum or ti.shielded then return 0 end
+    print(moveType,ti.type)
+    if moveType == "land" then
+        if ti.type == "water" then
+            return 0
+        end
+    end
 	return ti[moveType or "land"]
 end
 

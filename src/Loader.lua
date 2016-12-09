@@ -41,7 +41,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
     for j = 1 , num_rows do
       if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
       local ioffset = (i-1) * -21
-      local hex = (j==1 or j==num_rows) and "TILE_ARCTIC_1" or ((math.random() < 0.3) and "TILE_GRASS_1" or "TILE_WATER_1")
+      local hex = (j==1 or j==num_rows) and "TILE_ARCTIC_1" or ((math.random() < 0.7) and "TILE_GRASS_1" or "TILE_WATER_1")
 
       local hex_info = {
         map = 'Earth',
@@ -50,6 +50,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
         neighbors = {},
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset},
         terrain_info = {
+          type = (hex == "TILE_WATER_1") and "water" or "land",
           land = math.random(7),
           sea = math.random(8),
           aero = math.random(4),
@@ -100,7 +101,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
         assault_rating = 4,
         defense_rating = 3,
         map = 'Earth',
-        mov_type = "ground",
+        mov_type = "land",
         address = hex_info.address,
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
       } or nil
