@@ -139,7 +139,9 @@ function IndexMap:movePlaceable(placeableId, srcAddressId, dstAddressId)
 end
 
 function IndexMap:findPath(fromId, toId, moveType)
-	return self.as:findPath(fromId, toId, moveType)
+	local path, cost = self.as:findPath(fromId, toId, moveType)
+	print("cost of path is",cost);
+	return path
 end
 
 function IndexMap:findAccessibleAddresses(fromId, maxCost, moveType)

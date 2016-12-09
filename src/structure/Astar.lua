@@ -36,6 +36,7 @@ function Astar:findPath(fromAddress, toAddress, moveType)
     		currentAddress = cameFrom[toAddress]
     		local path = {toAddress}
     		while not(currentAddress == nil) do
+                print('@@@@',gScore[currentAddress])
     			table.insert(path,currentAddress)
     			currentAddress = cameFrom[currentAddress]
     		end
@@ -51,17 +52,19 @@ function Astar:findPath(fromAddress, toAddress, moveType)
     	local neighbors = self:getNeighbors(currentAddress)
     	for i,neighbor in ipairs(neighbors) do
     		if not tableContains(closed,neighbor) then
-	    		local distStartNeighbor = gScore[currentAddress] + self:moveDifficult(neighbor,moveType)
-	    		if not tableContains(open,neighbor) then
-	    			table.insert(open,neighbor)
-		    		cameFrom[neighbor] = currentAddress
-	    			fScore[neighbor] = math.huge
-	    			gScore[neighbor] = math.huge
-	    		elseif not (distStartNeighbor >= gScore[neighbor]) then
-		    		cameFrom[neighbor] = currentAddress
-		    		gScore[neighbor] = distStartNeighbor
-		    		fScore[neighbor] = gScore[neighbor] + COST_ESTIMATE
-		    	end
+                local distStartNeighbor = gScore[currentAddress] + self:moveDifficult(neighbor,moveType)
+                local contained = true
+                if not tableContains(open,neighbor) then
+                    contained = false
+                    table.insert(open,neighbor)
+                    fScore[neighbor] = math.huge
+                    gScore[neighbor] = math.huge
+                end
+                if not (contained and distStartNeighbor >= gScore[neighbor]) then
+                    cameFrom[neighbor] = currentAddress
+                    gScore[neighbor] = distStartNeighbor
+                    fScore[neighbor] = gScore[neighbor] + COST_ESTIMATE
+                end
 	    	end
     	end
     end
