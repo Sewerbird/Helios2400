@@ -50,18 +50,21 @@ function Astar:findPath(fromAddress, toAddress, moveType)
     	end
     	local neighbors = self:getNeighbors(currentAddress)
     	for i,neighbor in ipairs(neighbors) do
-    		if not tableContains(closed,neighbor) then
-	    		local distStartNeighbor = gScore[currentAddress] + self:moveDifficult(neighbor,moveType)
-	    		if not tableContains(open,neighbor) then
-	    			table.insert(open,neighbor)
-		    		cameFrom[neighbor] = currentAddress
-	    			fScore[neighbor] = math.huge
-	    			gScore[neighbor] = math.huge
-	    		elseif not (distStartNeighbor > gScore[neighbor]) then
-		    		cameFrom[neighbor] = currentAddress
-		    		gScore[neighbor] = distStartNeighbor
-		    		fScore[neighbor] = gScore[neighbor] + COST_ESTIMATE
-		    	end
+            local moveDifficulty = self:moveDifficulty(neighbor,moveType)
+    		if moveDifficulty > 0 and not tableContains(closed,neighbor) then
+                local distStartNeighbor = gScore[currentAddress] + moveDifficulty
+                local contained = true
+                if not tableContains(open,neighbor) then
+                    contained = false
+                    table.insert(open,neighbor)
+                    fScore[neighbor] = math.huge
+                    gScore[neighbor] = math.huge
+                end
+                if not (contained and distStartNeighbor >= gScore[neighbor]) then
+                    cameFrom[neighbor] = currentAddress
+                    gScore[neighbor] = distStartNeighbor
+                    fScore[neighbor] = gScore[neighbor] + COST_ESTIMATE
+                end
 	    	end
     	end
     end
@@ -81,8 +84,10 @@ function Astar:getNeighbors(address)
 	return self.indexMap:getNeighbors(address) or {}
 end
 
-function Astar:moveDifficult(address,moveType)
-	return self.indexMap:getTerrainInfo(address)[moveType or "land"]
+function Astar:moveDifficulty(address,moveType)
+    local ti = self.indexMap:getTerrainInfo(address)
+    if ti.toxic or ti.vacuum or ti.shielded then return 0 end
+	return ti[moveType or "land"]
 end
 
 function Astar.lowestFscore(fScore,within)

@@ -6,7 +6,7 @@ function love.conf(t)
 	t.console = true
 
   GOAL_MEMORY = 1024 * 64 --64 Megabytes
-  BG_MUSIC_VOL = 0.15
+  BG_MUSIC_VOL = 0.015
 
   return t;
 end

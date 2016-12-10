@@ -51,14 +51,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
         map = 'Earth',
         address = 'Earth' .. HexCoord:new(i,j):toString(),
         terrain_sprite = hex,
-        neighbors = {
-          'Earth' .. HexCoord:new(i,j-1):toString(),
-          'Earth' .. HexCoord:new(i,j+1):toString(),
-          (j % 2 == 0) and 'Earth' .. HexCoord:new(i-1,j+1):toString() or 'Earth' .. HexCoord:new(i-1,j-1):toString(),
-          (j % 2 == 0) and 'Earth' .. HexCoord:new(i+1,j+1):toString() or 'Earth' .. HexCoord:new(i+1,j-1):toString(),
-          'Earth' .. HexCoord:new(i-1,j):toString(),
-          'Earth' .. HexCoord:new(i+1,j):toString()
-        },
+        neighbors = {},
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset},
         terrain_info = {
           land = math.random(7),
@@ -67,11 +60,30 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
           hover = math.random(6),
           space = math.random(3),
           reentry = math.random(10),
-          toxic = false,--math.random() > 0.8,
-          vacuum = false,--math.random() > 0.8,
-          shielded = false,--math.random() > 0.8,
+          toxic = math.random() > 0.95,
+          vacuum = math.random() > 0.95,
+          shielded = math.random() > 0.95,
         }
       }
+
+
+      if self.inBounds(i,j-1,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i,j-1):toString()) end
+      if self.inBounds(i,j+1,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i,j+1):toString()) end
+      if (i % 2 == 0) and self.inBounds(i-1,j+1,num_cols,num_rows) then 
+        table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i-1,j+1):toString())
+        end
+      if (i % 2 == 1) and self.inBounds(i-1,j-1,num_cols,num_rows) then 
+        table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i-1,j-1):toString())
+      end
+      if (i % 2 == 0) and self.inBounds(i+1,j+1,num_cols,num_rows) then 
+        table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i+1,j+1):toString())
+        end
+      if (i % 2 == 1) and self.inBounds(i+1,j-1,num_cols,num_rows) then 
+        table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i+1,j-1):toString())
+      end
+      if self.inBounds(i-1,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i-1,j):toString()) end
+      if self.inBounds(i+1,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i+1,j):toString()) end
+          
       local city_info = (hex == "TILE_GRASS_1" and math.random() < 0.15) and {
         gs_type = "city",
         owner = playerInfo.player_name,
@@ -108,6 +120,10 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
 
     end
   end
+end
+
+function Loader.inBounds(x, y, xBound, yBound)
+  return x > 0 and y > 0 and x <= xBound and y <= yBound
 end
 
 function Loader:debugGenerateSpaceMap (debug_gamestate)
