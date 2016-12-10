@@ -11,7 +11,9 @@ local MoveArmyMutator = require 'src/mutate/mutator/MoveArmyMutator'
 
 local SelectableSystem = System:extend({
 	current_selection = nil,
-	selected_unit_cursor_object = nil
+	selected_unit_cursor_object = nil,
+	path = nil,
+	path_overlays = {}
 })
 
 function SelectableSystem:init (registry, targetCollection, cursor_sprite)
@@ -24,6 +26,7 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 	      ),
 	    Placeable:new()
 	}))
+	self.path_overlays = {}
 
 	local unsubSelect= self.registry:subscribe("select", function (this, msg)
 		if self.targetCollection:has(msg.uid) then
@@ -31,6 +34,11 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 		end
 	end)
 
+	local unsubPathTo = self.registry:subscribe("pathTo", function (this, msg)
+		self:pathTo(msg.uid, msg.address, msg.map)
+		self:displayPathOverlay(msg.map)
+	end)
+	
 	local unsubMoveTo = self.registry:subscribe("moveTo", function (this, msg)
 		if self.targetCollection:has(msg.uid) then
 			self:moveSelectedTo(msg.uid, msg.address)
@@ -59,6 +67,7 @@ end
 
 function SelectableSystem:resetCursor ()
 	self.registry:get(self.selected_unit_cursor_object):getComponent('Transform'):teleport(0,0)
+	self:clearPathOverlay()
 end
 
 function SelectableSystem:centerCursor ( gameObject )
@@ -68,6 +77,60 @@ function SelectableSystem:centerCursor ( gameObject )
 		local cursorpoly = cursor:getComponent('Renderable').polygon
 		cursor:getComponent('Transform'):translate( tgtRenderable.polygon.w/2 - cursorpoly.w/2 ,  tgtRenderable.polygon.h/2 - cursorpoly.h/2)
 	end
+end
+
+function SelectableSystem:displayPathOverlay (map)
+	if not self.path then return end
+	self:clearPathOverlay()
+
+
+	local tilesOnWay = self.registry:getIdsByPool("Addressable", function(obj)
+		local transform = obj:getComponent("Transform")
+		local renObj = obj:getComponent("Renderable")
+		local addObj = obj:getComponent("Addressable")
+
+		for i, step in ipairs(self.path) do
+			if renObj and addObj.address == step then
+				return true
+			end
+		end
+	end)
+	for i, tileOnWay in ipairs(tilesOnWay) do
+		local s = self.registry:get(tileOnWay)
+		if s then
+			local overlay = self.registry:add(GameObject:new('Cursor',{
+				Transform:new(s.x,s.y),
+			    Renderable:new(
+			      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
+			      Global.Assets:getAsset("CURSOR_1")
+			      ),
+			    Placeable:new()
+			}))
+			table.insert(self.path_overlays, overlay)
+			self.targetCollection:attach(overlay,tileOnWay)
+		end
+	end
+end
+
+function SelectableSystem:clearPathOverlay ()
+	if self.path_overlays then
+		for i, overlay in ipairs(self.path_overlays) do
+			self.targetCollection:detach(overlay)
+			self.registry:remove(overlay)
+		end
+		self.path_overlays = {}
+	end
+end
+
+function SelectableSystem:pathTo(fromId, tgtAddress, map)
+	if self.current_selection ~= nil then
+		local curObj = self.registry:get(self.current_selection)
+		local fromAddress = curObj:getComponent('Placeable').address
+		local toAddress = tgtAddress.address
+		self.path = map:findPath(fromAddress, toAddress)
+		print("Path: " .. inspect(self.path))
+	end
+	-- body
 end
 
 function SelectableSystem:moveSelectedTo (tgtGameObjectId, tgtAddress)

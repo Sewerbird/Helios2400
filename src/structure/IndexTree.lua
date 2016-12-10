@@ -104,15 +104,19 @@ end
 function IndexTree:detach ( detachee, detachFromId )
 	assert(detachee ~= nil, 'tried to detach nil')
 	local v = self.nodes[detachee]
-	for j, p in ipairs(v.parents) do
-		for k, c in ipairs(self.nodes[p].children) do
-			if c == v.nid then
-				table.remove(self.nodes[p].children, k)
-				break
+	if not v then
+		print("Detachee " .. detachee .. " not in index tree")
+	else
+		for j, p in ipairs(v.parents) do
+			for k, c in ipairs(self.nodes[p].children) do
+				if c == v.nid then
+					table.remove(self.nodes[p].children, k)
+					break
+				end
 			end
 		end
+		v.parents = {}
 	end
-	v.parents = {}
 end
 
 function IndexTree:printIndexTree ()

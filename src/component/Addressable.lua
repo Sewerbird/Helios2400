@@ -6,7 +6,7 @@ local Addressable = Component:extend('Addressable', {
 	address = nil
 })
 
-function Addressable:init ( address )
+function Addressable:init ( address)
 	self.address = address
 end
 
