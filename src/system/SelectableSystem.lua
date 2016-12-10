@@ -30,7 +30,7 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 	self.path_overlays = {}
 
 	local unsubSelect= self.registry:subscribe("select", function (this, msg)
-		if self.targetCollection:has(msg.uid) then
+		if self.targetCollection:has(msg.uid) and self:targetIsMineToClickOn(msg.uid) then
 			self:select(msg.uid)
 		end
 	end)
@@ -45,6 +45,15 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 			self:moveSelectedTo(msg.uid, msg.address)
 		end
 	end)
+end
+
+function SelectableSystem:targetIsMineToClickOn ( uid )
+	local tgt = self.registry:get(uid)
+	if tgt:hasComponent("Stateful") and tgt:hasComponent("Placeable") then
+		local info = self.registry:get(tgt:getComponent("Stateful").ref):getComponent("GameInfo")
+		return self.registry:findComponent("GameInfo", {gs_type="player", is_current=true}).player_name == info.owner
+	end
+	return false
 end
 
 function SelectableSystem:select ( gameObjectId )

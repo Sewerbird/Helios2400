@@ -197,6 +197,8 @@ function Loader:debugGenerateMap ( save_name )
   debug_gamestate:add(GameObject:new('gsPlayer',{
     GameInfo:new({
       gs_type = 'player',
+      is_current = true,
+      is_alive = true,
       player_name = 'Eastasia',
       highlight_color = {20,200,200},
       midtone_color = {20,130,150},
@@ -206,6 +208,8 @@ function Loader:debugGenerateMap ( save_name )
   debug_gamestate:add(GameObject:new('gsPlayer',{
     GameInfo:new({
       gs_type = 'player',
+      is_current = false,
+      is_alive = true,
       player_name = 'Oceania',
       highlight_color = {80,150,230},
       midtone_color = {60,100,180},
@@ -215,6 +219,8 @@ function Loader:debugGenerateMap ( save_name )
   debug_gamestate:add(GameObject:new('gsPlayer',{
     GameInfo:new({
       gs_type = 'player',
+      is_current = false,
+      is_alive = true,
       player_name = 'Eurasia',
       highlight_color = {220,100,100},
       midtone_color = {160,60,60},
