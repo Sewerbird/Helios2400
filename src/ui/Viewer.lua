@@ -31,6 +31,8 @@ function Viewer:init ( registry, mapScenes )
 	end
 	self:changeTo()
 
+	self.Systems.TurnControl:begin()
+
 	registry:subscribe("ui/debug_prevscene", function() 
 		self:prevView() 
 	end)

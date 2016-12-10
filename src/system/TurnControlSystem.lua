@@ -31,6 +31,11 @@ function TurnControlSystem:init( registry, targetCollection )
 	end)
 end
 
+function TurnControlSystem:begin()
+	local new_player = self.registry:findComponent("GameInfo",{gs_type="player", player_name=self.targetCollection:current()})
+	self.registry:publish("beginTurn",new_player)
+end
+
 function TurnControlSystem:endTurn ()
 
 	print("Current player is " .. self.targetCollection:current())
