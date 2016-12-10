@@ -44,8 +44,7 @@ function ConfirmationDialogBoxView:init (registry, scenegraph, attachTo)
 		Renderable:new(
 			Polygon:new({w = 1200, h = 800}),
 			nil,
-			{0,0,0,128},
-			math.floor(math.random()*100000)),
+			{0,0,0,128}),
 		Interfaceable:new(
 			Polygon:new({w = 1200, h = 800}),
 			Block_Below_Delegate)
@@ -56,8 +55,7 @@ function ConfirmationDialogBoxView:init (registry, scenegraph, attachTo)
 		Renderable:new(
 			Polygon:new({w = 300, h = 150}),
 			nil,
-			{64, 128, 128,200},
-			'bg'),
+			{64, 128, 128,200}),
 		}))
 
 	local text_panel = registry:add(GameObject:new("cdbv_text_panel",{
