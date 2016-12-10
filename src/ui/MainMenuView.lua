@@ -17,6 +17,7 @@ function MainMenuView:init (registry, scenegraph)
 		Transform:new(0,0)
 	}))
 	self.scenegraph = scenegraph
+	self.registry = registry
 
 	local save_button_handler = TouchDelegate:new()
 	save_button_handler:setHandler('onTouch', function(this, x, y)

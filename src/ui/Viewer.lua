@@ -5,6 +5,7 @@ local Ring = require 'src/structure/Ring'
 local InterfaceableSystem = require 'src/system/InterfaceableSystem'
 local RenderableSystem = require 'src/system/RenderableSystem'
 local SelectableSystem = require 'src/system/SelectableSystem'
+local TurnControlSystem = require 'src/system/TurnControlSystem'
 
 local Viewer = class("Viewer", {
 	Registry = nil,
@@ -15,6 +16,9 @@ local Viewer = class("Viewer", {
 function Viewer:init ( registry, mapScenes )
 
 	self.Registry = registry
+
+	self.Systems.TurnControl = TurnControlSystem:new(self.Registry)
+
 	self.mapViews = Ring:new()
 	for i, scene in ipairs(mapScenes) do
 		local view = {

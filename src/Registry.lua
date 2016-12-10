@@ -70,6 +70,23 @@ function Registry:findComponent(poolType, where)
 	return nil
 end
 
+function Registry:findComponents(poolType, where)
+	local results = {}
+	for i, v in ipairs(self:getGameObjects(poolType)) do
+		local isOkay = true
+		local component = v:getComponent(poolType)
+		for key, value in pairs(where) do
+			if not (component[key] == value) then 
+				isOkay = false 
+			end
+		end
+		if isOkay then
+			table.insert(results, component)
+		end
+	end
+	return results
+end
+
 function Registry:getIdsByPool ( pool, fn)
 	local poolIds = {}
 	if fn == nil then
@@ -105,11 +122,11 @@ function Registry:getGameObjects ( pool_filter)
 end
 
 function Registry:publish(topic, message)
-	self.pubsub:publish(topic, message)
+	return self.pubsub:publish(topic, message)
 end
 
 function Registry:subscribe(topic, callback)
-	self.pubsub:subscribe(topic, callback)
+	return self.pubsub:subscribe(topic, callback)
 end
 
 function Registry:bind( component, source, onSourceChange, initWith)

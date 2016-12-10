@@ -10,6 +10,7 @@ function PubSub:subscribe( topic, callback )
 	  self.topics[topic] = {}
 	end
 	local f = self.UID_CNTR + 1
+	self.UID_CNTR = self.UID_CNTR+1
 	table.insert(self.topics[topic],{
 	  uid = f,
 	  cb = callback

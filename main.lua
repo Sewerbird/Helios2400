@@ -111,6 +111,8 @@ end
 function love.keypressed( key )
   if key == 'n' then
     my_viewer:nextView()
+  elseif key == 'q' then
+    my_viewer.Registry:publish("endTurn")
   end
   my_viewer.Systems.Interface:onKeypress(key)
 end

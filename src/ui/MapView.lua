@@ -7,12 +7,17 @@ local TouchDelegate = require 'src/datatype/TouchDelegate'
 local GameObject = require 'src/GameObject'
 local Polygon = require 'src/datatype/Polygon'
 local MainMenuView = require 'src/ui/MainMenuView'
+local QuickCommandPanelView = require 'src/ui/QuickCommandPanelView'
+local ConfirmationDialogBoxView = require 'src/ui/ConfirmationDialogBoxView'
 
 local MapView = class("MapView", {
 
 })
 
 function MapView:init( registry, scenegraph, tiles, cities, units )
+
+  self.registry = registry
+  self.scenegraph = scenegraph
 
   local Map_Layer = registry:add(GameObject:new('Map Layer', {
     Transform:new()
@@ -22,7 +27,9 @@ function MapView:init( registry, scenegraph, tiles, cities, units )
   local Unit_Layer = registry:add(GameObject:new('Unit_Layer',{}))
   local UI_Layer = registry:add(GameObject:new('UI_Layer',{}))
   local Main_Menu_View = MainMenuView:new(registry, scenegraph)
+  local Quick_Command_Panel_View = QuickCommandPanelView:new(registry, scenegraph)
   local Map_View_Touch_Delegate = TouchDelegate:new()
+  local Confirmation_Dialog_Box_View = ConfirmationDialogBoxView:new(registry, scenegraph)
   local Inspector = registry:add(GameObject:new('Inspector',{
     Transform:new(0,675),
     Renderable:new(
@@ -57,7 +64,8 @@ function MapView:init( registry, scenegraph, tiles, cities, units )
 
   scenegraph:attach(Map_View)
   scenegraph:attachAll({Map_Layer,UI_Layer}, Map_View)
-  scenegraph:attach(Inspector,UI_Layer)
+  scenegraph:attachAll({Inspector},UI_Layer)
+  scenegraph:attachAll({Quick_Command_Panel_View.root},Inspector)
   scenegraph:attachAll({Tile_Layer,City_Layer,Unit_Layer}, Map_Layer)
   for i, tile in ipairs(tiles) do
     scenegraph:attach(tile.root, Tile_Layer)
@@ -70,6 +78,33 @@ function MapView:init( registry, scenegraph, tiles, cities, units )
   end
 
   scenegraph:setRoot(Map_View)
+
+
+  registry:subscribe(Quick_Command_Panel_View.root .. ":endTurnRequest", function(this, msg)
+    if self.is_frozen then return end
+
+    self.is_frozen = true
+
+    local unsubConfirm = function() print('oops') end
+    local unsubCancel = function() print('oops') end
+
+    Confirmation_Dialog_Box_View:show(UI_Layer,"Whoa hey! You sure you want to end your turn?")
+
+    unsubConfirm = self.registry:subscribe("confirm",function(this, msg)
+      if not self.is_frozen then return end
+      self.registry:publish("endTurn")
+      unsubCancel()
+      unsubConfirm()
+      self.is_frozen = false
+    end)
+    
+    unsubCancel = self.registry:subscribe("cancel",function(this,msg)
+      if not self.is_frozen then return end
+      unsubCancel()
+      unsubConfirm()
+      self.is_frozen = false
+    end)
+  end)
 
 end
 
