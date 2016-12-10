@@ -92,7 +92,7 @@ function MapView:init( registry, scenegraph, tiles, cities, units )
 
     unsubConfirm = self.registry:subscribe("confirm",function(this, msg)
       if not self.is_frozen then return end
-      self.registry:publish("endTurn")
+      self.registry:publish("triggerEndTurn")
       unsubCancel()
       unsubConfirm()
       self.is_frozen = false

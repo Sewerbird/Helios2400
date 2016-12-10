@@ -7,6 +7,8 @@
 
 local System = require 'src/System'
 local Ring = require 'src/structure/Ring'
+local EndTurnMutator = require 'src/mutate/mutator/EndTurnMutator'
+local StartTurnMutator = require 'src/mutate/mutator/StartTurnMutator'
 
 local TurnControlSystem = System:extend("TurnControlSystem",{
 })
@@ -24,21 +26,23 @@ function TurnControlSystem:init( registry, targetCollection )
 		end
 	end
 
-	local unsubEndturn= self.registry:subscribe("endTurn", function (this, msg)
+	local unsubEndturn= self.registry:subscribe("triggerEndTurn", function (this, msg)
 		self:endTurn()
 	end)
 end
 
 function TurnControlSystem:endTurn ()
-	for i, player in ipairs(self.registry:findComponents("GameInfo", {gs_type="player"})) do
-		player.is_current = false
-	end
+
 	print("Current player is " .. self.targetCollection:current())
+	local oldPlayer = self.targetCollection:current()
 	self.targetCollection:next()
+	local newPlayer = self.targetCollection:current()
+	local mutEndTurn = EndTurnMutator:new(oldPlayer,newPlayer)
+	local mutNewTurn = StartTurnMutator:new(newPlayer)
 	print("Changed player to " .. self.targetCollection:current())
-	local current_player = self.registry:findComponent("GameInfo",{gs_type="player", player_name=self.targetCollection:current()})
-	current_player.is_current = true
-	self.registry:publish("beginTurn",current_player)
+
+	self.registry:publish("IMMEDIATE_MUTATE", mutEndTurn)
+	self.registry:publish("IMMEDIATE_MUTATE", mutNewTurn)
 end
 
 return TurnControlSystem
