@@ -37,13 +37,17 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
   local joffset = 0
   local num_rows = 12
   local num_cols = 24
+  local players = debug_gamestate:getGameObjects("GameInfo")
+
   for i = 1 , num_cols do --x
     for j = 1 , num_rows do
       if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
       local ioffset = (i-1) * -21
       local hex = (j==1 or j==num_rows) and "TILE_ARCTIC_1" or ((math.random() < 0.3) and "TILE_GRASS_1" or "TILE_WATER_1")
-
+      local player = math.random(1,#players)
+      local playerInfo = players[player]:getComponent('GameInfo')
       local hex_info = {
+        gs_type = "tile",
         map = 'Earth',
         address = 'Earth' .. HexCoord:new(i,j):toString(),
         terrain_sprite = hex,
@@ -81,6 +85,9 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
       if self.inBounds(i+1,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i+1,j):toString()) end
           
       local city_info = (hex == "TILE_GRASS_1" and math.random() < 0.15) and {
+        gs_type = "city",
+        owner = playerInfo.player_name,
+        turns_owned = {[playerInfo.player_name] = 1},
         city_name = city_names[math.floor(math.random()*#city_names)+1],
         map = 'Earth',
         address = hex_info.address,
@@ -88,14 +95,16 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
       } or nil
       local army_info = (hex == "TILE_GRASS_1" and math.random() < 0.13) and {
-        team_color = (math.random() > 0.5) and {60,60,200,200} or {200,60,60,200},
+        gs_type = "army",
+        owner = playerInfo.player_name,
+        turns_owned = {[playerInfo.player_name] = 1},
         icon_sprite = "TROOP_1",
         curr_hp = math.floor(math.random() * 100),
         max_hp = 100,
         max_move = 10,
         curr_move = 10,
         army_type = 'stealth',
-        army_name = (math.floor(math.random()*10)) .. "th Army",
+        army_name = playerInfo.player_name,
         personel_cnt = math.floor(math.random() * 10),
         assault_rating = 4,
         defense_rating = 3,
@@ -122,6 +131,7 @@ function Loader:debugGenerateSpaceMap (debug_gamestate)
   --Space Map
   local space_hexes = {
     {
+      gs_type = 'tile',
       map = 'Space',
       address = 'Space_Earth_Planet',
       terrain_sprite = "TILE_PLANET_1",
@@ -132,6 +142,7 @@ function Loader:debugGenerateSpaceMap (debug_gamestate)
       worldspace_coord = {0,0}
     },
     {
+      gs_type = 'tile',
       map = 'Space',
       address = 'Space_Earth_LowPrograde',
       terrain_sprite = "TILE_SPACE_1",
@@ -142,6 +153,7 @@ function Loader:debugGenerateSpaceMap (debug_gamestate)
       worldspace_coord = {100,0}
     },
     {
+      gs_type = 'tile',
       map = 'Space',
       address = 'Space_Earth_LowRetrograde',
       terrain_sprite = "TILE_SPACE_1",
@@ -151,6 +163,7 @@ function Loader:debugGenerateSpaceMap (debug_gamestate)
       worldspace_coord = {-100,0}
     },
     {
+      gs_type = 'tile',
       map = 'Space',
       address = 'Space_Luna_LowRetrograde',
       terrain_sprite = "TILE_SPACE_1",
@@ -161,6 +174,7 @@ function Loader:debugGenerateSpaceMap (debug_gamestate)
       worldspace_coord = {200,0}
     },
     {
+      gs_type = 'tile',
       map = 'Space',
       address = 'Space_Earth_LowPrograde',
       terrain_sprite = "TILE_PLANET_2",
@@ -178,7 +192,41 @@ end
 function Loader:debugGenerateMap ( save_name )
   --[[ Generate the Game State ]]--
 
-  local debug_gamestate = Registry:new()--TODO: make this with a Registry:new();
+  local debug_gamestate = Registry:new()
+
+  debug_gamestate:add(GameObject:new('gsPlayer',{
+    GameInfo:new({
+      gs_type = 'player',
+      is_current = true,
+      is_alive = true,
+      player_name = 'Eastasia',
+      highlight_color = {20,200,200},
+      midtone_color = {20,130,150},
+      shadow_color = {5,80,100}
+    })
+  }))
+  debug_gamestate:add(GameObject:new('gsPlayer',{
+    GameInfo:new({
+      gs_type = 'player',
+      is_current = false,
+      is_alive = true,
+      player_name = 'Oceania',
+      highlight_color = {80,150,230},
+      midtone_color = {60,100,180},
+      shadow_color = {30,50,120}
+    })
+  }))
+  debug_gamestate:add(GameObject:new('gsPlayer',{
+    GameInfo:new({
+      gs_type = 'player',
+      is_current = false,
+      is_alive = true,
+      player_name = 'Eurasia',
+      highlight_color = {220,100,100},
+      midtone_color = {160,60,60},
+      shadow_color = {120,30,30}
+    })
+  }))
 
   self:debugGenerateEarthMap(debug_gamestate)
   self:debugGenerateSpaceMap(debug_gamestate)
@@ -251,7 +299,7 @@ end
 
 function Loader:saveGame ( name, gamestateRegistry)
   local serialized_gamestate = {}
-  for i, obj in gamestateRegistry:getGameObjects("GameInfo") do
+  for i, obj in pairs(gamestateRegistry:getGameObjects("GameInfo")) do
     table.insert(serialized_gamestate, obj:getComponent("GameInfo"):serialize())
   end
   love.filesystem.write((name .. '.sav'), Tserial.pack(serialized_gamestate))
@@ -261,8 +309,7 @@ function Loader:loadGame( name, registry)
   local contents, size = love.filesystem.read((name .. '.sav'))
   local raw_save = Tserial.unpack(contents)
   for i, v in pairs(raw_save) do
-    local obj = GameInfo:reify(v)
-    registry:add(obj)
+    GameInfo:reify(registry, v)
   end
 end
 
