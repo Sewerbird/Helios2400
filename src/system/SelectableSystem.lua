@@ -8,6 +8,7 @@ local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
 
 local MoveArmyMutator = require 'src/mutate/mutator/MoveArmyMutator'
+local CaptureCityMutator = require 'src/mutate/mutator/CaptureCityMutator'
 
 local SelectableSystem = System:extend({
 	current_selection = nil,
@@ -83,7 +84,20 @@ function SelectableSystem:moveSelectedTo (tgtGameObjectId, tgtAddress)
 				srcObj:getComponent('Placeable').address, 
 				dstObj:getComponent('Addressable').address, 
 				0)
+
+			local city_at_location = self.registry:findComponent("GameInfo",{address = dstObj:getComponent('Addressable').address, gs_type = "city"})
+			local mutCapture = nil
+			if city_at_location then
+				local newOwner = self.registry:get(srcObj:getComponent("Stateful").ref):getComponent("GameInfo").owner
+				local oldOwner = city_at_location.owner
+				print('Capturing city ' .. city_at_location.gid .. ' with ' .. newOwner .. ' from ' .. oldOwner)
+				mutCapture = CaptureCityMutator:new(city_at_location.gid, newOwner, oldOwner)
+			end
+				
 			self.registry:publish("IMMEDIATE_MUTATE", mutMove)
+			if mutCapture then 
+				self.registry:publish("IMMEDIATE_MUTATE",mutCapture) 
+			end
 		else
 			self:select(tgtGameObjectId)
 		end

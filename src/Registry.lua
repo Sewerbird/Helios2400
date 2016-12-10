@@ -32,6 +32,7 @@ function Registry:add ( tgtObject )
 		self.registry[tgtObject.uid] = tgtObject
 		for key, component in pairs(tgtObject:getComponents()) do
 			component.registry = self
+			component.gid = tgtObject.uid
 			component.uid = tgtObject.uid .. '_' .. key
 			if component.deferred_bindings then
 				for i, binding in ipairs(component.deferred_bindings) do

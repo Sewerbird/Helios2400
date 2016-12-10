@@ -42,7 +42,11 @@ function CityMapViewIcon:init(registry, scenegraph, map, gamestate)
 			Polygon:new({ w=84, h=13 }),
 			nil,
 			playerinfo and playerinfo.midtone_color or {120,120,200,200},
-			gameinfo.city_name),
+			gameinfo.city_name
+		):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
+            local new_playerinfo = registry:findComponent("GameInfo", {player_name = msg.owner, gs_type = "player"})
+            if new_playerinfo then cmp.backgroundcolor = new_playerinfo.midtone_color end
+        end),
 		Stateful:new(gamestate)
 	}))
 	scenegraph:attach(debug_city, nil)

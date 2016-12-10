@@ -47,6 +47,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
       local player = math.random(1,#players)
       local playerInfo = players[player]:getComponent('GameInfo')
       local hex_info = {
+        gs_type = "tile",
         map = 'Earth',
         address = 'Earth' .. HexCoord:new(i,j):toString(),
         terrain_sprite = hex,
@@ -72,6 +73,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
         }
       }
       local city_info = (hex == "TILE_GRASS_1" and math.random() < 0.15) and {
+        gs_type = "city",
         owner = playerInfo.player_name,
         turns_owned = {[playerInfo.player_name] = 1},
         city_name = city_names[math.floor(math.random()*#city_names)+1],
@@ -81,6 +83,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
       } or nil
       local army_info = (hex == "TILE_GRASS_1" and math.random() < 0.13) and {
+        gs_type = "army",
         owner = playerInfo.player_name,
         turns_owned = {[playerInfo.player_name] = 1},
         icon_sprite = "TROOP_1",
@@ -112,6 +115,7 @@ function Loader:debugGenerateSpaceMap (debug_gamestate)
   --Space Map
   local space_hexes = {
     {
+      gs_type = 'tile',
       map = 'Space',
       address = 'Space_Earth_Planet',
       terrain_sprite = "TILE_PLANET_1",
@@ -122,6 +126,7 @@ function Loader:debugGenerateSpaceMap (debug_gamestate)
       worldspace_coord = {0,0}
     },
     {
+      gs_type = 'tile',
       map = 'Space',
       address = 'Space_Earth_LowPrograde',
       terrain_sprite = "TILE_SPACE_1",
@@ -132,6 +137,7 @@ function Loader:debugGenerateSpaceMap (debug_gamestate)
       worldspace_coord = {100,0}
     },
     {
+      gs_type = 'tile',
       map = 'Space',
       address = 'Space_Earth_LowRetrograde',
       terrain_sprite = "TILE_SPACE_1",
@@ -141,6 +147,7 @@ function Loader:debugGenerateSpaceMap (debug_gamestate)
       worldspace_coord = {-100,0}
     },
     {
+      gs_type = 'tile',
       map = 'Space',
       address = 'Space_Luna_LowRetrograde',
       terrain_sprite = "TILE_SPACE_1",
@@ -151,6 +158,7 @@ function Loader:debugGenerateSpaceMap (debug_gamestate)
       worldspace_coord = {200,0}
     },
     {
+      gs_type = 'tile',
       map = 'Space',
       address = 'Space_Earth_LowPrograde',
       terrain_sprite = "TILE_PLANET_2",
@@ -172,6 +180,7 @@ function Loader:debugGenerateMap ( save_name )
 
   debug_gamestate:add(GameObject:new('gsPlayer',{
     GameInfo:new({
+      gs_type = 'player',
       player_name = 'Eastasia',
       highlight_color = {20,200,200},
       midtone_color = {20,130,150},
@@ -180,6 +189,7 @@ function Loader:debugGenerateMap ( save_name )
   }))
   debug_gamestate:add(GameObject:new('gsPlayer',{
     GameInfo:new({
+      gs_type = 'player',
       player_name = 'Oceania',
       highlight_color = {80,150,230},
       midtone_color = {60,100,180},
@@ -188,6 +198,7 @@ function Loader:debugGenerateMap ( save_name )
   }))
   debug_gamestate:add(GameObject:new('gsPlayer',{
     GameInfo:new({
+      gs_type = 'player',
       player_name = 'Eurasia',
       highlight_color = {220,100,100},
       midtone_color = {160,60,60},
