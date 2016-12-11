@@ -56,15 +56,15 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset},
         terrain_info = {
           type = (hex == "TILE_WATER_1") and "water" or "land",
-          land = math.random(7),
-          sea = math.random(8),
-          aero = math.random(4),
-          hover = math.random(6),
-          space = math.random(3),
-          reentry = math.random(10),
-          toxic = math.random() > 0.95,
-          vacuum = math.random() > 0.95,
-          shielded = math.random() > 0.95,
+          land = (hex == "TILE_WATER_1") and 0 or 1,
+          sea = (hex ~= "TILE_WATER_1") and 0 or 1,
+          aero = 1,
+          hover = 1,
+          space = 0,
+          reentry = 1,
+          toxic = false,
+          vacuum = false,
+          shielded = false,
         }
       }
 
