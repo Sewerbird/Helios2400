@@ -21,6 +21,7 @@ function CityMapViewIcon:init(registry, scenegraph, map, gamestate)
 	local City_Touch_Delegate = TouchDelegate:new()
 	City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
 		if this.component.gob:hasComponent('Placeable') then
+          	registry:publish("selectCity",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), map = map, gamestate = gamestate, icon_type = 'city'})
 			print('Clicked on a city (' .. this.component.gob.uid .. ')! Is situated at address: ' .. map:summarizeAddress(this.component:getSiblingComponent('Placeable').address))
 		end
 	end)
