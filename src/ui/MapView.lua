@@ -1,5 +1,7 @@
 --MapView.lua
 local class = require 'lib/30log'
+local statemachine = require('lib/statemachine')
+
 local Interfaceable = require 'src/component/Interfaceable'
 local Renderable = require 'src/component/Renderable'
 local Transform = require 'src/component/Transform'

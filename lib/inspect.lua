@@ -310,7 +310,7 @@ end
 function inspect.inspect(root, options)
   options       = options or {}
 
-  local depth   = options.depth   or math.huge
+  local depth   = options.depth   or 2 --math.huge
   local newline = options.newline or '\n'
   local indent  = options.indent  or '  '
   local process = options.process

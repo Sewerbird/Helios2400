@@ -23,7 +23,7 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
-          registry:publish("select",{uid = this.component.gob.uid})
+          registry:publish("selectIcon",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), map = map, gamestate = gamestate, icon_type = 'army'})
           print('Clicked on a unit (' .. this.component.gob.uid .. ')! Is situated at address:' .. map:summarizeAddress(this.component:getSiblingComponent('Placeable').address))
           return true
         end
@@ -41,9 +41,11 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
           Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73, 0,37}),
           Unit_Touch_Delegate),
         Stateful:new(gamestate),
-        Placeable:new(gameinfo.address),
-        Moveable:new(),
-        GameInfo:new(gameinfo)
+        Placeable:new(gameinfo.address):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
+          print("Updating army placeable address")
+          cmp.address = msg.address
+        end),
+        Moveable:new()
       }))
       debug_army_bg = registry:add(GameObject:new('Army_BG', {
         Transform:new((84-50)/2, (73-50)/2),

@@ -22,6 +22,7 @@ function MoveArmyMutator:apply ( registry )
 	local info = being_moved:getComponent("GameInfo")
 	info.address = self.destination_address
 	info.curr_move = info.curr_move - self.move_cost
+	registry:publish(self.target .. '_GameInfo',info)
 	registry:publish(self.target .. ':moved', {
 		subject = "moved", 
 		origin_info = self.origin_info,
@@ -37,6 +38,7 @@ function MoveArmyMutator:rollback ( registry )
 	local info = being_unmoved:getComponent("GameInfo")
 	info.address = self.origin_address
 	info.curr_move = info.curr_move + self.move_cost
+	registry:publish(self.target .. '_GameInfo',info)
 	registry:publish(self.target .. ':moved', { 
 		subject = "moved", 
 		destination_info = self.origin_info,
