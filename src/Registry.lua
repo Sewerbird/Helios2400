@@ -5,6 +5,7 @@ local GameObject = require 'src/GameObject'
 local GameInfo = require 'src/component/GameInfo'
 local PubSub = require 'src/PubSub'
 local Graph = require 'src/structure/Graph'
+local UUID = require 'lib/uuid'
 
 local Registry = class('Registry', {
 	bind_graph = nil,
@@ -31,6 +32,7 @@ function Registry:add ( tgtObject )
 		self.registry[tgtObject.uid] = tgtObject
 		for key, component in pairs(tgtObject:getComponents()) do
 			component.registry = self
+			component.gid = tgtObject.uid
 			component.uid = tgtObject.uid .. '_' .. key
 			if component.deferred_bindings then
 				for i, binding in ipairs(component.deferred_bindings) do
@@ -44,8 +46,58 @@ function Registry:add ( tgtObject )
 	return tgtObject.uid
 end
 
+function Registry:remove ( tgtUid )
+	self.registry[tgtUid] = nil
+end
+
 function Registry:get ( tgtObjectId )
 	return self.registry[tgtObjectId]
+end
+
+function Registry:findComponent(poolType, where)
+	for i, v in ipairs(self:getGameObjects(poolType)) do
+		local isOkay = true
+		local component = v:getComponent(poolType)
+		for key, value in pairs(where) do
+			if not (component[key] == value) then 
+				isOkay = false 
+			end
+		end
+		if isOkay then
+			return component
+		end
+	end
+	return nil
+end
+
+function Registry:findComponents(poolType, where)
+	local results = {}
+	for i, v in ipairs(self:getGameObjects(poolType)) do
+		local isOkay = true
+		local component = v:getComponent(poolType)
+		for key, value in pairs(where) do
+			if not (component[key] == value) then 
+				isOkay = false 
+			end
+		end
+		if isOkay then
+			table.insert(results, component)
+		end
+	end
+	return results
+end
+
+function Registry:getIdsByPool ( pool, fn)
+	local poolIds = {}
+	if fn == nil then
+		fn = function () return true end
+	end
+	for i, v in ipairs(self.registry) do
+		if v:hasComponent(pool) and fn(v) then
+			table.insert(poolIds, i)
+		end
+	end
+	return poolIds
 end
 
 function Registry:getComponent ( tgtObjectUID, poolType )
@@ -55,26 +107,26 @@ function Registry:getComponent ( tgtObjectUID, poolType )
 	return self.registry[tgtObjectUID]:getComponent(poolType)
 end
 
-function Registry:getGameObjects ( pool_filter )
+function Registry:getGameObjects ( pool_filter)
 	if pool_filter then
 		local filtered = {}
 		for i, v in pairs(self.registry) do
 			if v:hasComponent(pool_filter) then
-				filtered[i] = v
+				table.insert(filtered, v)
 			end
 		end
-		return pairs(filtered)
+		return filtered
 	else
-		return pairs(self.registry)
+		return self.registry
 	end
 end
 
 function Registry:publish(topic, message)
-	self.pubsub:publish(topic, message)
+	return self.pubsub:publish(topic, message)
 end
 
 function Registry:subscribe(topic, callback)
-	self.pubsub:subscribe(topic, callback)
+	return self.pubsub:subscribe(topic, callback)
 end
 
 function Registry:bind( component, source, onSourceChange, initWith)
@@ -101,7 +153,11 @@ function Registry:summarize ( )
 end
 
 function Registry:getCount ()
-	return #self.registry
+	local cnt = 0
+	for i, v in pairs(self.registry) do
+		cnt = cnt + 1
+	end
+	return cnt
 end
 
 return Registry

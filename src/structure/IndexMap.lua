@@ -18,8 +18,8 @@ function Location:init(address, neighbors, terrain_info)
 	if address == nil then error('Tried to create location with nil address') end
 	self.address = address
 	self.placeables = {}
-	self.neighbors = neighbors or {}
 	self.terrain_info = terrain_info
+	self.neighbors = neighbors or {}
 end
 
 function Location:__tostring()
@@ -31,7 +31,7 @@ function IndexMap:load(registry, map)
 	local armies = {}
 	local cities = {}
 
-	for id, obj in registry:getGameObjects("GameInfo") do
+	for id, obj in pairs(registry:getGameObjects("GameInfo")) do
     	local tgt = obj:getComponent("GameInfo")
 		if obj.description == "gsHex" and tgt.map == map then
 			table.insert(hexes, obj)
@@ -46,7 +46,7 @@ function IndexMap:load(registry, map)
 		local my_cities = {}
 		local my_armies = {}
 		local hex = obj:getComponent("GameInfo")
-		self:addAddress(hex.address, hex.neighbors)
+		self:addAddress(hex.address, hex.neighbors,hex.terrain_info)
 		for j, city in ipairs(cities) do
 			local myc = city:getComponent("GameInfo")
 			if myc.address == hex.address then
@@ -128,7 +128,30 @@ function IndexMap:movePlaceable(placeableId, srcAddressId, dstAddressId)
 end
 
 function IndexMap:findPath(fromId, toId, moveType)
-	return self.as:findPath(fromId, toId, moveType)
+	local path, cost = self.as:findPath(fromId, toId, moveType)
+	print("cost of path is",cost);
+	return path
+end
+
+function IndexMap:findAccessibleAddresses(fromId, maxCost, moveType)
+	local result = {}
+	result[fromId] = 1
+	for i,neighbor in ipairs(self.addressbook[fromId].neighbors) do
+		local moveCost = self.addressbook[neighbor].terrain_info[moveType or "land"]
+		if  moveCost <= maxCost then
+			local toAdd = self:findAccessibleAddresses(neighbor, maxCost - moveCost, moveType)
+			for k,v in pairs(toAdd) do
+				result[k] = 1
+			end
+		end
+	end
+
+	local returnResult = {}
+	for k,v in pairs(result) do
+		table.insert(returnResult,k)
+	end
+
+	return result
 end
 
 function IndexMap:summarizeAddress(addressId)

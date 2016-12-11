@@ -64,11 +64,14 @@ function RenderableSystem:drawHeirarchy ( root )
 			love.graphics.setColor({r,g,b,a})
 		end
 		if renderable.text ~= nil then
-			love.graphics.print(renderable.text)
-		end
-
-		if renderable.text ~= nil then
-			love.graphics.print(renderable.text)
+			if renderable.polygon then
+				love.graphics.printf(renderable.text,
+					renderable.polygon.vertices[1], 
+					renderable.polygon.vertices[2], 
+					renderable.polygon.vertices[3],'center')
+			else
+				love.graphics.print(renderable.text)
+			end
 		end
 	end
 

@@ -17,6 +17,7 @@ function MainMenuView:init (registry, scenegraph)
 		Transform:new(0,0)
 	}))
 	self.scenegraph = scenegraph
+	self.registry = registry
 
 	local save_button_handler = TouchDelegate:new()
 	save_button_handler:setHandler('onTouch', function(this, x, y)
@@ -28,7 +29,7 @@ function MainMenuView:init (registry, scenegraph)
 	local load_button_handler = TouchDelegate:new()
 	load_button_handler:setHandler('onTouch', function(this, x, y)
 		print('Button pressed: load. Loading disabled for the moment')
-		self.hide()
+		self:hide()
 	end)
 	local return_button_handler = TouchDelegate:new()
 	return_button_handler:setHandler('onTouch', function(this, x, y)

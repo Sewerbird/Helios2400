@@ -8,10 +8,13 @@ local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
 
 local MoveArmyMutator = require 'src/mutate/mutator/MoveArmyMutator'
+local CaptureCityMutator = require 'src/mutate/mutator/CaptureCityMutator'
 
 local SelectableSystem = System:extend({
 	current_selection = nil,
-	selected_unit_cursor_object = nil
+	selected_unit_cursor_object = nil,
+	path = nil,
+	path_overlays = {}
 })
 
 function SelectableSystem:init (registry, targetCollection, cursor_sprite)
@@ -24,18 +27,33 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 	      ),
 	    Placeable:new()
 	}))
+	self.path_overlays = {}
 
 	local unsubSelect= self.registry:subscribe("select", function (this, msg)
-		if self.targetCollection:has(msg.uid) then
+		if self.targetCollection:has(msg.uid) and self:targetIsMineToClickOn(msg.uid) then
 			self:select(msg.uid)
 		end
 	end)
 
+	local unsubPathTo = self.registry:subscribe("pathTo", function (this, msg)
+		self:pathTo(msg.uid, msg.address, msg.map)
+		self:displayPathOverlay(msg.map)
+	end)
+	
 	local unsubMoveTo = self.registry:subscribe("moveTo", function (this, msg)
 		if self.targetCollection:has(msg.uid) then
 			self:moveSelectedTo(msg.uid, msg.address)
 		end
 	end)
+end
+
+function SelectableSystem:targetIsMineToClickOn ( uid )
+	local tgt = self.registry:get(uid)
+	if tgt:hasComponent("Stateful") and tgt:hasComponent("Placeable") then
+		local info = self.registry:get(tgt:getComponent("Stateful").ref):getComponent("GameInfo")
+		return self.registry:findComponent("GameInfo", {gs_type="player", is_current=true}).player_name == info.owner
+	end
+	return false
 end
 
 function SelectableSystem:select ( gameObjectId )
@@ -59,6 +77,7 @@ end
 
 function SelectableSystem:resetCursor ()
 	self.registry:get(self.selected_unit_cursor_object):getComponent('Transform'):teleport(0,0)
+	self:clearPathOverlay()
 end
 
 function SelectableSystem:centerCursor ( gameObject )
@@ -70,13 +89,66 @@ function SelectableSystem:centerCursor ( gameObject )
 	end
 end
 
+function SelectableSystem:displayPathOverlay (map)
+	if not self.path then return end
+	self:clearPathOverlay()
+
+
+	local tilesOnWay = self.registry:getIdsByPool("Addressable", function(obj)
+		local transform = obj:getComponent("Transform")
+		local renObj = obj:getComponent("Renderable")
+		local addObj = obj:getComponent("Addressable")
+
+		for i, step in ipairs(self.path) do
+			if renObj and addObj.address == step then
+				return true
+			end
+		end
+	end)
+	for i, tileOnWay in ipairs(tilesOnWay) do
+		local s = self.registry:get(tileOnWay)
+		if s then
+			local overlay = self.registry:add(GameObject:new('Cursor',{
+				Transform:new(s.x,s.y),
+			    Renderable:new(
+			      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
+			      Global.Assets:getAsset("CURSOR_1")
+			      ),
+			    Placeable:new()
+			}))
+			table.insert(self.path_overlays, overlay)
+			self.targetCollection:attach(overlay,tileOnWay)
+		end
+	end
+end
+
+function SelectableSystem:clearPathOverlay ()
+	if self.path_overlays then
+		for i, overlay in ipairs(self.path_overlays) do
+			self.targetCollection:detach(overlay)
+			self.registry:remove(overlay)
+		end
+		self.path_overlays = {}
+	end
+end
+
+function SelectableSystem:pathTo(fromId, tgtAddress, map)
+	if self.current_selection ~= nil then
+		local curObj = self.registry:get(self.current_selection)
+		local fromAddress = curObj:getComponent('Placeable').address
+		local toAddress = tgtAddress.address
+		self.path = map:findPath(fromAddress, toAddress)
+		print("Path: " .. inspect(self.path))
+	end
+	-- body
+end
+
 function SelectableSystem:moveSelectedTo (tgtGameObjectId, tgtAddress)
 	if self.current_selection ~= nil and self.current_selection ~= tgtGameObjectId then --something might be moveable
 		local srcObj = self.registry:get(self.current_selection)
 		local dstObj = self.registry:get(tgtGameObjectId)
 
 		if srcObj:hasComponent('Moveable') and srcObj:hasComponent('Placeable') and dstObj:hasComponent('Addressable') then
-			--TODO: make this generate a mutator instead
 			local mutMove = MoveArmyMutator:new(
 				srcObj:getComponent('Stateful').ref, 
 				srcObj:getComponent('Stateful').ref,
@@ -84,7 +156,20 @@ function SelectableSystem:moveSelectedTo (tgtGameObjectId, tgtAddress)
 				srcObj:getComponent('Placeable').address, 
 				dstObj:getComponent('Addressable').address, 
 				0)
+
+			local city_at_location = self.registry:findComponent("GameInfo",{address = dstObj:getComponent('Addressable').address, gs_type = "city"})
+			local mutCapture = nil
+			if city_at_location then
+				local newOwner = self.registry:get(srcObj:getComponent("Stateful").ref):getComponent("GameInfo").owner
+				local oldOwner = city_at_location.owner
+				print('Capturing city ' .. city_at_location.gid .. ' with ' .. newOwner .. ' from ' .. oldOwner)
+				mutCapture = CaptureCityMutator:new(city_at_location.gid, newOwner, oldOwner)
+			end
+				
 			self.registry:publish("IMMEDIATE_MUTATE", mutMove)
+			if mutCapture then 
+				self.registry:publish("IMMEDIATE_MUTATE",mutCapture) 
+			end
 		else
 			self:select(tgtGameObjectId)
 		end
