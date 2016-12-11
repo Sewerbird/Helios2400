@@ -31,12 +31,18 @@ function ConfirmationDialogBoxView:init (registry, scenegraph, attachTo)
 		print('Confirmed!')
 		self:hide()
 		registry:publish('confirm')
+		return true
 	end)
 
 	cancel_button_handler:setHandler('onTouch', function(this, x, y)
 		print('Canceled!')
 		self:hide()
 		registry:publish('cancel')
+		return true
+	end)
+
+	Block_Below_Delegate:setHandler('onTouch', function(this, x, y)
+		return true
 	end)
 
 	local gray_out = registry:add(GameObject:new("mmv_grayout", {

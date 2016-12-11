@@ -41,7 +41,8 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 			{ name = 'clickedOtherHex', from = 'unitPathing', to = 'unitPathing' },
 			{ name = 'reclickedOtherHex', from = 'unitPathing', to = 'unitMoving' },
 			{ name = 'movingDoneReady', from = 'unitMoving', to = 'unitSelected' },
-			{ name = 'movingDoneFinished', from = 'unitMoving', to = 'idle'}
+			{ name = 'movingDoneFinished', from = 'unitMoving', to = 'idle'},
+			{ name = 'reset', from = '*', to = 'idle'}
 		},
 		callbacks = {
 			onstatechange = function(this, event, from, to, msg)
@@ -82,6 +83,13 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 		}
 	})
 
+	local unsubEndTurn = self.registry:subscribe("endTurn", function (this, msg)
+		self.fsm:reset()
+		self:clearPathOverlay()
+		self:deselect()
+		self.path = nil
+		self.current_selection = nil
+	end)
 	local unsubSelect = self.registry:subscribe("selectIcon", function (this, msg)
 		if self.targetCollection:has(msg.uid) then
 			local selected = self.registry:get(msg.uid)
