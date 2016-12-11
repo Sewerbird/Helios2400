@@ -35,7 +35,7 @@ function TileMapViewIcon:init (registry, scenegraph, map, gamestate)
 			Global.Assets:getAsset(gameinfo.terrain_sprite)
 			),
 		Stateful:new(gamestate),
-		Addressable:new(gameinfo.address, map)
+		Addressable:new(gameinfo.address)
 	}))
 end
 

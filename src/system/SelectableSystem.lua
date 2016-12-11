@@ -82,19 +82,24 @@ end
 function SelectableSystem:displayPathOverlay (map)
 	if not self.path then return end
 	self:clearPathOverlay()
-	for i, pathpoint in ipairs(self.path) do
-		local s = self.registry:getIdsByPool("Addressable", function(obj)
-			local transform = obj:getComponent("Transform")
-			local renObj = obj:getComponent("Renderable")
-			local addObj = obj:getComponent("Addressable")
-			if renObj and addObj.address == pathpoint then
+
+
+	local tilesOnWay = self.registry:getIdsByPool("Addressable", function(obj)
+		local transform = obj:getComponent("Transform")
+		local renObj = obj:getComponent("Renderable")
+		local addObj = obj:getComponent("Addressable")
+
+		for i, step in ipairs(self.path) do
+			if renObj and addObj.address == step then
 				return true
 			end
-		end)[1]
+		end
+	end)
+	for i, tileOnWay in ipairs(tilesOnWay) do
+		local s = self.registry:get(tileOnWay)
 		if s then
-			local sobjTrans = self.registry:get(s)
 			local overlay = self.registry:add(GameObject:new('Cursor',{
-				Transform:new(sobjTrans.x,sobjTrans.y),
+				Transform:new(s.x,s.y),
 			    Renderable:new(
 			      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 			      Global.Assets:getAsset("CURSOR_1")
@@ -102,7 +107,7 @@ function SelectableSystem:displayPathOverlay (map)
 			    Placeable:new()
 			}))
 			table.insert(self.path_overlays, overlay)
-			self.targetCollection:attach(overlay,s)
+			self.targetCollection:attach(overlay,tileOnWay)
 		end
 	end
 end
