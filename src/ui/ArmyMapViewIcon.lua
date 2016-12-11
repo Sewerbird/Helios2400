@@ -19,6 +19,7 @@ local ArmyMapViewIcon = class("ArmyMapViewIcon",{
 
 function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
       local gameinfo = registry:getComponent(gamestate, "GameInfo")
+      local playerinfo = registry:findComponent("GameInfo", {player_name = gameinfo.owner})
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
@@ -31,7 +32,7 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
         Transform:new(
           gameinfo.worldspace_coord[1], 
           gameinfo.worldspace_coord[2]
-          ):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
+          ):bindTo(gamestate .. ":moved", function (this, cmp, msg)
             local new_xy = registry:getComponent(msg.destination_info, "GameInfo").worldspace_coord
             cmp.x = new_xy[1]
             cmp.y = new_xy[2]
@@ -49,7 +50,22 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
         Renderable:new(
           Polygon:new({ w = 50, h = 50}),
           nil,
-          gameinfo.team_color),
+          playerinfo.midtone_color
+          ):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
+            local new_playerinfo = registry:findComponent("GameInfo", {player_name = msg.owner})
+            if new_playerinfo then cmp.backgroundcolor = new_playerinfo.midtone_color end
+        end),
+        Stateful:new(gamestate)
+      }))
+      debug_army_bg_shadow = registry:add(GameObject:new('Army_BGb', {
+        Transform:new(0, 0),
+        Renderable:new(
+          Polygon:new({0,0 , 3,3 , 3,45 , 45,45 , 50,50 , 0,50}),
+          nil,
+          playerinfo.shadow_color):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
+            local new_playerinfo = registry:findComponent("GameInfo", {player_name = msg.owner})
+            if new_playerinfo then cmp.backgroundcolor = new_playerinfo.shadow_color end
+        end),
         Stateful:new(gamestate)
       }))
       debug_army_sprite = registry:add(GameObject:new('Troop', {
@@ -65,7 +81,10 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
           nil,
           nil,
           nil,
-          gameinfo.army_name),
+          gameinfo.army_name):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
+            --print('>>>' .. inspect(msg,{depth=2}))
+            cmp.text = msg.army_name
+        end),
         Stateful:new(gamestate)
       }))
       debug_army_health = registry:add(GameObject:new('HealthBar', {
@@ -73,11 +92,13 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
         Renderable:new(
           Polygon:new({ w = 50 * (gameinfo.curr_hp / gameinfo.max_hp), h=5}),
           nil,
-          {100,200,100}):bindTo("tick", function (this, cmp, msg) 
-            cmp.polygon = Polygon:new({w = 50 * msg.percent, h = 5})
+          playerinfo.highlight_color):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
+            local new_playerinfo = registry:findComponent("GameInfo", {player_name = msg.owner})
+            if new_playerinfo then cmp.backgroundcolor = new_playerinfo.highlight_color end
         end),
         Stateful:new(gamestate)
       }))
+      --[[
       debug_army_timer = registry:add(GameObject:new('Timer', {
         Transform:new(0,15),
         Renderable:new(
@@ -89,10 +110,10 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
           cmp.text = registry:getComponent(gamestate,"GameInfo").address
         end),
         Stateful:new(gamestate)
-      }))
+      }))]]
       scenegraph:attach(debug_army,nil)
       scenegraph:attach(debug_army_bg, debug_army)
-      scenegraph:attachAll({debug_army_sprite, debug_army_name, debug_army_health, debug_army_timer}, debug_army_bg)
+      scenegraph:attachAll({debug_army_bg_shadow, debug_army_sprite, debug_army_name, debug_army_health--[[, debug_army_timer]]}, debug_army_bg)
 
    	self.root = debug_army
 end

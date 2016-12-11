@@ -29,7 +29,7 @@ function love.load()
   Global.MutatorBus = MutatorBus:new(Global.Registry)
   EarthSceneGraph, SpaceSceneGraph = Loader:new(Global):debugLoad()
 
-  my_viewer = Viewer:new(Global.Registry, {SpaceSceneGraph,EarthSceneGraph})
+  my_viewer = Viewer:new(Global.Registry, {EarthSceneGraph,SpaceSceneGraph})
 
   --Profiling stuff
   ProFi:start()
@@ -111,6 +111,8 @@ end
 function love.keypressed( key )
   if key == 'n' then
     my_viewer:nextView()
+  elseif key == 'q' then
+    my_viewer.Registry:publish("endTurn")
   end
   my_viewer.Systems.Interface:onKeypress(key)
 end
