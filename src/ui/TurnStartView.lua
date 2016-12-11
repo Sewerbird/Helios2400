@@ -38,9 +38,9 @@ function TurnStartView:init (registry, scenegraph, attachTo)
 	}))
 
 	local bg_rect = registry:add(GameObject:new("tsv_bg_rect", {
-		Transform:new(600-150,400-75),
+		Transform:new(600-150,400-95),
 		Renderable:new(
-			Polygon:new({w = 300, h = 150}),
+			Polygon:new({w = 300, h = 170}),
 			nil,
 			{64, 128, 128,200}),
 		}))
@@ -48,14 +48,14 @@ function TurnStartView:init (registry, scenegraph, attachTo)
 	local text_panel = registry:add(GameObject:new("tsv_text_panel",{
 		Transform:new(10, 10),
 		Renderable:new(
-			Polygon:new({w = 280, h = 80}),
+			Polygon:new({w = 280, h = 100}),
 			nil,
 			{100,200,200},
 			"Your Turn")
 		}))
 
 	local start_btn = registry:add(GameObject:new("tsv_confirm_btn",{
-		Transform:new(10, 100),
+		Transform:new(10, 120),
 		Renderable:new(
 			Polygon:new({w = 280, h = 40}),
 			nil,
