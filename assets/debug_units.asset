@@ -1,0 +1,39 @@
+{
+	assetId = "DEBUG_UNITS_1",
+	assetType = "spriteSheet",
+	assetPath = "debug_units.png",
+	data = {
+		{
+			assetId = "UNIT_INFANTRY_1",
+			assetType = "sprite",
+			x = 0,
+			y = 0,
+			width = 25,
+			height = 30
+		},
+		{
+			assetId = "UNIT_SPY_1",
+			assetType = "sprite",
+			x = 25,
+			y = 0,
+			width = 25,
+			height = 30
+		},
+		{
+			assetId = "UNIT_TANK_1",
+			assetType = "sprite",
+			x = 50,
+			y = 0,
+			width = 25,
+			height = 30
+		},
+		{
+			assetId = "UNIT_MECH_1",
+			assetType = "sprite",
+			x = 75,
+			y = 0,
+			width = 25,
+			height = 30
+		}
+	}
+}

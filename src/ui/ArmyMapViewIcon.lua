@@ -67,9 +67,9 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
         Stateful:new(gamestate)
       }))
       debug_army_sprite = registry:add(GameObject:new('Troop', {
-        Transform:new(3,5),
+        Transform:new(12,12),
         Renderable:new(
-          Polygon:new({ w = 50, h = 50 }),
+          Polygon:new({ w = 25, h = 30 }),
           Global.Assets:getAsset(gameinfo.icon_sprite)),
         Stateful:new(gamestate)
       }))

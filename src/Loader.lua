@@ -44,6 +44,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
       if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
       local ioffset = (i-1) * -21
       local hex = (j==1 or j==num_rows) and "TILE_ARCTIC_1" or ((math.random() < 0.3) and "TILE_GRASS_1" or "TILE_WATER_1")
+      local army = (math.random() < 0.3) and "UNIT_INFANTRY_1" or (math.random() < 0.5 and "UNIT_TANK_1" or "UNIT_MECH_1")
       local player = math.random(1,#players)
       local playerInfo = players[player]:getComponent('GameInfo')
       local hex_info = {
@@ -94,16 +95,16 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
         icon_sprite = "CITY_1",
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
       } or nil
-      local army_info = (hex == "TILE_GRASS_1" and math.random() < 0.13) and {
+      local army_info = (hex == "TILE_GRASS_1" and math.random() < 0.20) and {
         gs_type = "army",
         owner = playerInfo.player_name,
         turns_owned = {[playerInfo.player_name] = 1},
-        icon_sprite = "TROOP_1",
+        icon_sprite = army,
         curr_hp = math.floor(math.random() * 100),
         max_hp = 100,
         max_move = 10,
         curr_move = 10,
-        army_type = 'stealth',
+        army_type = 'infantry',
         army_name = playerInfo.player_name,
         personel_cnt = math.floor(math.random() * 10),
         assault_rating = 4,
