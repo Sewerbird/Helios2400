@@ -72,9 +72,9 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
         Stateful:new(gamestate)
       }))
       debug_army_sprite = registry:add(GameObject:new('Troop', {
-        Transform:new(3,5),
+        Transform:new(12,12),
         Renderable:new(
-          Polygon:new({ w = 50, h = 50 }),
+          Polygon:new({ w = 25, h = 30 }),
           Global.Assets:getAsset(gameinfo.icon_sprite)),
         Stateful:new(gamestate)
       }))
@@ -101,22 +101,22 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
         end),
         Stateful:new(gamestate)
       }))
-      --[[
-      debug_army_timer = registry:add(GameObject:new('Timer', {
-        Transform:new(0,15),
+      debug_army_moves = registry:add(GameObject:new('MovePointsCounter', {
+        Transform:new(0,33),
         Renderable:new(
+          Polygon:new({ w = 12, h = 12 }),
           nil,
-          nil,
-          nil,
-          gameinfo.address
+          {10,10,10},
+          gameinfo.curr_move
           ):bindTo(gamestate .. "_GameInfo", function(this, cmp, msg) 
-          cmp.text = registry:getComponent(gamestate,"GameInfo").address
+          print('got army movement cost deduction: ' .. inspect(msg))
+          cmp.text = registry:getComponent(gamestate,"GameInfo").curr_move
         end),
         Stateful:new(gamestate)
-      }))]]
+      }))
       scenegraph:attach(debug_army,nil)
       scenegraph:attach(debug_army_bg, debug_army)
-      scenegraph:attachAll({debug_army_bg_shadow, debug_army_sprite, debug_army_name, debug_army_health--[[, debug_army_timer]]}, debug_army_bg)
+      scenegraph:attachAll({debug_army_bg_shadow, debug_army_sprite, debug_army_name, debug_army_health, debug_army_moves}, debug_army_bg)
 
    	self.root = debug_army
 end

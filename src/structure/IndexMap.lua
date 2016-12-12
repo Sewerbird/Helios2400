@@ -130,7 +130,7 @@ end
 function IndexMap:findPath(fromId, toId, moveType)
 	local path, cost = self.as:findPath(fromId, toId, moveType)
 	print("cost of path is",cost);
-	return path
+	return path, cost
 end
 
 function IndexMap:findAccessibleAddresses(fromId, maxCost, moveType)

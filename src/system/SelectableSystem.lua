@@ -16,6 +16,7 @@ local SelectableSystem = System:extend({
 	current_selection = nil,
 	selected_unit_cursor_object = nil,
 	path = nil,
+	path_cost = nil,
 	path_overlays = {}
 })
 
@@ -196,7 +197,7 @@ function SelectableSystem:clearPathOverlay ()
 end
 
 function SelectableSystem:pathTo(fromAddress, toAddress, map)
-	self.path = map:findPath(fromAddress, toAddress)
+	self.path, self.path_cost = map:findPath(fromAddress, toAddress)
 	print("Path: " .. inspect(self.path))
 end
 
@@ -212,7 +213,7 @@ function SelectableSystem:moveSelectedTo (tgtGameObjectId, tgtAddress)
 				dstObj:getComponent('Stateful').ref,
 				srcObj:getComponent('Placeable').address, 
 				dstObj:getComponent('Addressable').address, 
-				0)
+				self.path_cost)
 
 			local city_at_location = self.registry:findComponent("GameInfo",{address = dstObj:getComponent('Addressable').address, gs_type = "city"})
 			local mutCapture = nil
