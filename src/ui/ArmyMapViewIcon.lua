@@ -85,7 +85,6 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
           nil,
           nil,
           gameinfo.army_name):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
-            --print('>>>' .. inspect(msg,{depth=2}))
             cmp.text = msg.army_name
         end),
         Stateful:new(gamestate)
@@ -109,8 +108,10 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
           {10,10,10},
           gameinfo.curr_move
           ):bindTo(gamestate .. "_GameInfo", function(this, cmp, msg) 
-          print('got army movement cost deduction: ' .. inspect(msg))
           cmp.text = registry:getComponent(gamestate,"GameInfo").curr_move
+          if cmp.text < 0 then cmp.text = "~" .. cmp.text 
+          else cmp.text = "" .. cmp.text end
+          cmp.polygon = Polygon:new( { w = 8 * #cmp.text, h = 12})
         end),
         Stateful:new(gamestate)
       }))
