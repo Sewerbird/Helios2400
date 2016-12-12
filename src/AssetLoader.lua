@@ -7,6 +7,7 @@ local Animation = require 'src/datatype/Animation'
 
 local AssetLoader = class("AssetLoader", {
 	assets = {},
+	specs = {},
 	rootPath = "",
 	errorPrefix = "ERROR: "
 })
@@ -33,6 +34,10 @@ function AssetLoader:loadAsset(asset)
 		return
 	end
 
+	if asset.assetType == "gameData" then
+		self:loadGameData(asset)
+		return
+	end
 	if asset.assetType == "spriteSheet" then 
 		self:loadSpriteSheet(asset)
 		return
@@ -95,8 +100,15 @@ function AssetLoader:loadAudio(audio)
 	self.assets[audio.assetId] = love.audio.newSource(self.rootPath .. audio.assetPath)
 end
 
+function AssetLoader:loadGameData(gamedatasheet)
+	for i, datum in ipairs(gamedatasheet.data) do
+		print("datum " .. i .. " -> " .. inspect(datum))
+		self.specs[datum.specId] = datum
+	end
+end
+
 function AssetLoader.isAsset(String)
-   return ".asset"=='' or string.sub(String,-string.len(".asset"))==".asset"
+   return ".asset"=='' or string.sub(String,-string.len(".asset"))==".asset" or string.sub(String,-string.len(".spec"))==".spec"
 end
 
 function AssetLoader:getAsset(assetId)
@@ -104,6 +116,23 @@ function AssetLoader:getAsset(assetId)
 		error(self.errorPrefix .. assetId .. " is not loaded or incorrect")
 	end
 	return self.assets[assetId]
+end
+
+local function copy(obj, seen)
+  if type(obj) ~= 'table' then return obj end
+  if seen and seen[obj] then return seen[obj] end
+  local s = seen or {}
+  local res = setmetatable({}, getmetatable(obj))
+  s[obj] = res
+  for k, v in pairs(obj) do res[copy(k, s)] = copy(v, s) end
+  return res
+end
+
+function AssetLoader:getSpec(specId)
+	if self.specs[specId] == nil then
+		error(self.errorPrefix .. specId .. " is not loaded or incorrect")
+	end
+	return copy(self.specs[specId])
 end
 
 function AssetLoader:printAllAssets()
