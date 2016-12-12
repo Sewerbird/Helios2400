@@ -32,7 +32,7 @@ function Loader:init(context)
   self.loadContext = context
 end
 
-function Loader:debugGenerateEarthMap (debug_gamestate)
+function Loader:debugGenerateEarthMap (debug_gamestate, assets)
   local city_names = {'New Moroni', 'Tiangong', 'Elonia', 'Neokyoto', 'Al Kicab', 'Choaswell', 'Atraapool', 'Efrimirie', 'Droawona'}
   local joffset = 0
   local num_rows = 12
@@ -44,7 +44,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
       if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
       local ioffset = (i-1) * -21
       local hex = (j==1 or j==num_rows) and "TILE_ARCTIC_1" or ((math.random() < 0.3) and "TILE_GRASS_1" or "TILE_WATER_1")
-      local army = (math.random() < 0.3) and "UNIT_INFANTRY_1" or (math.random() < 0.5 and "UNIT_TANK_1" or "UNIT_MECH_1")
+      local army = (math.random() < 0.3) and "SPEC_UNIT_INFANTRY_1" or (math.random() < 0.5 and "SPEC_UNIT_ARTILLERY_1" or "SPEC_UNIT_MECH_1")
       local player = math.random(1,#players)
       local playerInfo = players[player]:getComponent('GameInfo')
       local hex_info = {
@@ -95,25 +95,20 @@ function Loader:debugGenerateEarthMap (debug_gamestate)
         icon_sprite = "CITY_1",
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
       } or nil
-      local army_info = (hex == "TILE_GRASS_1" and math.random() < 0.20) and {
-        gs_type = "army",
-        owner = playerInfo.player_name,
-        turns_owned = {[playerInfo.player_name] = 1},
-        icon_sprite = army,
-        curr_hp = math.floor(math.random() * 100),
-        max_hp = 100,
-        max_move = 10,
-        curr_move = 10,
-        army_type = 'infantry',
-        army_name = playerInfo.player_name,
-        personel_cnt = math.floor(math.random() * 10),
-        assault_rating = 4,
-        defense_rating = 3,
-        map = 'Earth',
-        mov_type = "ground",
-        address = hex_info.address,
-        worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
-      } or nil
+      local army_info = nil
+      if hex == "TILE_GRASS_1" and math.random() < 0.20 then
+        army_info = assets:getSpec(army)
+        army_info.gs_type = "army"
+        army_info.map = 'Earth'
+        army_info.mov_type = "ground"
+        army_info.army_name = playerInfo.player_name
+        army_info.address = hex_info.address
+        army_info.worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
+        army_info.owner = playerInfo.player_name
+        army_info.turns_owned = {[playerInfo.player_name] = 1}
+        army_info.curr_hp = army_info.max_hp
+        army_info.curr_move = army_info.max_move
+      end
 
       local oHex = debug_gamestate:add(GameObject:new('gsHex',{GameInfo:new(hex_info)}))
       local oCity = city_info and debug_gamestate:add(GameObject:new('gsCity',{GameInfo:new(city_info)})) or nil
@@ -127,7 +122,7 @@ function Loader.inBounds(x, y, xBound, yBound)
   return x > 0 and y > 0 and x <= xBound and y <= yBound
 end
 
-function Loader:debugGenerateSpaceMap (debug_gamestate)
+function Loader:debugGenerateSpaceMap (debug_gamestate, assets)
 
   --Space Map
   local space_hexes = {
@@ -190,7 +185,7 @@ function Loader:debugGenerateSpaceMap (debug_gamestate)
   end
 end
 
-function Loader:debugGenerateMap ( save_name )
+function Loader:debugGenerateMap ( save_name, assets)
   --[[ Generate the Game State ]]--
 
   local debug_gamestate = Registry:new()
@@ -229,8 +224,8 @@ function Loader:debugGenerateMap ( save_name )
     })
   }))
 
-  self:debugGenerateEarthMap(debug_gamestate)
-  self:debugGenerateSpaceMap(debug_gamestate)
+  self:debugGenerateEarthMap(debug_gamestate, assets)
+  self:debugGenerateSpaceMap(debug_gamestate, assets)
 
   self:saveGame(save_name, debug_gamestate)
 end
@@ -248,7 +243,7 @@ function Loader:debugLoad ()
   --[[ Generate the Game State ]]--
 
   local debug_gamestate = self.loadContext.Registry--TODO: make this with a Registry:new();
-  self:debugGenerateMap('default')
+  self:debugGenerateMap('default', Assets)
   self:loadGame('default',debug_gamestate)
 
   --[[Instantiate Tilemap View ]]--

@@ -20,7 +20,7 @@
 			height = 30
 		},
 		{
-			assetId = "UNIT_TANK_1",
+			assetId = "UNIT_ARTILLERY_1",
 			assetType = "sprite",
 			x = 50,
 			y = 0,
