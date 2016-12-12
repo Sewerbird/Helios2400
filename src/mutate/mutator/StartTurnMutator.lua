@@ -15,8 +15,28 @@ end
 function StartTurnMutator:apply ( registry )
 
 	local new_player = registry:findComponent("GameInfo",{gs_type="player", player_name=self.new_player})
-	print('BEGINNING TURN WITH ' .. self.new_player)
 	registry:publish("beginTurn",new_player)
+	local playerControlsByzantium = false
+	local playerHasWonTheGame = false
+	local byzantium = nil
+	for i, city in ipairs(registry:findComponents("GameInfo", {gs_type="city", owner=self.new_player})) do
+		city.turns_owned[self.new_player] = city.turns_owned[self.new_player] and city.turns_owned[self.new_player] + 1 or 1
+		if city.is_planetary_capitol and city.turns_owned[self.new_player] == 5 then
+			--Win Game
+			playerHasWonTheGame = true
+			byzantium = city
+		elseif city.is_planetary_capitol then
+			playerControlsByzantium = true
+			byzantium = city
+		end
+	end
+
+	registry:publish("beginTurn",new_player)
+	if playerHasWonTheGame then
+		registry:publish("gameOverByzantiumWin", {player=new_player,byzantium=byzantium})
+	elseif playerControlsByzantium then
+		registry:publish("byzantiumOwned", {player=new_player,byzantium=byzantium})
+	end
 
 end
 
