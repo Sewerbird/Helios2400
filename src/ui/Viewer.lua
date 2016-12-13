@@ -25,7 +25,7 @@ function Viewer:init ( registry, mapScenes )
 			sceneGraph = scene,
 			render = RenderableSystem:new(self.Registry, scene),
 			interface = InterfaceableSystem:new(self.Registry, scene),
-			selection = SelectableSystem:new(self.Registry, scene, "CURSOR_1")
+			selection = SelectableSystem:new(self.Registry, scene, "ANIM_CURSOR_1")
 		}
 		self.mapViews:add(view)
 	end

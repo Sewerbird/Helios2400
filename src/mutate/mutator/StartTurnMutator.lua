@@ -14,6 +14,7 @@ end
 
 function StartTurnMutator:apply ( registry )
 
+	--Check the Win Condition
 	local new_player = registry:findComponent("GameInfo",{gs_type="player", player_name=self.new_player})
 	registry:publish("beginTurn",new_player)
 	local playerControlsByzantium = false
@@ -31,6 +32,13 @@ function StartTurnMutator:apply ( registry )
 		end
 	end
 
+	--Refresh all Players' units' movement budgets
+	for i, army in ipairs(registry:findComponents("GameInfo", {gs_type="army", owner=self.new_player})) do
+		army.curr_move = army.max_move
+		registry:publish(army.gid .. "_GameInfo", army)
+	end
+
+	--Publish events
 	registry:publish("beginTurn",new_player)
 	if playerHasWonTheGame then
 		registry:publish("gameOverByzantiumWin", {player=new_player,byzantium=byzantium})

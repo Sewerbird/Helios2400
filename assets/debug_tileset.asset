@@ -84,7 +84,7 @@
 			height = 50
 		},
 		{
-			assetId = "CURSOR_1",
+			assetId = "ANIM_CURSOR_1",
 			assetType = "animation",
 			x = 0,
 			y = 218,
@@ -92,6 +92,22 @@
 			frameHeight = 73,
 			amountOfFrames = 3,
 			frameTime = 0.3
+		},
+		{
+			assetId = "CURSOR_1",
+			assetType = "sprite",
+			x = 0,
+			y = 218,
+			width = 84,
+			height = 73
+		},
+		{
+			assetId = "CURSOR_2",
+			assetType = "sprite",
+			x = 84,
+			y = 218,
+			width = 84,
+			height = 73
 		}
 	}
 }

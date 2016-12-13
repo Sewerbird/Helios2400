@@ -1,6 +1,7 @@
 --MoveArmyMutator.lua
 local class = require 'lib/30log'
 local Mutator = require 'src/mutate/Mutator'
+local CaptureCityMutator = require 'src/mutate/mutator/CaptureCityMutator'
 local MoveArmyMutator = Mutator:extend('MoveArmyMutator', {
 	origin_address = nil,
 	destination_address = nil,
@@ -17,6 +18,11 @@ function MoveArmyMutator:init ( target, origin_info, destination_info, origin_ad
 	self.move_cost = move_cost
 end
 
+function MoveArmyMutator:isValid ( registry )
+	local info = registry:get(self.target):getComponent("GameInfo")
+	return info.curr_move >= self.move_cost
+end
+
 function MoveArmyMutator:apply ( registry )
 	local being_moved = registry:get(self.target)
 	local info = being_moved:getComponent("GameInfo")
@@ -31,6 +37,19 @@ function MoveArmyMutator:apply ( registry )
 		destination_address = self.destination_address,
 		move_cost = self.move_cost
 	})
+
+	local city_at_location = registry:findComponent("GameInfo",{address = self.destination_address, gs_type = "city"})
+	local mutCapture = nil
+	if city_at_location then
+		local newOwner = info.owner
+		local oldOwner = city_at_location.owner
+		print('Capturing city ' .. city_at_location.gid .. ' with ' .. newOwner .. ' from ' .. oldOwner)
+		mutCapture = CaptureCityMutator:new(city_at_location.gid, newOwner, oldOwner)
+	end
+		
+	if mutCapture then 
+		registry:publish("IMMEDIATE_MUTATE",mutCapture) 
+	end
 end
 
 function MoveArmyMutator:rollback ( registry )

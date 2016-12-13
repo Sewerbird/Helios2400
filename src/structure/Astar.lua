@@ -35,11 +35,13 @@ function Astar:findPath(fromAddress, toAddress, moveType)
     	if (currentAddress == toAddress) then
     		currentAddress = cameFrom[toAddress]
     		local path = {toAddress}
+            local path_costs = {gScore[toAddress]+0}
     		while not(currentAddress == nil) do
     			table.insert(path,currentAddress)
+                table.insert(path_costs,gScore[currentAddress]+0)
     			currentAddress = cameFrom[currentAddress]
     		end
-    		return path, gScore[toAddress]
+    		return path, gScore[toAddress], path_costs
     	end
 
     	table.insert(closed,currentAddress)
