@@ -56,18 +56,14 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 			onenterunitSelected = function(this, event, from, to, msg) 
 				print("Selecting unit (" .. msg.uid .. ") at " .. inspect(msg.address.address) .. " and my path is " .. inspect(self.path))
 				self:select(self.current_selection)
+				self:clearPathOverlay()
+				self.path = nil
 			end,
 			onenteridle = function(this, event, from, to, msg)
 				self:deselect()
 			end,
 			onleaveunitPathing = function(this, event, from, to, msg)
-				self:clearPathOverlay()
 			end,
-			--[[
-			onleaveunitMoving = function(this, event, from, to, msg)
-				self.path = nil
-			end,
-			]]--
 			onclickedOtherHex = function(this, event, from, to, msg) 
 				local fromAddress = self.registry:get(self.current_selection):getComponent("Placeable").address
 				local tgt = self.registry:get(msg.uid)
@@ -226,7 +222,7 @@ end
 
 function SelectableSystem:pathTo(fromAddress, toAddress, map)
 	self.path, self.path_cost, self.path_costs = map:findPath(fromAddress, toAddress)
-	print("Path: " .. inspect(self.path) .. "\nTotal Cost: " .. self.path_cost .. "\nPiecewise Costs: " .. inspect(self.path_costs))
+	print("Path: " .. inspect(self.path) .. "\nTotal Cost: " .. inspect(self.path_cost) .. "\nPiecewise Costs: " .. inspect(self.path_costs))
 end
 
 function SelectableSystem:moveSelectedTo (tgtGameObjectId, tgtAddress)
