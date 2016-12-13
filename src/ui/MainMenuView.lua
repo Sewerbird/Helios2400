@@ -5,7 +5,7 @@ local Renderable = require 'src/component/Renderable'
 local Interfaceable = require 'src/component/Interfaceable'
 local Polygon = require 'src/datatype/Polygon'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
-local SaveGameView = require 'src/ui/SaveGameDirectoryView'
+local SaveDirectoryView = require 'src/ui/SaveDirectoryView'
 
 local MainMenuView = class("MainMenuView", {
 	root = nil,
@@ -20,10 +20,11 @@ function MainMenuView:init (registry, scenegraph)
 	self.scenegraph = scenegraph
 	self.registry = registry
 
-	local save_view = SaveGameView:new(registry, scenegraph, ".sav")
+	self.save_view = SaveDirectoryView:new(registry, scenegraph,".sav")
 
 	local save_button_handler = TouchDelegate:new()
 	save_button_handler:setHandler('onTouch', function(this, x, y)
+		self.save_view:show(self.root)
 		print('Button pressed: save')
 	end)
 	local load_button_handler = TouchDelegate:new()
@@ -178,7 +179,7 @@ function MainMenuView:init (registry, scenegraph)
 		}))
 
 	self.scenegraph:attach(self.root, nil)
-	self.scenegraph:attachAll({gray_out, bg_rect, save_view.root}, self.root)
+	self.scenegraph:attachAll({gray_out, bg_rect, self.save_view.root}, self.root)
 	self.scenegraph:attachAll({title_panel, saveload_panel, view_switcher_panel}, bg_rect)
 	self.scenegraph:attachAll({save_btn, load_btn, return_btn, quit_btn}, saveload_panel)
 	self.scenegraph:attachAll({switch_next_btn, switch_prev_btn}, view_switcher_panel)

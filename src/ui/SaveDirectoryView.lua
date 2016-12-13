@@ -6,7 +6,7 @@ local Interfaceable = require 'src/component/Interfaceable'
 local Polygon = require 'src/datatype/Polygon'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 
-local SaveGameDirectoryView = class("SaveGameDirectoryView", {
+local SaveDirectoryView = class("SaveDirectoryView", {
 	root = nil,
 	is_attached = false,
 	scenegraph = nil
@@ -25,7 +25,7 @@ function SaveGameDirectoryRow:init (registry, scenegraph, path, row_num)
 	self.scenegraph = scenegraph
 
 	local bg_rect = registry:add(GameObject:new("sgdvr_bg_rect", {
-		Transform:new(5,row_num * 40),
+		Transform:new(5,5 + row_num * 40),
 		Renderable:new(
 			Polygon:new({ w = 300, h = 30 }),
 			nil,
@@ -37,7 +37,7 @@ function SaveGameDirectoryRow:init (registry, scenegraph, path, row_num)
 	self.scenegraph:attach(bg_rect, self.root)
 end
 
-function SaveGameDirectoryView:getList (file_extension_filter)
+function SaveDirectoryView:getList (file_extension_filter)
 	local rootpath = "" --TODO: make a .sav and .scn subdirectory
 	local saves = {}
 	for i,v in ipairs(love.filesystem.getDirectoryItems("")) do
@@ -49,7 +49,24 @@ function SaveGameDirectoryView:getList (file_extension_filter)
 	return saves
 end
 
-function SaveGameDirectoryView:init (registry, scenegraph, file_extension_filter)
+function SaveDirectoryView:setMode (mode)
+	if mode == "LOAD" then
+		self.mode = "LOAD"
+	elseif mode == "SAVE" then
+		self.mode = "SAVE"
+	end
+end
+
+function SaveDirectoryView:show (attachTo)
+end
+
+function SaveDirectoryView:hide ()
+end
+
+function SaveDirectoryView:refresh ()
+end
+
+function SaveDirectoryView:init (registry, scenegraph, file_extension_filter)
 	self.root = registry:add(GameObject:new("qcpv_root", {
 		Transform:new(0,0)
 	}))
@@ -63,7 +80,7 @@ function SaveGameDirectoryView:init (registry, scenegraph, file_extension_filter
 		Renderable:new(
 			Polygon:new({ w = 310, h = 600}),
 			nil,
-			{200,200,200})
+			{100,200,200})
 	})), self.root)
 	for i, save in ipairs(saves) do
 		self.scenegraph:attach(SaveGameDirectoryRow:new(registry,scenegraph,save,i-1).root, self.root)
@@ -71,4 +88,4 @@ function SaveGameDirectoryView:init (registry, scenegraph, file_extension_filter
 
 end
 
-return SaveGameDirectoryView
+return SaveDirectoryView
