@@ -40,8 +40,8 @@ end
 function SaveGameDirectoryView:getList (file_extension_filter)
 	local rootpath = "" --TODO: make a .sav and .scn subdirectory
 	local saves = {}
-	for i,v in ipairs(love.filesystem.getDirectoryItems(love.filesystem.getSaveDirectory())) do
-		if file_extension_filter and string.sub(file_extension_filter,-string.len(file_extension_filter))==file_extension_filter then
+	for i,v in ipairs(love.filesystem.getDirectoryItems("")) do
+		if file_extension_filter and string.sub(v,-string.len(file_extension_filter))==file_extension_filter then
 			local filePath = rootpath .. v
 			table.insert(saves, filePath)
 		end
