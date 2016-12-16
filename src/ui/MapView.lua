@@ -14,15 +14,17 @@ local ConfirmationDialogBoxView = require 'src/ui/ConfirmationDialogBoxView'
 local TurnStartView = require 'src/ui/TurnStartView'
 local CityInspectorView = require 'src/ui/CityInspectorView'
 local ArmyInspectorView = require 'src/ui/ArmyInspectorView'
+local ArmyMapViewIcon = require 'src/ui/ArmyMapViewIcon'
 
 local MapView = class("MapView", {
 
 })
 
-function MapView:init( registry, scenegraph, tiles, cities, units )
+function MapView:init( registry, scenegraph, map, tiles, cities, units )
 
   self.registry = registry
   self.scenegraph = scenegraph
+  self.map = map
 
   local Map_Layer = registry:add(GameObject:new('Map Layer', {
     Transform:new()
@@ -102,6 +104,13 @@ function MapView:init( registry, scenegraph, tiles, cities, units )
       print('Show army inspector for ' .. inspect(msg.address.address))
       Army_Inspector_View:hide()
       Army_Inspector_View:show(Inspector,msg)
+    end
+  end)
+
+  registry:subscribe("placeArmy", function(this, msg)
+    if msg.map == self.map then
+      print("Placing army on " .. self.map .. ': ' .. inspect(msg) .. ' -> ' .. Unit_Layer)
+      self.scenegraph:attach(ArmyMapViewIcon:new(self.registry,self.scenegraph,msg.unit).root, Unit_Layer)
     end
   end)
 

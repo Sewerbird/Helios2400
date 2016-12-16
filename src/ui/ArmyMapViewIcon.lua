@@ -17,15 +17,15 @@ local ArmyMapViewIcon = class("ArmyMapViewIcon",{
 	root = nil
 })
 
-function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
+function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
       local gameinfo = registry:getComponent(gamestate, "GameInfo")
       local playerinfo = registry:findComponent("GameInfo", {player_name = gameinfo.owner})
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
-          registry:publish("selectIcon",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), map = map, gamestate = gamestate, icon_type = 'army'})
-          registry:publish("selectArmy",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), map = map, gamestate = gamestate, icon_type = 'army'})
-          print('Clicked on a unit (' .. this.component.gob.uid .. ')! Is situated at address:' .. map:summarizeAddress(this.component:getSiblingComponent('Placeable').address))
+          registry:publish("selectIcon",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), gamestate = gamestate, icon_type = 'army'})
+          registry:publish("selectArmy",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), gamestate = gamestate, icon_type = 'army'})
+          print('Clicked on a unit (' .. this.component.gob.uid .. ')! Is situated at address:' .. this.component:getSiblingComponent('Placeable').address)
           return true
         end
       end)

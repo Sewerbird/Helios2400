@@ -10,6 +10,7 @@ local TouchDelegate = require 'src/datatype/TouchDelegate'
 local GameObject = require 'src/GameObject'
 local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
+local ProduceArmyMutator = require 'src/mutate/mutator/ProduceArmyMutator'
 
 local CityMapViewIcon = class("CityMapViewIcon", {
 	root = nil
@@ -23,6 +24,9 @@ function CityMapViewIcon:init(registry, scenegraph, map, gamestate)
 		if this.component.gob:hasComponent('Placeable') then
           	registry:publish("selectCity",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), map = map, gamestate = gamestate, icon_type = 'city'})
 			print('Clicked on a city (' .. this.component.gob.uid .. ')! Is situated at address: ' .. map:summarizeAddress(this.component:getSiblingComponent('Placeable').address))
+			local cityinfo = registry:findComponent("GameInfo", {gs_type = "city", address = this.component:getSiblingComponent('Placeable').address})
+			print('Clicked on a city with cityinfo = ' .. inspect(cityinfo.address) .. ', named ' .. cityinfo.city_name)
+			registry:publish("IMMEDIATE_MUTATE", ProduceArmyMutator:new("SPEC_UNIT_MECH_1",cityinfo.address))
 		end
 	end)
 	debug_city = registry:add(GameObject:new('City', {

@@ -104,7 +104,6 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
         army_info = assets:getSpec(army)
         army_info.gs_type = "army"
         army_info.map = 'Earth'
-        army_info.mov_type = "ground"
         army_info.army_name = playerInfo.player_name
         army_info.address = hex_info.address
         army_info.worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
@@ -284,15 +283,15 @@ function Loader:debugLoad ()
       end
     elseif obj.description == 'gsArmy' then
       if tgt.map == 'Earth' then
-        table.insert(Earth_Units, ArmyMapViewIcon:new(debug_gamestate,EarthSceneGraph,Earth_Map,key))
+        table.insert(Earth_Units, ArmyMapViewIcon:new(debug_gamestate,EarthSceneGraph,key))
       elseif tgt.map == 'Space' then
-        table.insert(Space_Units, ArmyMapViewIcon:new(debug_gamestate,SpaceSceneGraph,Space_Map,key))
+        table.insert(Space_Units, ArmyMapViewIcon:new(debug_gamestate,SpaceSceneGraph,key))
       end
     end
   end
 
-  local Earth_View = MapView:new(debug_gamestate, EarthSceneGraph, Earth_Tiles, Earth_Cities, Earth_Units)
-  local Space_View = MapView:new(debug_gamestate, SpaceSceneGraph, Space_Tiles, Space_Cities, Space_Units)
+  local Earth_View = MapView:new(debug_gamestate, EarthSceneGraph, 'Earth', Earth_Tiles, Earth_Cities, Earth_Units)
+  local Space_View = MapView:new(debug_gamestate, SpaceSceneGraph, 'Space', Space_Tiles, Space_Cities, Space_Units)
 
   return EarthSceneGraph, SpaceSceneGraph
 end
