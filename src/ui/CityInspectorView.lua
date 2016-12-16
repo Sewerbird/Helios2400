@@ -5,11 +5,13 @@ local Renderable = require 'src/component/Renderable'
 local Interfaceable = require 'src/component/Interfaceable'
 local Polygon = require 'src/datatype/Polygon'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
+local ProduceArmyMutator = require 'src/mutate/mutator/ProduceArmyMutator'
 
 local CityInspectorView = class("CityInspectorView", {
 	root = nil,
 	is_attached = false,
-	scenegraph = nil
+	scenegraph = nil,
+    cityInfo = nil
 })
 
 function CityInspectorView:init (registry, scenegraph)
@@ -18,13 +20,6 @@ function CityInspectorView:init (registry, scenegraph)
 	}))
 	self.scenegraph = scenegraph
 	self.registry = registry
-
-	local end_turn_button_handler = TouchDelegate:new()
-	end_turn_button_handler:setHandler('onTouch', function(this, x, y)
-		print('Ending turn')
-		registry:publish(self.root .. ':endTurnRequest')
-		return true
-	end)
 
 	local bg_rect = registry:add(GameObject:new("civ_bg_rect", {
 		Transform:new(125,0),
@@ -60,13 +55,23 @@ function CityInspectorView:init (registry, scenegraph)
     		{120,150,150},
     		"Currently Building Nothing")
     	}))
+    local debug_build_button_handler = TouchDelegate:new()
+    debug_build_button_handler:setHandler('onTouch', function(this, x, y)
+        if self.cityInfo then
+            print('Button pressed: building unit at city named ' .. self.cityInfo.city_name)
+            registry:publish("IMMEDIATE_MUTATE", ProduceArmyMutator:new("SPEC_UNIT_MECH_1",self.cityInfo.address))
+        end
+    end)
     local build_btn = registry:add(GameObject:new("civ_build_btn", {
     	Transform:new(5,80),
     	Renderable:new(
     		Polygon:new({w=65, h = 30}),
     		nil,
     		{200,200,200},
-    		"BUILD")
+    		"BUILD"),
+        Interfaceable:new(
+            Polygon:new({w=65, h = 30}),
+            debug_build_button_handler)
     	}))
     local stop_build_btn = registry:add(GameObject:new("civ_stop_build_btn", {
     	Transform:new(75,80),
@@ -101,6 +106,7 @@ function CityInspectorView:init (registry, scenegraph)
 
 	self.info_rect = info_rect
 	self.build_info = build_info
+    self.build_rect = build_rect
 	self.aux_info = aux_info
 end
 
@@ -113,6 +119,7 @@ function CityInspectorView:show ( attachTo, city )
 		local cityPlanet = cityInfo.map
 		local cityAge = cityInfo.turns_owned[cityOwner]
 
+        self.cityInfo = cityInfo
 		self.registry:get(self.info_rect):getComponent("Renderable").text = (cityName or "none") .. "\n" .. (cityOwner or "none") .. "\n" .. cityPlanet .. " : " .. cityAddress .. "\n" .. (cityOwner or "none") .. "'s for " .. (cityAge or 0) .. " turns"
 		self.scenegraph:attach(self.root, attachTo)
 		self.is_attached = true
@@ -123,6 +130,7 @@ function CityInspectorView:hide ()
 	if self.is_attached then
 		self.scenegraph:detach(self.root)
 		self.is_attached = false
+        self.cityInfo = nil
 	end
 end
 

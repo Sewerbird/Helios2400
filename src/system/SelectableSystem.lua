@@ -26,7 +26,7 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 		Transform:new(0,0),
 	    Renderable:new(
 	      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
-	      Global.Assets:getAsset(cursor_sprite)
+	      Global.Assets:getAsset("ANIM_CURSOR_1")
 	      ),
 	    Placeable:new()
 	}))
