@@ -102,7 +102,6 @@ end
 
 function AssetLoader:loadGameData(gamedatasheet)
 	for i, datum in ipairs(gamedatasheet.data) do
-		print("datum " .. i .. " -> " .. inspect(datum))
 		self.specs[datum.specId] = datum
 	end
 end

@@ -44,7 +44,6 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
           Unit_Touch_Delegate),
         Stateful:new(gamestate),
         Placeable:new(gameinfo.address):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
-          print("Updating army placeable address")
           cmp.address = msg.address
         end),
         Moveable:new()
@@ -110,16 +109,11 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
           gameinfo.curr_move
           ):bindTo(gamestate .. "_GameInfo", function(this, cmp, msg) 
           cmp.text = registry:getComponent(gamestate,"GameInfo").curr_move
-          if cmp.text == 0 then
+          if cmp.text <= 0 then
             cmp.text = ""
             cmp.polygon = Polygon:new({0,-33 , 50,-33 , 50,12 , 0,12})
             cmp.transform = Transform:new(0,0)
             cmp.backgroundcolor = {10,10,10,100}
-          elseif cmp.text < 0 then 
-            cmp.text = "~" .. cmp.text 
-            cmp.polygon = Polygon:new({0,-33 , 50,-33 , 50,12 , 0,12})
-            cmp.transform = Transform:new(0,0)
-            cmp.backgroundcolor = {10,10,10}
           else 
             cmp.transform = Transform:new(0,33)
             cmp.text = "" .. cmp.text 

@@ -149,7 +149,7 @@ function CityInspectorSummaryCardView:show( curr_player, city_player, city )
         local px_e = 45+(progress_percent*(200-45))
         build_progress.polygon = Polygon:new({5,5 , 45,5 , 45,20+15 , px_e,20+15 , px_e,30+15 , 35,30+15, 5,45})
     local info = self.registry:getComponent(self.info_text,"Renderable")
-        info.text = "Controlled by ".. city.owner.." ".. city.turns_owned[city.owner] .." turns"
+        info.text = "Controlled by ".. tostring(city.owner).." ".. tostring(city.turns_owned[city.owner]) .." turns"
 
     self.build_button_handler:setHandler('onTouch', function(this, x, y)
         if city then
@@ -190,6 +190,13 @@ function CityInspectorView:show ( attachTo, city )
         local currentPlayerInfo = self.registry:findComponent("GameInfo",{gs_type = "player", is_current = true})
         local cityPlayerInfo = self.registry:findComponent("GameInfo",{gs_type = "player", player_name = cityInfo.owner})
         self.summary_card:show( currentPlayerInfo, cityPlayerInfo, cityInfo )
+
+        self.citySubscription = self.registry:subscribe(city.gamestate .. "_GameInfo", function(this,msg)
+            local cityInfo = self.registry:get(city.gamestate):getComponent("GameInfo")
+            local currentPlayerInfo = self.registry:findComponent("GameInfo",{gs_type = "player", is_current = true})
+            local cityPlayerInfo = self.registry:findComponent("GameInfo",{gs_type = "player", player_name = cityInfo.owner})
+            self.summary_card:show(currentPlayerInfo, cityPlayerInfo, cityInfo)
+        end)
 	end
 end
 
@@ -197,6 +204,7 @@ function CityInspectorView:hide ()
 	if self.is_attached then
 		self.scenegraph:detach(self.root)
 		self.is_attached = false
+        self:citySubscription()
 	end
 end
 

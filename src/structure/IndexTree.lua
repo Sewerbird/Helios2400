@@ -105,7 +105,7 @@ function IndexTree:detach ( detachee, detachFromId )
 	assert(detachee ~= nil, 'tried to detach nil')
 	local v = self.nodes[detachee]
 	if not v then
-		print("Detachee " .. detachee .. " not in index tree")
+		error("Detachee " .. detachee .. " not in index tree")
 	else
 		for j, p in ipairs(v.parents) do
 			for k, c in ipairs(self.nodes[p].children) do
