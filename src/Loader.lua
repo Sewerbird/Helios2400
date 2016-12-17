@@ -44,8 +44,8 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
       if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
       local isCapitol = (i == 5) and (j == 5)
       local ioffset = (i-1) * -21
-      local hex = (j==1 or j==num_rows) and "TILE_ARCTIC_1" or ((math.random() < 0.3 or isCapitol) and "TILE_GRASS_1" or "TILE_WATER_1")
-      local army = (math.random() < 0.3) and "SPEC_UNIT_INFANTRY_1" or (math.random() < 0.5 and "SPEC_UNIT_ARTILLERY_1" or "SPEC_UNIT_MECH_1")
+      local hex = (j==1 or j==num_rows) and "TILE_ARCTIC_1" or ((math.random() < 0.7 or isCapitol) and "TILE_GRASS_1" or "TILE_WATER_1")
+      local army = (math.random() < 0.05) and "SPEC_UNIT_INFANTRY_1" or (math.random() < 0.5 and "SPEC_UNIT_ARTILLERY_1" or "SPEC_UNIT_MECH_1")
       local player = math.random(1,#players)
       local playerInfo = players[player]:getComponent('GameInfo')
 
@@ -88,7 +88,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
       if self.inBounds(i-1,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i-1,j):toString()) end
       if self.inBounds(i+1,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i+1,j):toString()) end
           
-      local city_info = (isCapitol or (hex == "TILE_GRASS_1" and math.random() < 0.15)) and {
+      local city_info = (isCapitol or (hex == "TILE_GRASS_1" and math.random() < 0.05)) and {
         gs_type = "city",
         owner = playerInfo.player_name,
         is_planetary_capitol = isCapitol,
@@ -97,7 +97,8 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
         map = 'Earth',
         address = hex_info.address,
         icon_sprite = "CITY_1",
-        worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
+        worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset},
+        build_queue = {}
       } or nil
       local army_info = nil
       if hex == "TILE_GRASS_1" and math.random() < 0.20 then
