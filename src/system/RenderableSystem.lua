@@ -11,11 +11,13 @@ local System = require 'src/System'
 local RenderableSystem = System:extend("RenderableSystem",{
 	renderable_cache = nil,
 	last_publish_count = nil,
-	dirty = 10000
+	dirty = 10000,
+	font = nil
 })
 
 function RenderableSystem:init ( registry, targetCollection )
 	RenderableSystem.super.init(self, registry, targetCollection)
+	love.graphics.setNewFont("assets/InputSansNarrow-Light.ttf",12)
 end
 
 function RenderableSystem:update( dt )

@@ -110,9 +110,22 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
           gameinfo.curr_move
           ):bindTo(gamestate .. "_GameInfo", function(this, cmp, msg) 
           cmp.text = registry:getComponent(gamestate,"GameInfo").curr_move
-          if cmp.text < 0 then cmp.text = "~" .. cmp.text 
-          else cmp.text = "" .. cmp.text end
-          cmp.polygon = Polygon:new( { w = 8 * #cmp.text, h = 12})
+          if cmp.text == 0 then
+            cmp.text = ""
+            cmp.polygon = Polygon:new({0,-33 , 50,-33 , 50,12 , 0,12})
+            cmp.transform = Transform:new(0,0)
+            cmp.backgroundcolor = {10,10,10,100}
+          elseif cmp.text < 0 then 
+            cmp.text = "~" .. cmp.text 
+            cmp.polygon = Polygon:new({0,-33 , 50,-33 , 50,12 , 0,12})
+            cmp.transform = Transform:new(0,0)
+            cmp.backgroundcolor = {10,10,10}
+          else 
+            cmp.transform = Transform:new(0,33)
+            cmp.text = "" .. cmp.text 
+            cmp.polygon = Polygon:new( { w = 8 * #cmp.text, h = 12})
+            cmp.backgroundcolor = {10,10,10}
+          end
         end),
         Stateful:new(gamestate)
       }))

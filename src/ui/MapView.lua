@@ -41,7 +41,7 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
   local Army_Inspector_View = ArmyInspectorView:new(registry, scenegraph)
 
   local Inspector = registry:add(GameObject:new('Inspector',{
-    Transform:new(0,675),
+    Transform:new(0,640),
     Renderable:new(
       Polygon:new({w=1200, h=125}),
       nil,
@@ -102,6 +102,7 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
   registry:subscribe("selectArmy", function(this, msg)
     if msg.icon_type == 'army' then
       print('Show army inspector for ' .. inspect(msg.address.address))
+      City_Inspector_View:hide()
       Army_Inspector_View:hide()
       Army_Inspector_View:show(Inspector,msg)
     end

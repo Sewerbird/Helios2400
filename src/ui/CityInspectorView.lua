@@ -7,6 +7,158 @@ local Polygon = require 'src/datatype/Polygon'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 local ProduceArmyMutator = require 'src/mutate/mutator/ProduceArmyMutator'
 
+local CityInspectorSummaryCardView = class("CityInspectorSummaryCardView", {
+    root = nil,
+    registry = nil,
+    scenegraph = nil
+})
+
+function CityInspectorSummaryCardView:init (registry, scenegraph)
+    self.root = registry:add(GameObject:new("civScard", {
+        Transform:new(0,0)
+    }))
+
+    self.registry = registry
+    self.scenegraph = scenegraph
+    
+    --[[Handlers]]--
+    self.build_button_handler = TouchDelegate:new()
+
+    --[[Components]]--
+
+    local bg_rect = registry:add(GameObject:new("civScard_bg_rect",{
+        Transform:new(5,5),
+        Renderable:new(
+            Polygon:new({w = 230, h = 160}),
+            nil,
+            {250,120,120} --TODO: player highlight color
+            )
+        }))
+
+    local shield = registry:add(GameObject:new("civScard_shield",{
+        Transform:new(0,0),
+        Renderable:new(
+            Polygon:new({0,0 , 10,10 , 40,10 , 60,30 , 180,30 , 200,10 , 230,10 , 230,150 , 10,150 , 10,10.1 , 0,0.1 , 0,160 , 240,160 , 240,0}),
+            nil,
+            {120,30,30}--TODO: player shade color
+            )
+        }))
+
+    local title_rect = registry:add(GameObject:new("civScard_title_rect",{
+        Transform:new(45,5),
+        Renderable:new(
+            Polygon:new({0,0 , 150,0 , 132,18 , 18,18}),
+            nil,
+            {200,80,80},--TOOD: player midtone color
+            "CITY NAME HERE" --TODO: city name
+            )
+        }))
+
+    local info_text = registry:add(GameObject:new("civScard_info_rect",{
+        Transform:new(10,30),
+        Renderable:new(
+            Polygon:new({w = 220, h = 50}),
+            nil,
+            {200,200,200,0},
+            "CITY OWNER HERE (3 turns)\nFACTION: Mormons"
+            )
+        }))
+
+    local build_summary = registry:add(GameObject:new("civScard_build_summary",{
+        Transform:new(10,85),
+        Renderable:new(
+            Polygon:new({w = 10, h = 10}),
+            nil,
+            {0,0,0,0},
+            "bs")
+    }))
+
+    local being_built_icon = registry:add(GameObject:new("civScard_being_built_icon",{
+        Transform:new(-12+25,-15+25),
+        Renderable:new(
+            Polygon:new({w = 25, h = 30}),
+            Global.Assets:getAsset("UNIT_MECH_1"),
+            {200,200,0}),
+        Interfaceable:new(
+            Polygon:new({w = 25, h = 30}),
+            self.build_button_handler)
+        }))
+
+    local build_thermometer_text = registry:add(GameObject:new("civScard_therm_text",{
+        Transform:new(50,0),
+        Renderable:new(
+            Polygon:new({w = 160, h = 30}),
+            nil,
+            {255,255,255,100},
+            "'Mad Cat' Mech Squad\n(3 turns left)"
+            )
+        }))
+    local build_thermometer_bg = registry:add(GameObject:new("civScard_therm_back",{
+        Transform:new(0,0),
+        Renderable:new(
+            Polygon:new({0,0 , 50,0 , 50,15+15 , 200+10,15+15 , 200+10,35+15 , 50,35+15 , 50,50 , 0,50}),
+            nil,
+            {120,30,30})
+        }))
+
+    local build_thermometer_wrap = registry:add(GameObject:new("civScard_therm_wrap",{
+        Transform:new(0,0),
+        Renderable:new(
+            Polygon:new({5,5 , 45,5 , 45,20+15 , 195+10,20+15 , 195+10,30+15 , 45,30+15 , 45,45 , 5,45}),
+            nil,
+            {220,50,50})
+        }))
+    
+    local build_thermometer_progress = registry:add(GameObject:new("civScard_therm_top",{
+        Transform:new(0,0),
+        Renderable:new(
+            Polygon:new({5,5 , 45,5 , 45,20+15 , 195+10,20+15 , 195+10,30+15 , 35,30+15 , 5,45}),
+            nil,
+            {250,80,80})
+        }))
+
+    scenegraph:attach(self.root,nil)
+    scenegraph:attachAll({bg_rect, info_text, shield},self.root)
+    scenegraph:attach(build_summary, bg_rect)
+    scenegraph:attachAll({build_thermometer_bg, build_thermometer_wrap, build_thermometer_progress, being_built_icon, build_thermometer_text}, build_summary)
+    scenegraph:attach(title_rect, shield)
+    scenegraph:detach(self.root,nil)
+
+    self.bg_rect = bg_rect
+    self.shield = shield
+    self.title_rect = title_rect
+    self.build_summary = build_summary
+    self.build_thermometer_progress = build_thermometer_progress
+    self.build_thermometer_wrap = build_thermometer_wrap
+    self.build_thermometer_bg = build_thermometer_bg
+    self.build_thermometer_text = build_thermometer_text
+    self.info_text = info_text
+end
+
+function CityInspectorSummaryCardView:show( curr_player, city_player, city )
+    self.registry:getComponent(self.bg_rect,"Renderable").backgroundcolor = curr_player.midtone_color
+    self.registry:getComponent(self.shield,"Renderable").backgroundcolor = curr_player.shadow_color
+    local title = self.registry:getComponent(self.title_rect,"Renderable")
+        title.backgroundcolor = city_player.highlight_color
+        title.text = city.city_name
+    self.registry:getComponent(self.build_thermometer_bg,"Renderable").backgroundcolor = curr_player.shadow_color
+    self.registry:getComponent(self.build_thermometer_wrap,"Renderable").backgroundcolor = city_player.midtone_color
+    local build_progress = self.registry:getComponent(self.build_thermometer_progress,"Renderable")
+        build_progress.backgroundcolor = city_player.highlight_color
+        local progress_percent = math.random()
+        local px_e = 45+(progress_percent*(200-45))
+        build_progress.polygon = Polygon:new({5,5 , 45,5 , 45,20+15 , px_e,20+15 , px_e,30+15 , 35,30+15, 5,45})
+    local info = self.registry:getComponent(self.info_text,"Renderable")
+        info.text = "Controlled by ".. city.owner.." ".. city.turns_owned[city.owner] .." turns"
+
+    self.build_button_handler:setHandler('onTouch', function(this, x, y)
+        if city then
+            print('Button pressed: building unit at city named ' .. city.city_name)
+            self.registry:publish("IMMEDIATE_MUTATE", ProduceArmyMutator:new("SPEC_UNIT_MECH_1",city.address))
+        end
+    end)
+end
+
 local CityInspectorView = class("CityInspectorView", {
 	root = nil,
 	is_attached = false,
@@ -16,113 +168,28 @@ local CityInspectorView = class("CityInspectorView", {
 
 function CityInspectorView:init (registry, scenegraph)
 	self.root = registry:add(GameObject:new("civ_root", {
-		Transform:new(0,0)
+		Transform:new(125,0)
 	}))
 	self.scenegraph = scenegraph
 	self.registry = registry
 
-	local bg_rect = registry:add(GameObject:new("civ_bg_rect", {
-		Transform:new(125,0),
-		Renderable:new(
-			Polygon:new({w = 500, h = 125}),
-			nil,
-			{80,80,80,200},
-			"CITY INSPECTOR VIEW")
-		}))
-    
-    local info_rect = registry:add(GameObject:new("civ_info_rect", {
-    	Transform:new(0,10),
-    	Renderable:new(
-    		Polygon:new({w=200, h = 115}),
-    		nil,
-    		{90,100,100},
-    		"Info about the city goes here\n Like its name: \n And owner: \n and address perhaps.\n Population?")
-    	}))
-
-    local build_rect = registry:add(GameObject:new("civ_build_rect", {
-    	Transform:new(200,10),
-    	Renderable:new(
-    		Polygon:new({w=150, h = 115}),
-    		nil,
-    		{90,100,100})
-    	}))
-
-    local build_info = registry:add(GameObject:new("civ_build_info",{
-    	Transform:new(0,0),
-    	Renderable:new(
-    		Polygon:new({w=150, h = 75}),
-    		nil,
-    		{120,150,150},
-    		"Currently Building Nothing")
-    	}))
-    local debug_build_button_handler = TouchDelegate:new()
-    debug_build_button_handler:setHandler('onTouch', function(this, x, y)
-        if self.cityInfo then
-            print('Button pressed: building unit at city named ' .. self.cityInfo.city_name)
-            registry:publish("IMMEDIATE_MUTATE", ProduceArmyMutator:new("SPEC_UNIT_MECH_1",self.cityInfo.address))
-        end
-    end)
-    local build_btn = registry:add(GameObject:new("civ_build_btn", {
-    	Transform:new(5,80),
-    	Renderable:new(
-    		Polygon:new({w=65, h = 30}),
-    		nil,
-    		{200,200,200},
-    		"BUILD"),
-        Interfaceable:new(
-            Polygon:new({w=65, h = 30}),
-            debug_build_button_handler)
-    	}))
-    local stop_build_btn = registry:add(GameObject:new("civ_stop_build_btn", {
-    	Transform:new(75,80),
-    	Renderable:new(
-    		Polygon:new({w=65, h = 30}),
-    		nil,
-    		{200,200,200},
-    		"HALT")
-    	}))
-    local aux_rect = registry:add(GameObject:new("civ_aux_rect", {
-    	Transform:new(350,10),
-    	Renderable:new(
-    		Polygon:new({w = 150, h = 115}),
-    		nil,
-    		{90,100,10})
-    	}))
-    local aux_info = registry:add(GameObject:new("civ_aux_info",{
-    	Transform:new(5,0),
-    	Renderable:new(
-    		Polygon:new({w = 140, h = 105}),
-    		nil,
-    		{200,200,200})
-    	}))
-
+    self.summary_card = CityInspectorSummaryCardView:new(registry, scenegraph)
 
 	self.scenegraph:attach(self.root, nil)
-	self.scenegraph:attachAll({bg_rect}, self.root)
-	self.scenegraph:attachAll({info_rect, build_rect, aux_rect}, bg_rect)
-	self.scenegraph:attachAll({build_info, build_btn, stop_build_btn}, build_rect)
-	self.scenegraph:attachAll({aux_info}, aux_rect)
+    self.scenegraph:attach(self.summary_card.root, self.root)
 	self.scenegraph:detach(self.root)
 
-	self.info_rect = info_rect
-	self.build_info = build_info
-    self.build_rect = build_rect
-	self.aux_info = aux_info
 end
 
 function CityInspectorView:show ( attachTo, city )
 	if not self.is_attached then
-		local cityInfo = self.registry:get(city.gamestate):getComponent("GameInfo")
-		local cityName = cityInfo.city_name
-		local cityOwner = cityInfo.owner
-		local cityAddress = cityInfo.address
-		local cityPlanet = cityInfo.map
-		local cityAge = cityInfo.turns_owned[cityOwner]
-
-        self.cityInfo = cityInfo
-		self.registry:get(self.info_rect):getComponent("Renderable").text = (cityName or "none") .. "\n" .. (cityOwner or "none") .. "\n" .. cityPlanet .. " : " .. cityAddress .. "\n" .. (cityOwner or "none") .. "'s for " .. (cityAge or 0) .. " turns"
-		self.scenegraph:attach(self.root, attachTo)
+        self.scenegraph:attach(self.root, attachTo)
 		self.is_attached = true
+
+        local cityInfo = self.registry:get(city.gamestate):getComponent("GameInfo")
+        local currentPlayerInfo = self.registry:findComponent("GameInfo",{gs_type = "player", is_current = true})
+        local cityPlayerInfo = self.registry:findComponent("GameInfo",{gs_type = "player", player_name = cityInfo.owner})
+        self.summary_card:show( currentPlayerInfo, cityPlayerInfo, cityInfo )
 	end
 end
 
@@ -130,7 +197,6 @@ function CityInspectorView:hide ()
 	if self.is_attached then
 		self.scenegraph:detach(self.root)
 		self.is_attached = false
-        self.cityInfo = nil
 	end
 end
 
