@@ -25,7 +25,7 @@ function Component:getSiblingComponent ( type )
 	if self.gob:hasComponent(type) then
 		return self.gob:getComponent(type)
 	else
-		print('could not find sibling of type ' .. type)
+		error('could not find sibling of type ' .. type)
 		return nil
 	end
 end

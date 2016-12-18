@@ -44,4 +44,14 @@ function GameObject:getInfo()
 	return result .. "]"
 end
 
+function GameObject:__tostring()
+	local result = self.description or "undefinedGameObject"
+	result = result .. "["
+	for k,v in pairs(self:getComponents()) do
+		result = result .. k ..","
+	end
+	result = result:sub(1, -2)
+	return result .. "]"
+end
+
 return GameObject

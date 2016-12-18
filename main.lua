@@ -24,7 +24,7 @@ function love.load()
     Registry = Registry:new(),
     Assets = AssetLoader:new():loadAssets("assets/"),
     TickAccumulator = 0,
-    TickRate = 0.1
+    TickRate = 0.01
   }
   Global.MutatorBus = MutatorBus:new(Global.Registry)
   EarthSceneGraph, SpaceSceneGraph = Loader:new(Global):debugLoad()
@@ -49,8 +49,7 @@ function love.update( dt )
     if Global.TickAccumulator > Global.TickRate then
       Global.TickAccumulator = Global.TickAccumulator - Global.TickRate
       local val = math.random()
-      Global.Registry:publish('tick',{percent = val})
-      my_viewer.Systems.Render:update(dt)
+      Global.Registry:publish('tick',{dt = dt})
     end
   end
 

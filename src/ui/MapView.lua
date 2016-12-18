@@ -1,5 +1,7 @@
 --MapView.lua
 local class = require 'lib/30log'
+local statemachine = require('lib/statemachine')
+
 local Interfaceable = require 'src/component/Interfaceable'
 local Renderable = require 'src/component/Renderable'
 local Transform = require 'src/component/Transform'
@@ -10,15 +12,19 @@ local MainMenuView = require 'src/ui/MainMenuView'
 local QuickCommandPanelView = require 'src/ui/QuickCommandPanelView'
 local ConfirmationDialogBoxView = require 'src/ui/ConfirmationDialogBoxView'
 local TurnStartView = require 'src/ui/TurnStartView'
+local CityInspectorView = require 'src/ui/CityInspectorView'
+local ArmyInspectorView = require 'src/ui/ArmyInspectorView'
+local ArmyMapViewIcon = require 'src/ui/ArmyMapViewIcon'
 
 local MapView = class("MapView", {
 
 })
 
-function MapView:init( registry, scenegraph, tiles, cities, units )
+function MapView:init( registry, scenegraph, map, tiles, cities, units )
 
   self.registry = registry
   self.scenegraph = scenegraph
+  self.map = map
 
   local Map_Layer = registry:add(GameObject:new('Map Layer', {
     Transform:new()
@@ -30,17 +36,28 @@ function MapView:init( registry, scenegraph, tiles, cities, units )
   local Turn_Start_View = TurnStartView:new(registry, scenegraph)
   local Main_Menu_View = MainMenuView:new(registry, scenegraph)
   local Quick_Command_Panel_View = QuickCommandPanelView:new(registry, scenegraph)
-  local Map_View_Touch_Delegate = TouchDelegate:new()
   local Confirmation_Dialog_Box_View = ConfirmationDialogBoxView:new(registry, scenegraph)
+  local City_Inspector_View = CityInspectorView:new(registry, scenegraph)
+  local Army_Inspector_View = ArmyInspectorView:new(registry, scenegraph)
+
+  local bg_click_interceptor = TouchDelegate:new()
+  bg_click_interceptor:setHandler('onTouch',function(this)
+      return true
+  end)
+
   local Inspector = registry:add(GameObject:new('Inspector',{
-    Transform:new(0,675),
-    Renderable:new(
-      Polygon:new({w=1200, h=125}),
-      nil,
-      {50,100,100,125},
-      "Inspector Panel (has some commands, cursor information, minimap, etc). Press Escape to bring up the Main Menu")
+      Transform:new(0,640),
+      Renderable:new(
+        Polygon:new({w=1200, h=125}),
+        nil,
+        {50,100,100,125},
+        "Inspector Panel (has some commands, cursor information, minimap, etc). Press Escape to bring up the Main Menu"),
+      Interfaceable:new(
+        Polygon:new({w=1200, h=125}),
+        bg_click_interceptor)
     }))
 
+  local Map_View_Touch_Delegate = TouchDelegate:new()
   Map_View_Touch_Delegate:setHandler('onDrag', function(this, x,y,dx,dy)
     if not Main_Menu_View.is_attached and registry:get(Map_Layer):hasComponent('Transform') then
       local t = registry:get(Map_Layer):getComponent('Transform')
@@ -66,9 +83,10 @@ function MapView:init( registry, scenegraph, tiles, cities, units )
 
   scenegraph:attach(Map_View)
   scenegraph:attachAll({Map_Layer,UI_Layer}, Map_View)
+  scenegraph:attachAll({Tile_Layer,City_Layer,Unit_Layer}, Map_Layer)
   scenegraph:attachAll({Inspector},UI_Layer)
   scenegraph:attachAll({Quick_Command_Panel_View.root},Inspector)
-  scenegraph:attachAll({Tile_Layer,City_Layer,Unit_Layer}, Map_Layer)
+
   for i, tile in ipairs(tiles) do
     scenegraph:attach(tile.root, Tile_Layer)
   end
@@ -80,6 +98,30 @@ function MapView:init( registry, scenegraph, tiles, cities, units )
   end
 
   scenegraph:setRoot(Map_View)
+
+  registry:subscribe("selectCity", function(this, msg)
+    if msg.icon_type == 'city' then
+      print('Show city inspector for ' .. inspect(msg.address.address))
+      City_Inspector_View:hide()
+      City_Inspector_View:show(Inspector,msg)
+    end
+  end)
+
+  registry:subscribe("selectArmy", function(this, msg)
+    if msg.icon_type == 'army' then
+      print('Show army inspector for ' .. inspect(msg.address.address))
+      City_Inspector_View:hide()
+      Army_Inspector_View:hide()
+      Army_Inspector_View:show(Inspector,msg)
+    end
+  end)
+
+  registry:subscribe("placeArmy", function(this, msg)
+    if msg.map == self.map then
+      print("Placing army on " .. self.map .. ': ' .. inspect(msg) .. ' -> ' .. Unit_Layer)
+      self.scenegraph:attach(ArmyMapViewIcon:new(self.registry,self.scenegraph,msg.unit).root, Unit_Layer)
+    end
+  end)
 
   registry:subscribe(Quick_Command_Panel_View.root .. ":startTurnRequest", function(this, msg)
     Turn_Start_View:show(UI_Layer, self.registry:findComponent("GameInfo",{gs_type="player", is_current=true}))

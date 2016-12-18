@@ -10,7 +10,13 @@ function TouchDelegate:init ( )
 end
 
 function TouchDelegate:setHandler ( event, handler )
-	self.handlers[event] = handler
+	if type(event) == "table" then
+		for i, e in event do
+			self.handlers[event] = handler
+		end
+	else
+		self.handlers[event] = handler
+	end
 end
 
 function TouchDelegate:hasHandler ( event )
