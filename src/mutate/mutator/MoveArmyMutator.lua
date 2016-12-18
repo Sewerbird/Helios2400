@@ -8,11 +8,9 @@ local MoveArmyMutator = Mutator:extend('MoveArmyMutator', {
 	move_cost = nil
 })
 
-function MoveArmyMutator:init ( target, origin_info, destination_info, origin_address, destination_address, move_cost )
+function MoveArmyMutator:init ( target, origin_address, destination_address, move_cost )
 	MoveArmyMutator.super:init()
 	self.target = target
-	self.origin_info = origin_info
-	self.destination_info = destination_info
 	self.origin_address = origin_address
 	self.destination_address = destination_address
 	self.move_cost = move_cost
@@ -26,13 +24,17 @@ end
 function MoveArmyMutator:apply ( registry )
 	local being_moved = registry:get(self.target)
 	local info = being_moved:getComponent("GameInfo")
+	registry:summarize()
+	print('moving army ' .. self.target .. ' from ' .. self.origin_address .. ' to ' .. self.destination_address .. ' costing ' .. self.move_cost)
+	print('looking for address ' .. self.destination_address)
+	local new_coord = registry:findComponent("GameInfo", {gs_type = "tile", address = self.destination_address})
+	print("New_coord : " .. inspect(new_coord.worldspace_coord))
 	info.address = self.destination_address
 	info.curr_move = info.curr_move - self.move_cost
+	info.worldspace_coord = { new_coord.worldspace_coord[1], new_coord.worldspace_coord[2]}
 	registry:publish(self.target .. '_GameInfo',info)
 	registry:publish(self.target .. ':moved', {
 		subject = "moved", 
-		origin_info = self.origin_info,
-		destination_info = self.destination_info,
 		origin_address = self.origin_address, 
 		destination_address = self.destination_address,
 		move_cost = self.move_cost
@@ -60,8 +62,6 @@ function MoveArmyMutator:rollback ( registry )
 	registry:publish(self.target .. '_GameInfo',info)
 	registry:publish(self.target .. ':moved', { 
 		subject = "moved", 
-		destination_info = self.origin_info,
-		origin_info = self.destination_info,
 		origin_address = self.destination_address, 
 		destination_address = self.origin_address,
 		move_cost = self.move_cost 

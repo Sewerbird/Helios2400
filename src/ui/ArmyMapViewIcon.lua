@@ -34,8 +34,7 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
           gameinfo.worldspace_coord[1], 
           gameinfo.worldspace_coord[2]
           ):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
-            new_address = registry:findComponent("GameInfo", {gs_type = "tile", address = msg.address})
-            local new_xy = new_address.worldspace_coord
+            local new_xy = msg.worldspace_coord
             cmp.x = new_xy[1]
             cmp.y = new_xy[2]
         end),
