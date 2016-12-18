@@ -244,8 +244,7 @@ function SelectableSystem:moveArmyTo (army, tgtAddress, cost)
 			cost)
 
 		if mutMove:isValid(self.registry) then
-			self.registry:publish("IMMEDIATE_MUTATE", mutMove)
-			return true
+			return mutMove:apply(self.registry)
 		end
 	elseif armyInfo then
 		return true
