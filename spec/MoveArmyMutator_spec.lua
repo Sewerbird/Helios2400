@@ -44,6 +44,18 @@ describe('MoveArmyMutator', function()
 		local testPubSub = PubSub:new()
 		local testRegistry = Registry:new()
 		local testObjectRef = testRegistry:add(testObject)
+		local testDestination = testRegistry:add(GameObject:new("testobj",{
+			GameInfo:new({
+				gs_type = "tile",
+				address = "sad_place"
+				})
+			}))
+		local testOrigin = testRegistry:add(GameObject:new("testobj",{
+			GameInfo:new({
+				gs_type = "tile",
+				address = "happy_place"
+				})
+			}))
 
 		assert.are.equal(testObject, testRegistry:get(testObjectRef))
 
