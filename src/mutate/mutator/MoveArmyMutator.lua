@@ -36,10 +36,7 @@ function MoveArmyMutator:apply ( registry )
 	local being_moved = registry:get(self.target)
 	local info = being_moved:getComponent("GameInfo")
 	registry:summarize()
-	print('moving army ' .. self.target .. ' from ' .. self.origin_address .. ' to ' .. self.destination_address .. ' costing ' .. self.move_cost)
-	print('looking for address ' .. self.destination_address)
 	local new_coord = registry:findComponent("GameInfo", {gs_type = "tile", address = self.destination_address})
-	print("New_coord : " .. inspect(new_coord.worldspace_coord))
 
 	--Check if hex already occupied
 	local units_at_location = registry:findComponents("GameInfo",{address = self.destination_address, gs_type = "army"})
