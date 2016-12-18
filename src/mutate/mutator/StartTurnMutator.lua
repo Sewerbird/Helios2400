@@ -35,27 +35,23 @@ function StartTurnMutator:apply ( registry )
 		end
 
 		--Add up income
-		turn_income = turn_income + (city.build_point_rate or 0)
+		turn_income = turn_income + (city.base_income_rate or 0)
 
 		--Update unit build points
 		if #city.build_queue > 0 then
 			local bp_spent = city.base_build_point_rate
 			local overrun = (city.build_queue[1].base_build_point_cost - (city.build_queue[1].build_points_spent + bp_spent))
 			local i = 1
-			while overrun <= 0 and city.build_queue[i] do
+			while overrun <= 0 and city.build_queue[1] do
 				--Unit produced
-				city.build_queue[i].build_points_spent = city.build_queue[i].build_points_spent + bp_spent + overrun
+				city.build_queue[1].build_points_spent = city.build_queue[1].build_points_spent + bp_spent + overrun
 				bp_spent = bp_spent + overrun
-				registry:publish("IMMEDIATE_MUTATE", ProduceArmyMutator:new(city.build_queue[i],city.address))
-				overrun = (city.build_queue[i].base_build_point_cost - (city.build_queue[i].build_points_spent + bp_spent))
+				registry:publish("IMMEDIATE_MUTATE", ProduceArmyMutator:new(city.build_queue[1],city.address))
+				overrun = (city.build_queue[1].base_build_point_cost - (city.build_queue[1].build_points_spent + bp_spent))
+				table.remove(city.build_queue, 1)
 				i = i + 1
 			end
-			if i > 1 then
-				for j = 1, i do
-					table.remove(city.build_queue,j)
-				end
-			end
-			if overrun > 0 then
+			if overrun > 0 and #city.build_queue > 0 then
 				city.build_queue[1].build_points_spent = city.build_queue[1].build_points_spent + bp_spent
 			end
 		end

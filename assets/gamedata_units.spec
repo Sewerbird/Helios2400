@@ -59,7 +59,7 @@
 			army_type = "walker",
 			army_description = "'Mad Dog' Mechwalkers",
 			base_cash_cost = 20,
-			base_build_point_cost = 100,
+			base_build_point_cost = 30,
 			max_hp = 50,
 			assault_rating = {
 				ewar = 0,

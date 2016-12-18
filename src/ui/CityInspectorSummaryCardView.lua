@@ -179,7 +179,7 @@ function CityInspectorSummaryCardView:show( curr_player, city_player, city )
             local current_production = city.build_queue[1]
             local progress_percent = 0
             if current_production and current_production.base_build_point_cost then
-                progress_percent = math.max(current_production.build_points_spent / current_production.base_build_point_cost,1.0)
+                progress_percent = math.min(current_production.build_points_spent / current_production.base_build_point_cost,1.0)
                 self.registry:getComponent(self.being_built_icon,"Renderable").render = Global.Assets:getAsset(current_production.icon_sprite)
                 self.registry:getComponent(self.build_thermometer_text,"Renderable").text = current_production.army_description
             else
@@ -189,7 +189,7 @@ function CityInspectorSummaryCardView:show( curr_player, city_player, city )
             local px_e = 45+(progress_percent*(200-45))
             build_progress.polygon = Polygon:new({5,5 , 45,5 , 45,20+15 , px_e,20+15 , px_e,30+15 , 35,30+15, 5,45})
         local info = self.registry:getComponent(self.info_text,"Renderable")
-            info.text = "Controlled by ".. tostring(city.owner).." ".. tostring(city.turns_owned[city.owner] or 0) .." turns"
+            info.text = "Controlled by ".. tostring(city.owner).." ".. tostring(city.turns_owned[city.owner] or 0) .." turns" .. "\nProduction: " .. city.base_build_point_rate .. "bp/turn\nRevenue: $" .. city.base_income_rate .. "/turn"
         self.build_button_handler:setHandler('onTouch', function(this, x, y)
             if self.build_menu_view then
                 --deconstruct old build menu if it exists
@@ -200,12 +200,15 @@ function CityInspectorSummaryCardView:show( curr_player, city_player, city )
                 self.scenegraph:detach(self.build_menu_view.root, nil)
                 self.build_menu_view = nil
                 print("Inset returned value " .. tostring(value))
-                if value then
-                    self.registry:getComponent(self.being_built_icon,"Renderable").render = Global.Assets:getAsset(value.icon_sprite)
-                    self.registry:getComponent(self.build_thermometer_text,"Renderable").text = value.army_description
+                if value and value.base_cash_cost <= curr_player.cash_balance then
                     value.build_points_spent = 0
                     self.registry:publish("IMMEDIATE_MUTATE",CreditPlayerBalanceMutator:new(curr_player.player_name, -value.base_cash_cost))
-                    city.build_queue = { value }
+                    table.insert(city.build_queue, value)
+                    self.registry:getComponent(self.being_built_icon,"Renderable").render = Global.Assets:getAsset(city.build_queue[1].icon_sprite)
+                    self.registry:getComponent(self.build_thermometer_text,"Renderable").text = city.build_queue[1].army_description
+                    
+                else
+                    print("WARNIGN: Build menu tried to say to build a too-expensive unit, so ignoring!!!")
                 end
             end)
             self.scenegraph:attach(self.build_menu_view.root, self.root)
@@ -215,8 +218,13 @@ function CityInspectorSummaryCardView:show( curr_player, city_player, city )
             local refund =  city.build_queue[1].base_cash_cost * (city.build_queue[1].base_build_point_cost - city.build_queue[1].build_points_spent) / city.build_queue[1].base_build_point_cost
             self.registry:publish("IMMEDIATE_MUTATE",CreditPlayerBalanceMutator:new(curr_player.player_name, refund))
             city.build_queue = {}
+            table.remove(city.build_queue,1)
             self:show(curr_player, city_player, city)
-        end)   
+        end) 
+    else 
+       local info = self.registry:getComponent(self.info_text,"Renderable")
+            info.text = "Controlled by ".. tostring(city.owner).." ".. tostring(city.turns_owned[city.owner] or 0) .." turns"
+           
     end
 end
 

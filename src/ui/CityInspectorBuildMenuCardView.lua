@@ -118,7 +118,7 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
                 {255,255,255,25}
                 )
             }))
-            self["slot_" .. row .. "_" .. col .. "_cost"] = registry:add(GameObject:new("cibmc_slot_img",{
+            self["slot_" .. row .. "_" .. col .. "_cost"] = registry:add(GameObject:new("cibmc_slot_cost",{
             Transform:new(0,35),
             Renderable:new(
                 Polygon:new({w = 50, h = 15}),
