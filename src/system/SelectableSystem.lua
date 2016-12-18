@@ -73,18 +73,20 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 				elseif tgt:hasComponent("Placeable") then
 					toAddress = tgt:getComponent("Placeable").address
 				end
-				self:pathTo(fromAddress, toAddress, msg.map)
+				self:pathTo(fromAddress, toAddress, self.registry:getStructure("Earth"))
 				local budget = self.registry:get(self.registry:get(self.current_selection):getComponent("Stateful").ref):getComponent("GameInfo").curr_move
 				self:displayPathOverlay(msg.map, budget)
 			end,
 			onreclickedOtherHex = function(this, event, from, to, msg)
 				local success = true
 				for i,v in ripairs(self.path_costs) do
-					local cost = self.path_costs[i] - (self.path_costs[i + 1] or 0)
-					print('So going to ' .. tostring(self.path[i]) .. ' takes ' .. tostring(cost))
-					local cs = self.registry:get(self.current_selection)
-					local army = self.registry:get(cs:getComponent("Stateful").ref)
-					if success and not self:moveArmyTo(army, self.path[i], cost) then success = false end
+					if success then
+						local cost = self.path_costs[i] - (self.path_costs[i + 1] or 0)
+						print('So going to ' .. tostring(self.path[i]) .. ' takes ' .. tostring(cost))
+						local cs = self.registry:get(self.current_selection)
+						local army = self.registry:get(cs:getComponent("Stateful").ref)
+						success = self:moveArmyTo(army, self.path[i], cost)
+					end
 				end
 				if success then
 					self.fsm:movingDoneReady(msg)
@@ -93,7 +95,7 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 				end
 			end,
 			onmovingDoneAborted = function(this, event, from, to, msg)
-				local budget = self.registry:get(self.registry:get(self.current_selection):getComponent("Stateful").ref):getComponent("GameInfo").curr_move
+				local budget = self.registry:getComponent(self.registry:getComponent(self.current_selection,"Stateful").ref, "GameInfo").curr_move
 				self:displayPathOverlay(msg.map, budget)
 			end,
 			onmovingDoneReady = function(this, event, from, to, msg) 

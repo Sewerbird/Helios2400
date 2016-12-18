@@ -10,6 +10,7 @@ local UUID = require 'lib/uuid'
 local Registry = class('Registry', {
 	bind_graph = nil,
 	registry = {},
+	structures = {},
 	pubsub = nil,
 	historicCounter = 0,
 	publish_count = 0
@@ -18,6 +19,14 @@ local Registry = class('Registry', {
 function Registry:init ( )
 	self.pubsub = PubSub:new()
 	self.bind_graph = Graph:new()
+end
+
+function Registry:setStructure( name, structure )
+	self.structures[name] = structure
+end
+
+function Registry:getStructure( name )
+	return self.structures[name]
 end
 
 function Registry:add ( tgtObject )
