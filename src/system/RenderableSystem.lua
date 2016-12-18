@@ -17,7 +17,7 @@ local RenderableSystem = System:extend("RenderableSystem",{
 
 function RenderableSystem:init ( registry, targetCollection )
 	RenderableSystem.super.init(self, registry, targetCollection)
-	love.graphics.setNewFont("assets/InputSansNarrow-Light.ttf",12)
+	--love.graphics.setNewFont("assets/InputSansNarrow-Light.ttf",12)
 end
 
 function RenderableSystem:update( dt )
