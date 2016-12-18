@@ -47,13 +47,15 @@ describe('MoveArmyMutator', function()
 		local testDestination = testRegistry:add(GameObject:new("testobj",{
 			GameInfo:new({
 				gs_type = "tile",
-				address = "sad_place"
+				address = "sad_place",
+				worldspace_coord = {0,0}
 				})
 			}))
 		local testOrigin = testRegistry:add(GameObject:new("testobj",{
 			GameInfo:new({
 				gs_type = "tile",
-				address = "happy_place"
+				address = "happy_place",
+				worldspace_coord = {1,1}
 				})
 			}))
 
