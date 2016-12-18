@@ -170,14 +170,24 @@ function CityInspectorSummaryCardView:init (registry, scenegraph)
 end
 
 function CityInspectorSummaryCardView:show( curr_player, city_player, city )
+    --Change color to reflect owner & city name
     self.registry:getComponent(self.bg_rect,"Renderable").backgroundcolor = curr_player.midtone_color
     self.registry:getComponent(self.shield,"Renderable").backgroundcolor = curr_player.shadow_color
     local title = self.registry:getComponent(self.title_rect,"Renderable")
-        title.backgroundcolor = city_player.highlight_color
-        title.text = city.city_name
-
+    title.backgroundcolor = city_player.highlight_color
+    title.text = city.city_name
+    --Detach hidden info
     self.scenegraph:detach(self.build_summary)
+    --Detach subcards
+    if self.build_menu_view then
+        --deconstruct old build menu if it exists
+        self.scenegraph:detach(self.build_menu_view.root, nil)
+        self.build_menu_viw = nil
+    end
+
+    --Filter shown information
     if curr_player.player_name == city_player.player_name then
+        --Show owner-only & hidden info
         self.scenegraph:attach(self.build_summary, self.bg_rect)
         self.registry:getComponent(self.build_thermometer_bg,"Renderable").backgroundcolor = curr_player.shadow_color
         self.registry:getComponent(self.build_thermometer_wrap,"Renderable").backgroundcolor = city_player.midtone_color
@@ -227,10 +237,12 @@ function CityInspectorSummaryCardView:show( curr_player, city_player, city )
             table.remove(city.build_queue,1)
             self:show(curr_player, city_player, city)
         end) 
+    elseif false and "CAN SEE SOME THINGS WITH SPIES" == true then
+        --TODO: show spied info
     else 
-       local info = self.registry:getComponent(self.info_text,"Renderable")
-            info.text = "Controlled by ".. tostring(city.owner).." ".. tostring(city.turns_owned[city.owner] or 0) .." turns"
-           
+        --show public info
+        local info = self.registry:getComponent(self.info_text,"Renderable")
+        info.text = "Controlled by ".. tostring(city.owner).." ".. tostring(city.turns_owned[city.owner] or 0) .." turns"   
     end
 end
 

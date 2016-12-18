@@ -45,6 +45,9 @@ function CityInspectorView:show ( attachTo, city )
             local cityPlayerInfo = self.registry:findComponent("GameInfo",{gs_type = "player", player_name = cityInfo.owner})
             self.summary_card:show(currentPlayerInfo, cityPlayerInfo, cityInfo)
         end)
+    else
+    	self:hide()
+    	self:show(attachTo, city)
 	end
 end
 
