@@ -17,7 +17,7 @@ end
 function ProduceArmyMutator:apply ( registry )
 	local producing_city = registry:findComponent("GameInfo", {address = self.target_address, gs_type = "city"})
 	print("Placing unit at world coords " .. inspect(producing_city.worldspace_coord) .. " at city named " .. producing_city.city_name)
-	local army_info = Global.Assets:getSpec(self.unit_spec)
+	local army_info = self.unit_spec
     army_info.gs_type = "army"
     army_info.map = 'Earth'
     army_info.army_name = producing_city.owner
@@ -36,9 +36,6 @@ end
 
 function ProduceArmyMutator:rollback ( registry )
 	error("TODO: make rollback function for ProduceArmyMutator")
-	local captured_city = registry:get(self.target_city):getComponent("GameInfo")
-	captured_city.owner = self.old_player_owner
-	registry:publish(self.target_city .. '_GameInfo', captured_city)
 end
 
 return ProduceArmyMutator

@@ -98,7 +98,8 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
         address = hex_info.address,
         icon_sprite = "CITY_1",
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset},
-        build_queue = {}
+        build_queue = {},
+        base_build_point_rate = 10
       } or nil
       local army_info = nil
       if hex == "TILE_GRASS_1" and math.random() < 0.20 then
@@ -200,6 +201,7 @@ function Loader:debugGenerateMap ( save_name, assets)
       is_current = true,
       is_alive = true,
       player_name = 'Eastasia',
+      cash_balance = 1000,
       highlight_color = {20,200,200},
       midtone_color = {20,130,150},
       shadow_color = {5,80,100}
@@ -211,6 +213,7 @@ function Loader:debugGenerateMap ( save_name, assets)
       is_current = false,
       is_alive = true,
       player_name = 'Oceania',
+      cash_balance = 1000,
       highlight_color = {80,150,230},
       midtone_color = {60,100,180},
       shadow_color = {30,50,120}
@@ -222,6 +225,7 @@ function Loader:debugGenerateMap ( save_name, assets)
       is_current = false,
       is_alive = true,
       player_name = 'Eurasia',
+      cash_balance = 1000,
       highlight_color = {220,100,100},
       midtone_color = {160,60,60},
       shadow_color = {120,30,30}

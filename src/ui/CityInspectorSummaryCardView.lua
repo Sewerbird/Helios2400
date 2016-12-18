@@ -6,6 +6,7 @@ local Interfaceable = require 'src/component/Interfaceable'
 local Polygon = require 'src/datatype/Polygon'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 local ProduceArmyMutator = require 'src/mutate/mutator/ProduceArmyMutator'
+local CreditPlayerBalanceMutator = require 'src/mutate/mutator/CreditPlayerBalanceMutator'
 
 local CityInspectorBuildMenuCardView = require 'src/ui/CityInspectorBuildMenuCardView'
 
@@ -81,7 +82,7 @@ function CityInspectorSummaryCardView:init (registry, scenegraph)
         Transform:new(-12+25,-15+25),
         Renderable:new(
             Polygon:new({w = 25, h = 30}),
-            Global.Assets:getAsset("UNIT_UNKNOWN_1"),
+            nil,
             {200,200,0})
         }))
 
@@ -175,35 +176,47 @@ function CityInspectorSummaryCardView:show( curr_player, city_player, city )
         self.registry:getComponent(self.build_thermometer_wrap,"Renderable").backgroundcolor = city_player.midtone_color
         local build_progress = self.registry:getComponent(self.build_thermometer_progress,"Renderable")
             build_progress.backgroundcolor = city_player.highlight_color
-            local progress_percent = math.random()
+            local current_production = city.build_queue[1]
+            local progress_percent = 0
+            if current_production and current_production.base_build_point_cost then
+                progress_percent = math.max(current_production.build_points_spent / current_production.base_build_point_cost,1.0)
+                self.registry:getComponent(self.being_built_icon,"Renderable").render = Global.Assets:getAsset(current_production.icon_sprite)
+                self.registry:getComponent(self.build_thermometer_text,"Renderable").text = current_production.army_description
+            else
+                self.registry:getComponent(self.being_built_icon,"Renderable").render = Global.Assets:getAsset("UNIT_UNKNOWN_1")
+                self.registry:getComponent(self.build_thermometer_text,"Renderable").text = "No Unit In Production"
+            end
             local px_e = 45+(progress_percent*(200-45))
             build_progress.polygon = Polygon:new({5,5 , 45,5 , 45,20+15 , px_e,20+15 , px_e,30+15 , 35,30+15, 5,45})
         local info = self.registry:getComponent(self.info_text,"Renderable")
-            info.text = "Controlled by ".. tostring(city.owner).." ".. tostring(city.turns_owned[city.owner]) .." turns"
+            info.text = "Controlled by ".. tostring(city.owner).." ".. tostring(city.turns_owned[city.owner] or 0) .." turns"
         self.build_button_handler:setHandler('onTouch', function(this, x, y)
             if self.build_menu_view then
                 --deconstruct old build menu if it exists
                 self.scenegraph:detach(self.build_menu_view.root, nil)
                 self.build_menu_viw = nil
             end
-            self.build_menu_view = CityInspectorBuildMenuCardView:new(self.registry, self.scenegraph, nil, nil, function(value)
+            self.build_menu_view = CityInspectorBuildMenuCardView:new(self.registry, self.scenegraph, city, city_player, function(value)
                 self.scenegraph:detach(self.build_menu_view.root, nil)
                 self.build_menu_view = nil
                 print("Inset returned value " .. tostring(value))
                 if value then
-                    local spec = Global.Assets:getSpec(value)
-                    self.registry:getComponent(self.being_built_icon,"Renderable").render = Global.Assets:getAsset(spec.icon_sprite)
-                    self.registry:getComponent(self.build_thermometer_text,"Renderable").text = spec.army_description
+                    self.registry:getComponent(self.being_built_icon,"Renderable").render = Global.Assets:getAsset(value.icon_sprite)
+                    self.registry:getComponent(self.build_thermometer_text,"Renderable").text = value.army_description
+                    value.build_points_spent = 0
+                    self.registry:publish("IMMEDIATE_MUTATE",CreditPlayerBalanceMutator:new(curr_player.player_name, -value.base_cash_cost))
+                    city.build_queue = { value }
                 end
             end)
             self.scenegraph:attach(self.build_menu_view.root, self.root)
-            --[[
-            if city then
-                print('Button pressed: building unit at city named ' .. city.city_name)
-                self.registry:publish("IMMEDIATE_MUTATE", ProduceArmyMutator:new("SPEC_UNIT_MECH_1",city.address))
-            end
-            ]]--
-        end)       
+        end)    
+        self.halt_button_handler:setHandler('onTouch', function(this, x, y)
+            if not city.build_queue[1] then return end
+            local refund =  city.build_queue[1].base_cash_cost * (city.build_queue[1].base_build_point_cost - city.build_queue[1].build_points_spent) / city.build_queue[1].base_build_point_cost
+            self.registry:publish("IMMEDIATE_MUTATE",CreditPlayerBalanceMutator:new(curr_player.player_name, refund))
+            city.build_queue = {}
+            self:show(curr_player, city_player, city)
+        end)   
     end
 end
 

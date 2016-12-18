@@ -61,7 +61,7 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
             Polygon:new({10,10 , 40,10 , 60,30 , 10,30}),
             nil,
             {0,200,100},
-            "$100")
+            "$"..player.cash_balance)
         }))
     self.exit_rect = registry:add(GameObject:new("cibmc_exit_rect",{
         Transform:new(200,10),
@@ -86,14 +86,18 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
     for row = 1, 2 do
         for col = 1, 4 do
             local spec = nil
-            if col == 1 then icon = "UNIT_INFANTRY_1"; spec = "SPEC_UNIT_INFANTRY_1"
-            elseif col == 2 then icon = "UNIT_ARTILLERY_1"; spec = "SPEC_UNIT_ARTILLERY_1"
-            elseif col == 3 then icon = "UNIT_MECH_1"; spec = "SPEC_UNIT_MECH_1"
-            elseif col == 4 then icon = "UNIT_SPY_1"; spec = "SPEC_UNIT_SPY_1" end
+            if col == 1 then icon = "UNIT_INFANTRY_1"; spec = Global.Assets:getSpec("SPEC_UNIT_INFANTRY_1")
+            elseif col == 2 then icon = "UNIT_ARTILLERY_1"; spec = Global.Assets:getSpec("SPEC_UNIT_ARTILLERY_1")
+            elseif col == 3 then icon = "UNIT_MECH_1"; spec = Global.Assets:getSpec("SPEC_UNIT_MECH_1")
+            elseif col == 4 then icon = "UNIT_SPY_1"; spec = Global.Assets:getSpec("SPEC_UNIT_SPY_1") end
 
             local select_this_one = TouchDelegate:new()
             select_this_one:setHandler("onTouch", function(this, x, y)
-                self:choose(spec)
+                if player.cash_balance >= spec.base_cash_cost then
+                    self:choose(spec)
+                else
+                    print("Not enough cash, honey")
+                end
             end)
             self["slot_" .. row .. "_" .. col] = registry:add(GameObject:new("cibmc_slot",{
             Transform:new( (col-1)*55 + 2, (row-1)*51 +2),
@@ -110,7 +114,7 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
             Transform:new(12,5),
             Renderable:new(
                 Polygon:new({w = 50, h = 50}),
-                Global.Assets:getAsset(Global.Assets:getSpec(spec).icon_sprite),
+                Global.Assets:getAsset(spec.icon_sprite),
                 {255,255,255,25}
                 )
             }))
@@ -120,7 +124,7 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
                 Polygon:new({w = 50, h = 15}),
                 nil,
                 {255,255,255,25},
-                Global.Assets:getSpec(spec).base_cash_cost
+                spec.base_cash_cost
                 )
             }))
             scenegraph:attach(self["slot_" .. row .. "_" .. col],self.choose_rect)
