@@ -95,7 +95,7 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
     local specs = Global.Assets:getAllPlayerUnitSpecs()
 
     print(inspect(specs))
-    for row = 1, 2 do
+    for row = 1, math.ceil(#specs/4) do
         for col = 1, 4 do
             local spec = specs[(((row-1) * 4) + col)]
 
