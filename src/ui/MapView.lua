@@ -40,13 +40,21 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
   local City_Inspector_View = CityInspectorView:new(registry, scenegraph)
   local Army_Inspector_View = ArmyInspectorView:new(registry, scenegraph)
 
+  local bg_click_interceptor = TouchDelegate:new()
+  bg_click_interceptor:setHandler('onTouch',function(this)
+      return true
+  end)
+
   local Inspector = registry:add(GameObject:new('Inspector',{
-    Transform:new(0,640),
-    Renderable:new(
-      Polygon:new({w=1200, h=125}),
-      nil,
-      {50,100,100,125},
-      "Inspector Panel (has some commands, cursor information, minimap, etc). Press Escape to bring up the Main Menu")
+      Transform:new(0,640),
+      Renderable:new(
+        Polygon:new({w=1200, h=125}),
+        nil,
+        {50,100,100,125},
+        "Inspector Panel (has some commands, cursor information, minimap, etc). Press Escape to bring up the Main Menu"),
+      Interfaceable:new(
+        Polygon:new({w=1200, h=125}),
+        bg_click_interceptor)
     }))
 
   local Map_View_Touch_Delegate = TouchDelegate:new()

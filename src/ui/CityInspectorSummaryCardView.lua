@@ -28,6 +28,10 @@ function CityInspectorSummaryCardView:init (registry, scenegraph)
 
     self.build_button_handler = TouchDelegate:new()
     self.halt_button_handler = TouchDelegate:new()
+    local bg_click_interceptor = TouchDelegate:new()
+    bg_click_interceptor:setHandler('onTouch',function(this)
+        return true
+    end)
 
     --[[Components]]--
 
@@ -37,7 +41,10 @@ function CityInspectorSummaryCardView:init (registry, scenegraph)
             Polygon:new({w = 230, h = 160}),
             nil,
             {120,120,120} --TODO: player highlight color
-            )
+            ),
+        Interfaceable:new(
+            Polygon:new({w = 230, h = 160}),
+            bg_click_interceptor)
         }))
 
     self.shield = registry:add(GameObject:new("civScard_shield",{
@@ -217,7 +224,6 @@ function CityInspectorSummaryCardView:show( curr_player, city_player, city )
             if not city.build_queue[1] then return end
             local refund =  city.build_queue[1].base_cash_cost * (city.build_queue[1].base_build_point_cost - city.build_queue[1].build_points_spent) / city.build_queue[1].base_build_point_cost
             self.registry:publish("IMMEDIATE_MUTATE",CreditPlayerBalanceMutator:new(curr_player.player_name, refund))
-            city.build_queue = {}
             table.remove(city.build_queue,1)
             self:show(curr_player, city_player, city)
         end) 
