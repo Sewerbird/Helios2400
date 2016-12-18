@@ -134,6 +134,16 @@ function AssetLoader:getSpec(specId)
 	return copy(self.specs[specId])
 end
 
+function AssetLoader:getAllPlayerUnitSpecs()
+	local specs = {}
+	for i, spec in pairs(self.specs) do
+		if spec.available_to_players then
+			table.insert(specs, copy(spec))
+		end
+	end
+	return specs
+end
+
 function AssetLoader:printAllAssets()
 	print("Assets:")
 	for k,v in pairs(self.assets) do

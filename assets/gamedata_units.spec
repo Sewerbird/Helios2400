@@ -24,7 +24,8 @@
 				indirect = 2,
 				direct = 2,
 				close = 2
-			}
+			},
+			available_to_players = true
 		},
 		{
 			specId = "SPEC_UNIT_ARTILLERY_1",
@@ -48,7 +49,8 @@
 				indirect = 2,
 				direct = 2,
 				close = 2
-			}
+			},
+			available_to_players = true
 		},
 		{
 			specId = "SPEC_UNIT_MECH_1",
@@ -72,7 +74,8 @@
 				indirect = 2,
 				direct = 2,
 				close = 2
-			}
+			},
+			available_to_players = true
 		},
 		{
 			specId = "SPEC_UNIT_SPY_1",
@@ -96,7 +99,8 @@
 				indirect = 0,
 				direct = 0,
 				close = 0
-			}
+			},
+			available_to_players = true
 		}
 
 	}

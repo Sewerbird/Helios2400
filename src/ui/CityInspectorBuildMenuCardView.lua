@@ -91,13 +91,13 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
         self.choose_rect,
         self.money_rect,
         self.exit_rect}, self.root)
+
+    local specs = Global.Assets:getAllPlayerUnitSpecs()
+
+    print(inspect(specs))
     for row = 1, 2 do
         for col = 1, 4 do
-            local spec = nil
-            if col == 1 then icon = "UNIT_INFANTRY_1"; spec = Global.Assets:getSpec("SPEC_UNIT_INFANTRY_1")
-            elseif col == 2 then icon = "UNIT_ARTILLERY_1"; spec = Global.Assets:getSpec("SPEC_UNIT_ARTILLERY_1")
-            elseif col == 3 then icon = "UNIT_MECH_1"; spec = Global.Assets:getSpec("SPEC_UNIT_MECH_1")
-            elseif col == 4 then icon = "UNIT_SPY_1"; spec = Global.Assets:getSpec("SPEC_UNIT_SPY_1") end
+            local spec = specs[(((row-1) * 4) + col)]
 
             local select_this_one = TouchDelegate:new()
             select_this_one:setHandler("onTouch", function(this, x, y)
@@ -121,8 +121,8 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
             self["slot_" .. row .. "_" .. col .. "_img"] = registry:add(GameObject:new("cibmc_slot_img",{
                 Transform:new(12,5),
                 Renderable:new(
-                    Polygon:new({w = 50, h = 50}),
-                    Global.Assets:getAsset(spec.icon_sprite),
+                    Polygon:new({w = 25, h = 30}),
+                    (spec and Global.Assets:getAsset(spec.icon_sprite)) or nil,
                     {255,255,255,25}
                     )
             }))
@@ -131,8 +131,8 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
                 Renderable:new(
                     Polygon:new({w = 50, h = 15}),
                     nil,
-                    player.cash_balance >= spec.base_cash_cost and {200,255,200,100} or {255,200,200,100},
-                    spec.base_cash_cost
+                    player.cash_balance >= (spec and spec.base_cash_cost or 0) and {200,255,200,100} or {255,200,200,100},
+                    spec and spec.base_cash_cost or ""
                     )
             }))
             self["slot_" .. row .. "_" .. col .. "_grayout"] = registry:add(GameObject:new("cibmc_slot_grayout",{
@@ -144,12 +144,13 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
                     )
             }))
             scenegraph:attach(self["slot_" .. row .. "_" .. col],self.choose_rect)
-            scenegraph:attach(self["slot_" .. row .. "_" .. col .. "_img"], self["slot_" .. row .. "_" .. col])
             scenegraph:attach(self["slot_" .. row .. "_" .. col .. "_cost"], self["slot_" .. row .. "_" .. col])
  
-            if player.cash_balance < spec.base_cash_cost then
+            if spec and player.cash_balance < spec.base_cash_cost then
+                scenegraph:attach(self["slot_" .. row .. "_" .. col .. "_img"], self["slot_" .. row .. "_" .. col])
                 scenegraph:attach(self["slot_" .. row .. "_" .. col .. "_grayout"], self["slot_" .. row .. "_" .. col])
-            else
+            elseif spec then
+                scenegraph:attach(self["slot_" .. row .. "_" .. col .. "_img"], self["slot_" .. row .. "_" .. col])
                 scenegraph:attach(self["slot_" .. row .. "_" .. col .. "_grayout"], self["slot_" .. row .. "_" .. col])
                 scenegraph:detach(self["slot_" .. row .. "_" .. col .. "_grayout"])
             end
