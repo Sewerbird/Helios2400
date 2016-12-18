@@ -11,7 +11,8 @@ local Registry = class('Registry', {
 	bind_graph = nil,
 	registry = {},
 	pubsub = nil,
-	historicCounter = 0
+	historicCounter = 0,
+	publish_count = 0
 })
 
 function Registry:init ( )
@@ -39,6 +40,9 @@ function Registry:add ( tgtObject )
 					component:bindTo(binding.topic, binding.fn, binding.init_with)
 				end
 				component.deferred_bindings = nil
+			end
+			if component.onFinalized then
+				component:onFinalized(self)
 			end
 		end
 	end
@@ -122,6 +126,7 @@ function Registry:getGameObjects ( pool_filter)
 end
 
 function Registry:publish(topic, message)
+	self.publish_count = self.publish_count+1
 	return self.pubsub:publish(topic, message)
 end
 

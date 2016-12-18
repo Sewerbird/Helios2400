@@ -14,15 +14,17 @@ local ConfirmationDialogBoxView = require 'src/ui/ConfirmationDialogBoxView'
 local TurnStartView = require 'src/ui/TurnStartView'
 local CityInspectorView = require 'src/ui/CityInspectorView'
 local ArmyInspectorView = require 'src/ui/ArmyInspectorView'
+local ArmyMapViewIcon = require 'src/ui/ArmyMapViewIcon'
 
 local MapView = class("MapView", {
 
 })
 
-function MapView:init( registry, scenegraph, tiles, cities, units )
+function MapView:init( registry, scenegraph, map, tiles, cities, units )
 
   self.registry = registry
   self.scenegraph = scenegraph
+  self.map = map
 
   local Map_Layer = registry:add(GameObject:new('Map Layer', {
     Transform:new()
@@ -38,13 +40,21 @@ function MapView:init( registry, scenegraph, tiles, cities, units )
   local City_Inspector_View = CityInspectorView:new(registry, scenegraph)
   local Army_Inspector_View = ArmyInspectorView:new(registry, scenegraph)
 
+  local bg_click_interceptor = TouchDelegate:new()
+  bg_click_interceptor:setHandler('onTouch',function(this)
+      return true
+  end)
+
   local Inspector = registry:add(GameObject:new('Inspector',{
-    Transform:new(0,675),
-    Renderable:new(
-      Polygon:new({w=1200, h=125}),
-      nil,
-      {50,100,100,125},
-      "Inspector Panel (has some commands, cursor information, minimap, etc). Press Escape to bring up the Main Menu")
+      Transform:new(0,640),
+      Renderable:new(
+        Polygon:new({w=1200, h=125}),
+        nil,
+        {50,100,100,125},
+        "Inspector Panel (has some commands, cursor information, minimap, etc). Press Escape to bring up the Main Menu"),
+      Interfaceable:new(
+        Polygon:new({w=1200, h=125}),
+        bg_click_interceptor)
     }))
 
   local Map_View_Touch_Delegate = TouchDelegate:new()
@@ -100,8 +110,16 @@ function MapView:init( registry, scenegraph, tiles, cities, units )
   registry:subscribe("selectArmy", function(this, msg)
     if msg.icon_type == 'army' then
       print('Show army inspector for ' .. inspect(msg.address.address))
+      City_Inspector_View:hide()
       Army_Inspector_View:hide()
       Army_Inspector_View:show(Inspector,msg)
+    end
+  end)
+
+  registry:subscribe("placeArmy", function(this, msg)
+    if msg.map == self.map then
+      print("Placing army on " .. self.map .. ': ' .. inspect(msg) .. ' -> ' .. Unit_Layer)
+      self.scenegraph:attach(ArmyMapViewIcon:new(self.registry,self.scenegraph,msg.unit).root, Unit_Layer)
     end
   end)
 

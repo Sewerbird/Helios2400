@@ -102,7 +102,6 @@ end
 
 function AssetLoader:loadGameData(gamedatasheet)
 	for i, datum in ipairs(gamedatasheet.data) do
-		print("datum " .. i .. " -> " .. inspect(datum))
 		self.specs[datum.specId] = datum
 	end
 end
@@ -133,6 +132,16 @@ function AssetLoader:getSpec(specId)
 		error(self.errorPrefix .. specId .. " is not loaded or incorrect")
 	end
 	return copy(self.specs[specId])
+end
+
+function AssetLoader:getAllPlayerUnitSpecs()
+	local specs = {}
+	for i, spec in pairs(self.specs) do
+		if spec.available_to_players then
+			table.insert(specs, copy(spec))
+		end
+	end
+	return specs
 end
 
 function AssetLoader:printAllAssets()

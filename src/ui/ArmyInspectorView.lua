@@ -18,13 +18,6 @@ function ArmyInspectorView:init (registry, scenegraph)
 	}))
 	self.scenegraph = scenegraph
 
-	local end_turn_button_handler = TouchDelegate:new()
-	end_turn_button_handler:setHandler('onTouch', function(this, x, y)
-		print('Ending turn')
-		registry:publish(self.root .. ':endTurnRequest')
-		return true
-	end)
-
 	local bg_rect = registry:add(GameObject:new("aiv_bg_rect", {
 		Transform:new(625,0),
 		Renderable:new(
@@ -43,8 +36,6 @@ function ArmyInspectorView:init (registry, scenegraph)
     		"Info about the unit goes here\n Like its name: \n And owner: \n and address perhaps.\n 10/10 hp?")
     	}))
 
-
-
 	self.scenegraph:attach(self.root, nil)
 	self.scenegraph:attachAll({bg_rect}, self.root)
 	self.scenegraph:attachAll({info_rect}, bg_rect)
@@ -54,7 +45,6 @@ end
 
 function ArmyInspectorView:show ( attachTo, city )
 	if not self.is_attached then
-		print("Switching to city " .. tostring(city))
 		self.scenegraph:attach(self.root, attachTo)
 		self.is_attached = true
 	end

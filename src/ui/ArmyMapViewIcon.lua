@@ -17,15 +17,15 @@ local ArmyMapViewIcon = class("ArmyMapViewIcon",{
 	root = nil
 })
 
-function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
+function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
       local gameinfo = registry:getComponent(gamestate, "GameInfo")
       local playerinfo = registry:findComponent("GameInfo", {player_name = gameinfo.owner})
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
-          registry:publish("selectIcon",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), map = map, gamestate = gamestate, icon_type = 'army'})
-          registry:publish("selectArmy",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), map = map, gamestate = gamestate, icon_type = 'army'})
-          print('Clicked on a unit (' .. this.component.gob.uid .. ')! Is situated at address:' .. map:summarizeAddress(this.component:getSiblingComponent('Placeable').address))
+          registry:publish("selectIcon",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), gamestate = gamestate, icon_type = 'army'})
+          registry:publish("selectArmy",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), gamestate = gamestate, icon_type = 'army'})
+          print('Clicked on a unit (' .. this.component.gob.uid .. ')! Is situated at address:' .. this.component:getSiblingComponent('Placeable').address)
           return true
         end
       end)
@@ -33,8 +33,9 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
         Transform:new(
           gameinfo.worldspace_coord[1], 
           gameinfo.worldspace_coord[2]
-          ):bindTo(gamestate .. ":moved", function (this, cmp, msg)
-            local new_xy = registry:getComponent(msg.destination_info, "GameInfo").worldspace_coord
+          ):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
+            new_address = registry:findComponent("GameInfo", {gs_type = "tile", address = msg.address})
+            local new_xy = new_address.worldspace_coord
             cmp.x = new_xy[1]
             cmp.y = new_xy[2]
         end),
@@ -43,7 +44,6 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
           Unit_Touch_Delegate),
         Stateful:new(gamestate),
         Placeable:new(gameinfo.address):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
-          print("Updating army placeable address")
           cmp.address = msg.address
         end),
         Moveable:new()
@@ -109,9 +109,17 @@ function ArmyMapViewIcon:init( registry, scenegraph, map, gamestate )
           gameinfo.curr_move
           ):bindTo(gamestate .. "_GameInfo", function(this, cmp, msg) 
           cmp.text = registry:getComponent(gamestate,"GameInfo").curr_move
-          if cmp.text < 0 then cmp.text = "~" .. cmp.text 
-          else cmp.text = "" .. cmp.text end
-          cmp.polygon = Polygon:new( { w = 8 * #cmp.text, h = 12})
+          if cmp.text <= 0 then
+            cmp.text = ""
+            cmp.polygon = Polygon:new({0,-33 , 50,-33 , 50,12 , 0,12})
+            cmp.transform = Transform:new(0,0)
+            cmp.backgroundcolor = {10,10,10,100}
+          else 
+            cmp.transform = Transform:new(0,33)
+            cmp.text = "" .. cmp.text 
+            cmp.polygon = Polygon:new( { w = 8 * #cmp.text, h = 12})
+            cmp.backgroundcolor = {10,10,10}
+          end
         end),
         Stateful:new(gamestate)
       }))

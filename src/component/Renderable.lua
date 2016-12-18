@@ -16,4 +16,12 @@ function Renderable:init ( polygon, render, backgroundcolor, text)
 	self.text = text or nil
 end
 
+function Renderable:onFinalized(this, registry)
+	if self.render and self.render.rtype == "animation" then
+		self.gob.registry:subscribe("tick", function(this, msg)
+			self.render.ani:update(msg.dt)
+		end)
+	end
+end
+
 return Renderable
