@@ -155,6 +155,9 @@ end
 
 function Registry:summarize ( )
 	print("Registry has " .. #self.registry .. " entries ")
+	for i, v in pairs(self:getGameObjects("GameInfo")) do
+		local info = v:getComponent("GameInfo")
+	end
 end
 
 function Registry:getCount ()

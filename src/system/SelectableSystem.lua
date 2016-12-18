@@ -77,8 +77,16 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 				local budget = self.registry:get(self.registry:get(self.current_selection):getComponent("Stateful").ref):getComponent("GameInfo").curr_move
 				self:displayPathOverlay(msg.map, budget)
 			end,
-			onreclickedOtherHex = function(this, event, from, to, msg) 
-				if self:moveSelectedTo(msg.uid, msg.address) then
+			onreclickedOtherHex = function(this, event, from, to, msg)
+				local success = true
+				for i,v in ripairs(self.path_costs) do
+					local cost = self.path_costs[i] - (self.path_costs[i + 1] or 0)
+					print('So going to ' .. tostring(self.path[i]) .. ' takes ' .. tostring(cost))
+					local cs = self.registry:get(self.current_selection)
+					local army = self.registry:get(cs:getComponent("Stateful").ref)
+					if success and not self:moveArmyTo(army, self.path[i], cost) then success = false end
+				end
+				if success then
 					self.fsm:movingDoneReady(msg)
 				else
 					self.fsm:movingDoneAborted(msg)
@@ -225,25 +233,22 @@ function SelectableSystem:pathTo(fromAddress, toAddress, map)
 	print("Path: " .. inspect(self.path) .. "\nTotal Cost: " .. inspect(self.path_cost) .. "\nPiecewise Costs: " .. inspect(self.path_costs))
 end
 
-function SelectableSystem:moveSelectedTo (tgtGameObjectId, tgtAddress)
-	if self.current_selection ~= nil and self.current_selection ~= tgtGameObjectId then --something might be moveable
-		local srcObj = self.registry:get(self.current_selection)
-		local dstObj = self.registry:get(tgtGameObjectId)
+function SelectableSystem:moveArmyTo (army, tgtAddress, cost)
+	print('moving to ' .. tgtAddress)
+	local armyInfo = army:getComponent('GameInfo')
+	if armyInfo and tgtAddress ~= armyInfo.address then --something might be moveable
+		local mutMove = MoveArmyMutator:new(
+			army.uid,
+			armyInfo.address, 
+			tgtAddress, 
+			cost)
 
-		if srcObj:hasComponent('Moveable') and srcObj:hasComponent('Placeable') and dstObj:hasComponent('Addressable') then
-			local mutMove = MoveArmyMutator:new(
-				srcObj:getComponent('Stateful').ref, 
-				srcObj:getComponent('Stateful').ref,
-				dstObj:getComponent('Stateful').ref,
-				srcObj:getComponent('Placeable').address, 
-				dstObj:getComponent('Addressable').address, 
-				self.path_cost)
-
-			if mutMove:isValid(self.registry) then
-				self.registry:publish("IMMEDIATE_MUTATE", mutMove)
-				return true
-			end
+		if mutMove:isValid(self.registry) then
+			self.registry:publish("IMMEDIATE_MUTATE", mutMove)
+			return true
 		end
+	elseif armyInfo then
+		return true
 	end
 	return false
 end

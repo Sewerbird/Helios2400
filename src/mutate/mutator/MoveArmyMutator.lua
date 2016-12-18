@@ -8,11 +8,9 @@ local MoveArmyMutator = Mutator:extend('MoveArmyMutator', {
 	move_cost = nil
 })
 
-function MoveArmyMutator:init ( target, origin_info, destination_info, origin_address, destination_address, move_cost )
+function MoveArmyMutator:init ( target, origin_address, destination_address, move_cost )
 	MoveArmyMutator.super:init()
 	self.target = target
-	self.origin_info = origin_info
-	self.destination_info = destination_info
 	self.origin_address = origin_address
 	self.destination_address = destination_address
 	self.move_cost = move_cost
@@ -20,36 +18,54 @@ end
 
 function MoveArmyMutator:isValid ( registry )
 	local info = registry:get(self.target):getComponent("GameInfo")
-	return info.curr_move >= self.move_cost
+
+	local units_at_location = registry:findComponents("GameInfo",{address = self.destination_address, gs_type = "army"})
+	local is_foreign_occupied = false
+	if #units_at_location > 0 then
+		for i, unit in ipairs(units_at_location) do
+			if unit.owner ~= info.owner then
+				is_foreign_occupied = true
+			end
+		end
+	end
+
+	return not is_foreign_occupied and info.curr_move >= self.move_cost
 end
 
 function MoveArmyMutator:apply ( registry )
 	local being_moved = registry:get(self.target)
 	local info = being_moved:getComponent("GameInfo")
-	info.address = self.destination_address
-	info.curr_move = info.curr_move - self.move_cost
-	registry:publish(self.target .. '_GameInfo',info)
-	registry:publish(self.target .. ':moved', {
-		subject = "moved", 
-		origin_info = self.origin_info,
-		destination_info = self.destination_info,
-		origin_address = self.origin_address, 
-		destination_address = self.destination_address,
-		move_cost = self.move_cost
-	})
+	local new_coord = registry:findComponent("GameInfo", {gs_type = "tile", address = self.destination_address})
 
-	local city_at_location = registry:findComponent("GameInfo",{address = self.destination_address, gs_type = "city"})
-	local mutCapture = nil
-	if city_at_location then
-		local newOwner = info.owner
-		local oldOwner = city_at_location.owner
-		print('Capturing city ' .. city_at_location.gid .. ' with ' .. newOwner .. ' from ' .. oldOwner)
-		mutCapture = CaptureCityMutator:new(city_at_location.gid, newOwner, oldOwner)
+	--Check if hex already occupied
+	local units_at_location = registry:findComponents("GameInfo",{address = self.destination_address, gs_type = "army"})
+	local is_foreign_occupied = false
+	if #units_at_location > 0 then
+		for i, unit in ipairs(units_at_location) do
+			if unit.owner ~= info.owner then
+				is_foreign_occupied = true
+			end
+		end
 	end
-		
-	if mutCapture then 
-		registry:publish("IMMEDIATE_MUTATE",mutCapture) 
+
+	if not is_foreign_occupied then
+		info.worldspace_coord = { new_coord.worldspace_coord[1], new_coord.worldspace_coord[2]}
+		info.address = self.destination_address
+		info.curr_move = info.curr_move - self.move_cost
+		registry:publish(self.target .. '_GameInfo',info)
+
+		local city_at_location = registry:findComponent("GameInfo",{address = self.destination_address, gs_type = "city"})
+		local mutCapture = nil
+		if city_at_location then
+			local newOwner = info.owner
+			local oldOwner = city_at_location.owner
+			print('Capturing city ' .. city_at_location.gid .. ' with ' .. newOwner .. ' from ' .. oldOwner)
+			registry:publish("IMMEDIATE_MUTATE", CaptureCityMutator:new(city_at_location.gid, newOwner, oldOwner))
+		end
+	else
+		print("Ack! Move army failed because of foreign unit")
 	end
+
 end
 
 function MoveArmyMutator:rollback ( registry )
@@ -58,14 +74,6 @@ function MoveArmyMutator:rollback ( registry )
 	info.address = self.origin_address
 	info.curr_move = info.curr_move + self.move_cost
 	registry:publish(self.target .. '_GameInfo',info)
-	registry:publish(self.target .. ':moved', { 
-		subject = "moved", 
-		destination_info = self.origin_info,
-		origin_info = self.destination_info,
-		origin_address = self.destination_address, 
-		destination_address = self.origin_address,
-		move_cost = self.move_cost 
-	})
 end
 
 return MoveArmyMutator
