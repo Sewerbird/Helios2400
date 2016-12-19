@@ -61,7 +61,7 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
   Map_View_Touch_Delegate:setHandler('onDrag', function(this, x,y,dx,dy)
     if not Main_Menu_View.is_attached and registry:get(Map_Layer):hasComponent('Transform') then
       local t = registry:get(Map_Layer):getComponent('Transform')
-      t:translate(dx,dy)
+      t:translateWithBounds(dx,dy,nil,{-74 * 1.5,0})
     end
   end)
   Map_View_Touch_Delegate:setHandler('onKeypress', function(this, btn)
