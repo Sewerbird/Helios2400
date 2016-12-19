@@ -299,6 +299,10 @@ function Loader:debugLoad ()
   local Earth_View = MapView:new(debug_gamestate, EarthSceneGraph, 'Earth', Earth_Tiles, Earth_Cities, Earth_Units)
   local Space_View = MapView:new(debug_gamestate, SpaceSceneGraph, 'Space', Space_Tiles, Space_Cities, Space_Units)
 
+
+  self.loadContext.Registry:setStructure('Earth', Earth_Map)
+  self.loadContext.Registry:setStructure('Space', Space_Map)
+
   return EarthSceneGraph, SpaceSceneGraph
 end
 

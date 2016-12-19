@@ -2,13 +2,14 @@
 local class = require 'lib/30log'
 local Mutator = require 'src/mutate/Mutator'
 local CaptureCityMutator = require 'src/mutate/mutator/CaptureCityMutator'
+local ConductBattleMutator = require 'src/mutate/mutator/ConductBattleMutator'
 local MoveArmyMutator = Mutator:extend('MoveArmyMutator', {
 	origin_address = nil,
 	destination_address = nil,
 	move_cost = nil
 })
 
-function MoveArmyMutator:init ( target, origin_address, destination_address, move_cost )
+function MoveArmyMutator:init ( target, origin_address, destination_address, move_cost)
 	MoveArmyMutator.super:init()
 	self.target = target
 	self.origin_address = origin_address
@@ -19,17 +20,7 @@ end
 function MoveArmyMutator:isValid ( registry )
 	local info = registry:get(self.target):getComponent("GameInfo")
 
-	local units_at_location = registry:findComponents("GameInfo",{address = self.destination_address, gs_type = "army"})
-	local is_foreign_occupied = false
-	if #units_at_location > 0 then
-		for i, unit in ipairs(units_at_location) do
-			if unit.owner ~= info.owner then
-				is_foreign_occupied = true
-			end
-		end
-	end
-
-	return not is_foreign_occupied and info.curr_move >= self.move_cost
+	return info.curr_move >= self.move_cost and info.address == self.origin_address
 end
 
 function MoveArmyMutator:apply ( registry )
@@ -40,10 +31,12 @@ function MoveArmyMutator:apply ( registry )
 	--Check if hex already occupied
 	local units_at_location = registry:findComponents("GameInfo",{address = self.destination_address, gs_type = "army"})
 	local is_foreign_occupied = false
+	local attack_target = nil
 	if #units_at_location > 0 then
 		for i, unit in ipairs(units_at_location) do
 			if unit.owner ~= info.owner then
 				is_foreign_occupied = true
+				attack_target = unit.gid
 			end
 		end
 	end
@@ -60,10 +53,13 @@ function MoveArmyMutator:apply ( registry )
 			local newOwner = info.owner
 			local oldOwner = city_at_location.owner
 			print('Capturing city ' .. city_at_location.gid .. ' with ' .. newOwner .. ' from ' .. oldOwner)
-			registry:publish("IMMEDIATE_MUTATE", CaptureCityMutator:new(city_at_location.gid, newOwner, oldOwner))
+			CaptureCityMutator:new(city_at_location.gid, newOwner, oldOwner):apply(registry)
 		end
+	elseif attack_target then
+		info.curr_move = info.curr_move - self.move_cost
+		ConductBattleMutator:new(self.target, attack_target):apply(registry)
 	else
-		print("Ack! Move army failed because of foreign unit")
+		--friendly space
 	end
 
 end

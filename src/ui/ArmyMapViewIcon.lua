@@ -23,10 +23,9 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
         if this.component.gob:hasComponent('Placeable') then
-          registry:publish("selectIcon",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), gamestate = gamestate, icon_type = 'army'})
-          registry:publish("selectArmy",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), gamestate = gamestate, icon_type = 'army'})
-          print('Clicked on a unit (' .. this.component.gob.uid .. ')! Is situated at address:' .. this.component:getSiblingComponent('Placeable').address)
-          return true
+					registry:publish("selectIcon",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), gamestate = gamestate, icon_type = 'army'})
+					registry:publish("selectArmy",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), gamestate = gamestate, icon_type = 'army'})
+					return true
         end
       end)
       debug_army = registry:add(GameObject:new('Army', {
@@ -95,7 +94,10 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
           nil,
           playerinfo.highlight_color):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
             local new_playerinfo = registry:findComponent("GameInfo", {player_name = msg.owner})
-            if new_playerinfo then cmp.backgroundcolor = new_playerinfo.highlight_color end
+            if new_playerinfo then 
+              cmp.backgroundcolor = new_playerinfo.highlight_color 
+              cmp.polygon = Polygon:new({w = 50 * (msg.curr_hp / msg.max_hp), h = 5})
+            end
         end),
         Stateful:new(gamestate)
       }))
@@ -127,6 +129,14 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
       scenegraph:attachAll({debug_army_bg_shadow, debug_army_sprite, debug_army_name, debug_army_health, debug_army_moves}, debug_army_bg)
 
    	self.root = debug_army
+
+    self.unsub = registry:subscribe(gamestate .. "_GameInfo", function(this, msg)
+    	if msg.curr_hp <= 0 then
+        print("Removing dead unit " .. gamestate .. "_GameInfo")
+    		scenegraph:detach(self.root)
+        registry:publish(self.root .. ":Removed")
+    	end
+    end)
 end
 
 return ArmyMapViewIcon

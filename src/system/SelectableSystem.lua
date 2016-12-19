@@ -41,17 +41,28 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 			{ name = 'clickedOtherHex', from = 'unitSelected', to = 'unitPathing' },
 			{ name = 'clickedOtherHex', from = 'unitPathing', to = 'unitPathing' },
 			{ name = 'reclickedOtherHex', from = 'unitPathing', to = 'unitMoving' },
-			{ name = 'movingDoneAborted', from = 'unitMoving', to = 'unitPathing' },
+			{ name = 'movingDoneAborted', from = 'unitMoving', to = 'unitSelected' },
 			{ name = 'movingDoneReady', from = 'unitMoving', to = 'unitSelected' },
 			{ name = 'movingDoneFinished', from = 'unitMoving', to = 'idle'},
 			{ name = 'reset', from = '*', to = 'idle'}
 		},
 		callbacks = {
 			onstatechange = function(this, event, from, to, msg)
-				print('SELECTABLE SYSTEM going from ' .. from .. ' to ' .. to) 
+				print('\27[31mSELECTABLE SYSTEM going from ' .. from .. ' to ' .. to .. '\27[0m') 
 			end,
 			onclickedUnit = function(this, event, from, to, msg) 
 				self:select(msg.uid)
+				local onBecomesInvalid
+				onBecomesInvalid = self.registry:subscribe(msg.uid .. ":Removed", function(this, evt)
+					print("Resetting due to removal on selectable?")
+					if msg.uid == self.current_selection then
+						print("YES!")
+						self.fsm:reset()
+						self:clearPathOverlay()
+						self.path = nil
+						onBecomesInvalid()
+					end
+				end)
 			end,
 			onenterunitSelected = function(this, event, from, to, msg) 
 				print("Selecting unit (" .. msg.uid .. ") at " .. inspect(msg.address.address) .. " and my path is " .. inspect(self.path))
@@ -73,31 +84,32 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 				elseif tgt:hasComponent("Placeable") then
 					toAddress = tgt:getComponent("Placeable").address
 				end
-				self:pathTo(fromAddress, toAddress, msg.map)
+				self:pathTo(fromAddress, toAddress, self.registry:getStructure("Earth"))
 				local budget = self.registry:get(self.registry:get(self.current_selection):getComponent("Stateful").ref):getComponent("GameInfo").curr_move
 				self:displayPathOverlay(msg.map, budget)
 			end,
 			onreclickedOtherHex = function(this, event, from, to, msg)
-				local success = true
-				for i,v in ripairs(self.path_costs) do
-					local cost = self.path_costs[i] - (self.path_costs[i + 1] or 0)
-					print('So going to ' .. tostring(self.path[i]) .. ' takes ' .. tostring(cost))
-					local cs = self.registry:get(self.current_selection)
-					local army = self.registry:get(cs:getComponent("Stateful").ref)
-					if success and not self:moveArmyTo(army, self.path[i], cost) then success = false end
+				for j,v in ipairs(self.path_costs) do
+					i = #self.path_costs - (j - 1)
+					if i > 1 then
+						local cost = self.path_costs[j] - (self.path_costs[j + 1] or 0)
+						print('So going to ' .. tostring(self.path[i]) .. ' takes ' .. tostring(cost))
+						local cs = self.registry:get(self.current_selection)
+						local army = self.registry:get(cs:getComponent("Stateful").ref)
+						self:moveArmyFromTo(army, self.path[i], self.path[i-1], cost)
+					end
 				end
-				if success then
-					self.fsm:movingDoneReady(msg)
-				else
-					self.fsm:movingDoneAborted(msg)
-				end
+				self.fsm:movingDoneReady(msg)
 			end,
 			onmovingDoneAborted = function(this, event, from, to, msg)
-				local budget = self.registry:get(self.registry:get(self.current_selection):getComponent("Stateful").ref):getComponent("GameInfo").curr_move
+				local budget = self.registry:getComponent(self.registry:getComponent(self.current_selection,"Stateful").ref, "GameInfo").curr_move
 				self:displayPathOverlay(msg.map, budget)
 			end,
 			onmovingDoneReady = function(this, event, from, to, msg) 
 				self.path = nil 
+				if self.registry:getComponent(self.registry:getComponent(self.current_selection,"Stateful").ref,"GameInfo").curr_move == 0 then
+					self.fsm:reset()
+				end
 			end,
 			onmovingDoneFinished = function(this, event, from, to, msg) 
 				self.path = nil
@@ -229,28 +241,30 @@ function SelectableSystem:clearPathOverlay ()
 end
 
 function SelectableSystem:pathTo(fromAddress, toAddress, map)
+	if fromAddress == nil or toAddress == nil then 
+		print("WARNING: pathTo called with a nil address - from " .. tostring(fromAddress) .. ' to ' .. tostring(toAddress))
+		return
+	end
 	self.path, self.path_cost, self.path_costs = map:findPath(fromAddress, toAddress)
 	print("Path: " .. inspect(self.path) .. "\nTotal Cost: " .. inspect(self.path_cost) .. "\nPiecewise Costs: " .. inspect(self.path_costs))
 end
 
-function SelectableSystem:moveArmyTo (army, tgtAddress, cost)
-	print('moving to ' .. tgtAddress)
+function SelectableSystem:moveArmyFromTo (army, fromAddress, tgtAddress, cost)
 	local armyInfo = army:getComponent('GameInfo')
 	if armyInfo and tgtAddress ~= armyInfo.address then --something might be moveable
+		print("Issuing moveArmyTo to go from " .. tostring(fromAddress) .. "to" .. tostring(tgtAddress) .." with " .. armyInfo.curr_move .. " against cost " .. cost)
+			
 		local mutMove = MoveArmyMutator:new(
 			army.uid,
-			armyInfo.address, 
+			fromAddress, 
 			tgtAddress, 
 			cost)
 
-		if mutMove:isValid(self.registry) then
-			self.registry:publish("IMMEDIATE_MUTATE", mutMove)
-			return true
+		if mutMove:isValid(self.registry) and not army.is_destroyed then
+			return mutMove:apply(self.registry)
 		end
 	elseif armyInfo then
-		return true
 	end
-	return false
 end
 
 return SelectableSystem
