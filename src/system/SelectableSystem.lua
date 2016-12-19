@@ -91,11 +91,13 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 			onreclickedOtherHex = function(this, event, from, to, msg)
 				for j,v in ipairs(self.path_costs) do
 					i = #self.path_costs - (j - 1)
-					local cost = self.path_costs[i] - (self.path_costs[i + 1] or 0)
-					print('So going to ' .. tostring(self.path[i]) .. ' takes ' .. tostring(cost))
-					local cs = self.registry:get(self.current_selection)
-					local army = self.registry:get(cs:getComponent("Stateful").ref)
-					self:moveArmyFromTo(army, self.path[i], self.path[i-1], cost)
+					if i > 1 then
+						local cost = self.path_costs[j] - (self.path_costs[j + 1] or 0)
+						print('So going to ' .. tostring(self.path[i]) .. ' takes ' .. tostring(cost))
+						local cs = self.registry:get(self.current_selection)
+						local army = self.registry:get(cs:getComponent("Stateful").ref)
+						self:moveArmyFromTo(army, self.path[i], self.path[i-1], cost)
+					end
 				end
 				self.fsm:movingDoneReady(msg)
 			end,
@@ -105,6 +107,9 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 			end,
 			onmovingDoneReady = function(this, event, from, to, msg) 
 				self.path = nil 
+				if self.registry:getComponent(self.registry:getComponent(self.current_selection,"Stateful").ref,"GameInfo").curr_move == 0 then
+					self.fsm:reset()
+				end
 			end,
 			onmovingDoneFinished = function(this, event, from, to, msg) 
 				self.path = nil
