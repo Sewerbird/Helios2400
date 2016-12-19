@@ -9,7 +9,7 @@ local MoveArmyMutator = Mutator:extend('MoveArmyMutator', {
 	move_cost = nil
 })
 
-function MoveArmyMutator:init ( target, origin_address, destination_address, move_cost )
+function MoveArmyMutator:init ( target, origin_address, destination_address, move_cost)
 	MoveArmyMutator.super:init()
 	self.target = target
 	self.origin_address = origin_address
@@ -20,7 +20,7 @@ end
 function MoveArmyMutator:isValid ( registry )
 	local info = registry:get(self.target):getComponent("GameInfo")
 
-	return info.curr_move >= self.move_cost
+	return info.curr_move >= self.move_cost and info.address == self.origin_address
 end
 
 function MoveArmyMutator:apply ( registry )
@@ -58,12 +58,9 @@ function MoveArmyMutator:apply ( registry )
 	elseif attack_target then
 		info.curr_move = info.curr_move - self.move_cost
 		ConductBattleMutator:new(self.target, attack_target):apply(registry)
-		return false
 	else
-		print("Attack target is " .. attack_target)
-		print("units at location is " .. inspect(units_at_location))
+		--friendly space
 	end
-	return true
 
 end
 

@@ -40,7 +40,12 @@ function ConductBattleMutator:apply ( registry )
 
 	if defender.is_destroyed and not attacker.is_destroyed then
 		--Attacker victorious!
-		--MoveArmyMutator:new(self.attacker,self.defender.address,0)
+	elseif attacker.is_destroyed and not defender.is_destroyed then
+		--Disastrous assault!
+	elseif attacker.is_destroyed and defender.is_destroyed then
+		--Mutual destruction
+	else
+		--Draw
 	end
 
 end

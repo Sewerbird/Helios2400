@@ -132,7 +132,9 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
 
     self.unsub = registry:subscribe(gamestate .. "_GameInfo", function(this, msg)
     	if msg.curr_hp <= 0 then
+        print("Removing dead unit " .. gamestate .. "_GameInfo")
     		scenegraph:detach(self.root)
+        registry:publish(self.root .. ":Removed")
     	end
     end)
 end
