@@ -88,6 +88,13 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
       if self.inBounds(i-1,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i-1,j):toString()) end
       if self.inBounds(i+1,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i+1,j):toString()) end
           
+      if i == 1 then 
+        if self.inBounds(i,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(num_cols,j):toString()) end
+        if self.inBounds(i,j-1,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(num_cols,j-1):toString()) end
+      elseif i == num_cols then
+        if self.inBounds(i,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(1,j):toString()) end
+        if self.inBounds(i,j+1,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(1,j+1):toString()) end
+      end
       local city_info = (isCapitol or (hex == "TILE_GRASS_1" and math.random() < 0.05)) and {
         gs_type = "city",
         owner = playerInfo.player_name,
