@@ -4,7 +4,8 @@ local AStar = require 'src/structure/Astar'
 
 local IndexMap = class("IndexMap",{
 	addressbook = {},
-	placeables_index = {}
+	placeables_index = {},
+	map_name = nil
 })
 
 local Location = class("Location",{
@@ -30,7 +31,8 @@ function IndexMap:load(registry, map)
 	local hexes = {}
 	local armies = {}
 	local cities = {}
-
+	self.map_name = map
+	
 	for id, obj in pairs(registry:getGameObjects("GameInfo")) do
     	local tgt = obj:getComponent("GameInfo")
 		if obj.description == "gsHex" and tgt.map == map then
@@ -128,9 +130,8 @@ function IndexMap:movePlaceable(placeableId, srcAddressId, dstAddressId)
 end
 
 function IndexMap:findPath(fromId, toId, moveType)
-	local path, cost = self.as:findPath(fromId, toId, moveType)
-	print("cost of path is",cost);
-	return path
+	local path, total_cost, costs = self.as:findPath(fromId, toId, moveType)
+	return path, total_cost, costs
 end
 
 function IndexMap:findAccessibleAddresses(fromId, maxCost, moveType)

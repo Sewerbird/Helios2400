@@ -37,6 +37,13 @@ function InterfaceableSystem:propogateEvent ( iobj, func, x, y, dx, dy, btn )
 		l_x = x - transform.x
 		l_y = y - transform.y
 	end
+	--Propogate on children
+	local children = self.targetCollection:getChildren(iobj)
+	for i = #children, 1, -1 do
+		local ele = children[i]
+		has_consumed = self:propogateEvent( ele, func, l_x, l_y, dx, dy, btn)
+		if has_consumed then return true end
+	end
 	--Execute on self
 	if obj:hasComponent('Interfaceable') then
 		local inter = obj:getComponent('Interfaceable')
@@ -48,13 +55,6 @@ function InterfaceableSystem:propogateEvent ( iobj, func, x, y, dx, dy, btn )
 			end
 			if has_consumed then return true end
 		end
-	end
-	--Propogate on children
-	local children = self.targetCollection:getChildren(iobj)
-	for i = #children, 1, -1 do
-		local ele = children[i]
-		has_consumed = self:propogateEvent( ele, func, l_x, l_y, dx, dy, btn)
-		if has_consumed then return true end
 	end
 	--Pop transform
 	if transform ~= nil then

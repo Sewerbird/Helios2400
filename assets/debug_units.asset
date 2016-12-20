@@ -34,6 +34,14 @@
 			y = 0,
 			width = 25,
 			height = 30
+		},
+		{
+			assetId = "UNIT_UNKNOWN_1",
+			assetType = "sprite",
+			x = 100,
+			y = 0,
+			width = 25,
+			height = 30
 		}
 	}
 }

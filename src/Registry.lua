@@ -10,13 +10,23 @@ local UUID = require 'lib/uuid'
 local Registry = class('Registry', {
 	bind_graph = nil,
 	registry = {},
+	structures = {},
 	pubsub = nil,
-	historicCounter = 0
+	historicCounter = 0,
+	publish_count = 0
 })
 
 function Registry:init ( )
 	self.pubsub = PubSub:new()
 	self.bind_graph = Graph:new()
+end
+
+function Registry:setStructure( name, structure )
+	self.structures[name] = structure
+end
+
+function Registry:getStructure( name )
+	return self.structures[name]
 end
 
 function Registry:add ( tgtObject )
@@ -39,6 +49,9 @@ function Registry:add ( tgtObject )
 					component:bindTo(binding.topic, binding.fn, binding.init_with)
 				end
 				component.deferred_bindings = nil
+			end
+			if component.onFinalized then
+				component:onFinalized(self)
 			end
 		end
 	end
@@ -122,6 +135,7 @@ function Registry:getGameObjects ( pool_filter)
 end
 
 function Registry:publish(topic, message)
+	self.publish_count = self.publish_count+1
 	return self.pubsub:publish(topic, message)
 end
 
@@ -150,6 +164,9 @@ end
 
 function Registry:summarize ( )
 	print("Registry has " .. #self.registry .. " entries ")
+	for i, v in pairs(self:getGameObjects("GameInfo")) do
+		local info = v:getComponent("GameInfo")
+	end
 end
 
 function Registry:getCount ()

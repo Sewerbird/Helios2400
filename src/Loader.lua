@@ -44,10 +44,11 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
       if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
       local isCapitol = (i == 5) and (j == 5)
       local ioffset = (i-1) * -21
-      local hex = (j==1 or j==num_rows) and "TILE_ARCTIC_1" or ((math.random() < 0.3 or isCapitol) and "TILE_GRASS_1" or "TILE_WATER_1")
-      local army = (math.random() < 0.3) and "SPEC_UNIT_INFANTRY_1" or (math.random() < 0.5 and "SPEC_UNIT_ARTILLERY_1" or "SPEC_UNIT_MECH_1")
+      local hex = (j==1 or j==num_rows) and "TILE_ARCTIC_1" or ((math.random() < 0.7 or isCapitol) and "TILE_GRASS_1" or "TILE_WATER_1")
+      local army = (math.random() < 0.05) and "SPEC_UNIT_INFANTRY_1" or (math.random() < 0.5 and "SPEC_UNIT_ARTILLERY_1" or "SPEC_UNIT_MECH_1")
       local player = math.random(1,#players)
       local playerInfo = players[player]:getComponent('GameInfo')
+
       local hex_info = {
         gs_type = "tile",
         map = 'Earth',
@@ -56,15 +57,16 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
         neighbors = {},
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset},
         terrain_info = {
-          land = math.random(7),
-          sea = math.random(8),
-          aero = math.random(4),
-          hover = math.random(6),
-          space = math.random(3),
-          reentry = math.random(10),
-          toxic = math.random() > 0.95,
-          vacuum = math.random() > 0.95,
-          shielded = math.random() > 0.95,
+          type = (hex == "TILE_WATER_1") and "water" or "land",
+          land = (hex == "TILE_WATER_1") and 0 or 1,
+          sea = (hex ~= "TILE_WATER_1") and 0 or 1,
+          aero = 1,
+          hover = 1,
+          space = 0,
+          reentry = 1,
+          toxic = false,
+          vacuum = false,
+          shielded = false,
         }
       }
 
@@ -86,7 +88,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
       if self.inBounds(i-1,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i-1,j):toString()) end
       if self.inBounds(i+1,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i+1,j):toString()) end
           
-      local city_info = (isCapitol or (hex == "TILE_GRASS_1" and math.random() < 0.15)) and {
+      local city_info = (isCapitol or (hex == "TILE_GRASS_1" and math.random() < 0.05)) and {
         gs_type = "city",
         owner = playerInfo.player_name,
         is_planetary_capitol = isCapitol,
@@ -95,14 +97,16 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
         map = 'Earth',
         address = hex_info.address,
         icon_sprite = "CITY_1",
-        worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
+        worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset},
+        build_queue = {},
+        base_build_point_rate = 10,
+        base_income_rate = 10
       } or nil
       local army_info = nil
       if hex == "TILE_GRASS_1" and math.random() < 0.20 then
         army_info = assets:getSpec(army)
         army_info.gs_type = "army"
         army_info.map = 'Earth'
-        army_info.mov_type = "ground"
         army_info.army_name = playerInfo.player_name
         army_info.address = hex_info.address
         army_info.worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset}
@@ -198,6 +202,7 @@ function Loader:debugGenerateMap ( save_name, assets)
       is_current = true,
       is_alive = true,
       player_name = 'Eastasia',
+      cash_balance = 10,
       highlight_color = {20,200,200},
       midtone_color = {20,130,150},
       shadow_color = {5,80,100}
@@ -209,6 +214,7 @@ function Loader:debugGenerateMap ( save_name, assets)
       is_current = false,
       is_alive = true,
       player_name = 'Oceania',
+      cash_balance = 10,
       highlight_color = {80,150,230},
       midtone_color = {60,100,180},
       shadow_color = {30,50,120}
@@ -220,6 +226,7 @@ function Loader:debugGenerateMap ( save_name, assets)
       is_current = false,
       is_alive = true,
       player_name = 'Eurasia',
+      cash_balance = 10,
       highlight_color = {220,100,100},
       midtone_color = {160,60,60},
       shadow_color = {120,30,30}
@@ -282,15 +289,19 @@ function Loader:debugLoad ()
       end
     elseif obj.description == 'gsArmy' then
       if tgt.map == 'Earth' then
-        table.insert(Earth_Units, ArmyMapViewIcon:new(debug_gamestate,EarthSceneGraph,Earth_Map,key))
+        table.insert(Earth_Units, ArmyMapViewIcon:new(debug_gamestate,EarthSceneGraph,key))
       elseif tgt.map == 'Space' then
-        table.insert(Space_Units, ArmyMapViewIcon:new(debug_gamestate,SpaceSceneGraph,Space_Map,key))
+        table.insert(Space_Units, ArmyMapViewIcon:new(debug_gamestate,SpaceSceneGraph,key))
       end
     end
   end
 
-  local Earth_View = MapView:new(debug_gamestate, EarthSceneGraph, Earth_Tiles, Earth_Cities, Earth_Units)
-  local Space_View = MapView:new(debug_gamestate, SpaceSceneGraph, Space_Tiles, Space_Cities, Space_Units)
+  local Earth_View = MapView:new(debug_gamestate, EarthSceneGraph, 'Earth', Earth_Tiles, Earth_Cities, Earth_Units)
+  local Space_View = MapView:new(debug_gamestate, SpaceSceneGraph, 'Space', Space_Tiles, Space_Cities, Space_Units)
+
+
+  self.loadContext.Registry:setStructure('Earth', Earth_Map)
+  self.loadContext.Registry:setStructure('Space', Space_Map)
 
   return EarthSceneGraph, SpaceSceneGraph
 end

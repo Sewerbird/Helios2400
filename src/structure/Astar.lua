@@ -35,11 +35,13 @@ function Astar:findPath(fromAddress, toAddress, moveType)
     	if (currentAddress == toAddress) then
     		currentAddress = cameFrom[toAddress]
     		local path = {toAddress}
+            local path_costs = {gScore[toAddress]+0}
     		while not(currentAddress == nil) do
     			table.insert(path,currentAddress)
+                table.insert(path_costs,gScore[currentAddress]+0)
     			currentAddress = cameFrom[currentAddress]
     		end
-    		return path, gScore[toAddress]
+    		return path, gScore[toAddress], path_costs
     	end
 
     	table.insert(closed,currentAddress)
@@ -87,6 +89,11 @@ end
 function Astar:moveDifficulty(address,moveType)
     local ti = self.indexMap:getTerrainInfo(address)
     if ti.toxic or ti.vacuum or ti.shielded then return 0 end
+    if moveType == "land" then
+        if ti.type == "water" then
+            return 0
+        end
+    end
 	return ti[moveType or "land"]
 end
 

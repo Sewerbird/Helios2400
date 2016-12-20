@@ -19,9 +19,7 @@ function TurnControlSystem:init( registry, targetCollection )
 	if not targetCollection then
 		local players = registry:findComponents("GameInfo", {gs_type="player"})
 		self.targetCollection = Ring:new()
-		print('PLAYERS for TCS: -> ' .. inspect(players,{depth=2}))
 		for i, player in ipairs(players) do
-			print('adding player ' .. player.player_name)
 			self.targetCollection:add(player.player_name)
 		end
 	end
@@ -38,7 +36,6 @@ end
 
 function TurnControlSystem:endTurn ()
 
-	print("Current player is " .. self.targetCollection:current())
 	local oldPlayer = self.targetCollection:current()
 	self.targetCollection:next()
 	local newPlayer = self.targetCollection:current()

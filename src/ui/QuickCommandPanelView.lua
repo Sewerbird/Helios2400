@@ -22,6 +22,7 @@ function QuickCommandPanelView:init (registry, scenegraph)
 	end_turn_button_handler:setHandler('onTouch', function(this, x, y)
 		print('Ending turn')
 		registry:publish(self.root .. ':endTurnRequest')
+		return true
 	end)
 
 	local bg_rect = registry:add(GameObject:new("qcpv_bg_rect", {

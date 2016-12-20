@@ -21,7 +21,7 @@ function TileMapViewIcon:init (registry, scenegraph, map, gamestate)
 	Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
 		if this.component.gob:hasComponent('Addressable') then
 			local addr = this.component.gob:getComponent('Addressable')
-			registry:publish("pathTo",{uid = this.component.gob.uid, address = addr, map = map})
+			registry:publish("selectIcon",{uid = this.component.gob.uid, address = addr, gamestate = gamestate, icon_type = 'tile'})
 			--registry:publish("moveTo",{uid = this.component.gob.uid, address = addr})
 		end
 	end)
