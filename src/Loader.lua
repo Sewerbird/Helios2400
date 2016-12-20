@@ -239,7 +239,7 @@ function Loader:debugGenerateMap ( save_name, assets)
   self:saveGame(save_name, debug_gamestate)
 end
 
-function Loader:debugLoad ()
+function Loader:debugLoad (save)
 
   --[[ Load Assets & Play some music because why not ]]--
   local Assets = self.loadContext.Assets
@@ -252,8 +252,13 @@ function Loader:debugLoad ()
   --[[ Generate the Game State ]]--
 
   local debug_gamestate = self.loadContext.Registry--TODO: make this with a Registry:new();
-  self:debugGenerateMap('default', Assets)
-  self:loadGame('default',debug_gamestate)
+
+  if save then
+    self:loadGame(save, debug_gamestate)
+  else
+    self:debugGenerateMap('default', Assets)
+    self:loadGame('default',debug_gamestate)
+  end
 
   --[[Instantiate Tilemap View ]]--
 
