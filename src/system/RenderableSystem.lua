@@ -60,11 +60,12 @@ function RenderableSystem:renderComponent ( cached )
 	if renderable ~= nil and cached.r ~= "PLZ_PUSH" and cached.r ~= "PLZ_POP" then
 		if renderable.render ~= nil then
 			if renderable.render.rtype == "sprite" then
-				if not self:isOffScreen(renderable) then
+				local offScreen = self:isOffScreen(renderable)
+				if not offScreen then
 					love.graphics.draw(renderable.render.img, renderable.render.quad)
 				else 
 					local mapWidth = 1512
-					love.graphics.draw(renderable.render.img, renderable.render.quad, mapWidth)
+					love.graphics.draw(renderable.render.img, renderable.render.quad, mapWidth * offScreen)
 				end
 			elseif renderable.render.rtype == "animation" then
 				renderable.render.ani:draw(renderable.render.sprite)
@@ -98,10 +99,12 @@ function RenderableSystem:renderComponent ( cached )
 	end
 end
 
-function RenderableSystem:isOffScreen(renderable)
+function RenderableSystem:getScreenWidthOffsets(renderable)
 	local tx = (self.renderable_cache.translation.x:total() or 0) *-1
-	local rx, ry, rw, rh = renderable.render.quad:getViewport()
-	return tx > rx + rw
+	local _, _, rw, _ = renderable.render.quad:getViewport()
+	tx = tx - rw
+	if tx<= 0 then return nil end
+	return math.ceil(tx/ 1512)
 end
 
 function RenderableSystem:drawHeirarchy ( root, big_list )
