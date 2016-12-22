@@ -60,8 +60,12 @@ function RenderableSystem:renderComponent ( cached )
 	if renderable ~= nil and cached.r ~= "PLZ_PUSH" and cached.r ~= "PLZ_POP" then
 		if renderable.render ~= nil then
 			if renderable.render.rtype == "sprite" then
-				if self:isOffScreen(renderable) then print("render is offscreen!") end
-				love.graphics.draw(renderable.render.img, renderable.render.quad)
+				if not self:isOffScreen(renderable) then
+					love.graphics.draw(renderable.render.img, renderable.render.quad)
+				else 
+					local mapWidth = 1512
+					love.graphics.draw(renderable.render.img, renderable.render.quad, mapWidth)
+				end
 			elseif renderable.render.rtype == "animation" then
 				renderable.render.ani:draw(renderable.render.sprite)
 			end
