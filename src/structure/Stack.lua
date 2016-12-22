@@ -56,4 +56,18 @@ function Stack:list ()
 	print(inspect(self._et))
 end
 
+function Stack:clear()
+  self._et = {}
+end
+
+function Stack:total()
+  local total = nil
+  for i,v in ipairs(self._et) do
+    if not total then total = v else
+      total = total + v
+    end
+  end
+  return total
+end
+
 return Stack

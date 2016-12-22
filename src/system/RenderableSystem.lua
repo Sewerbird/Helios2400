@@ -7,6 +7,7 @@
 ]]--
 
 local System = require 'src/System'
+local Stack = require 'src/structure/Stack'
 
 local RenderableSystem = System:extend("RenderableSystem",{
 	renderable_cache = nil,
@@ -17,6 +18,7 @@ local RenderableSystem = System:extend("RenderableSystem",{
 
 function RenderableSystem:init ( registry, targetCollection )
 	RenderableSystem.super.init(self, registry, targetCollection)
+	self.renderable_cache = {translation = {x = Stack:new(),y = Stack:new()}}
 	--love.graphics.setNewFont("assets/InputSansNarrow-Light.ttf",12)
 end
 
@@ -47,6 +49,8 @@ function RenderableSystem:renderComponent ( cached )
 	local delta = cached.t
 	if cached.r == "PLZ_PUSH" and delta then
 		love.graphics.push()
+		self.renderable_cache.translation.x:push(delta.x)
+		self.renderable_cache.translation.y:push(delta.y)
 		love.graphics.translate(delta.x, delta.y)
 	end
 
@@ -56,6 +60,7 @@ function RenderableSystem:renderComponent ( cached )
 	if renderable ~= nil and cached.r ~= "PLZ_PUSH" and cached.r ~= "PLZ_POP" then
 		if renderable.render ~= nil then
 			if renderable.render.rtype == "sprite" then
+				if self:isOnScreen(renderable) then print("render is offscreen!") end
 				love.graphics.draw(renderable.render.img, renderable.render.quad)
 			elseif renderable.render.rtype == "animation" then
 				renderable.render.ani:draw(renderable.render.sprite)
@@ -84,11 +89,24 @@ function RenderableSystem:renderComponent ( cached )
 
 	if cached.r == "PLZ_POP" and delta == "PLOXPOPIT" then
 		love.graphics.pop()
+		self.renderable_cache.translation.x:pop()
+		self.renderable_cache.translation.y:pop()
 	end
+end
+
+function RenderableSystem:isOnScreen(renderable)
+	print(self.renderable_cache.translation.x:total())
+	local rx, ry, rw, rh = renderable.render.quad:getViewport()
+end
+
+function RenderableSystem:getOffsetLocation(render)
+	
 end
 
 function RenderableSystem:drawHeirarchy ( root, big_list )
 	--Pop the coordinate system
+	self.renderable_cache.translation.x:clear()
+	self.renderable_cache.translation.y:clear()
 	local delta
 	if root:hasComponent('Transform') then
 		delta = root:getComponent('Transform')
