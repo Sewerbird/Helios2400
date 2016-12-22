@@ -1,6 +1,5 @@
 class = require 'lib/30log'
 inspect = require 'lib/inspect'
-ProFi = require 'lib/ProFi'
 debugGraph = require 'lib/debugGraph'
 
 local AssetLoader = require 'src/AssetLoader'
@@ -28,8 +27,6 @@ function love.load()
   Global.Loader = Loader:new(Global)
   Global.Loader:debugLoad()
 
-  --Profiling stuff
-  ProFi:start()
   fpsGraph = debugGraph:new('fps', 0, 0, 75)
   memGraph = debugGraph:new('mem', 0, 30, 75)
   dtGraph = debugGraph:new('custom', 0, 60, 75)
@@ -38,7 +35,8 @@ function love.load()
 end
 
 function love.update( dt )
-  if collectgarbage('count') > GOAL_MEMORY then error('Using too much memory mate!') end
+  local gc_cnt = collectgarbage('count')
+  if gc_cnt > GOAL_MEMORY then error("Using too much memory mate! \nYou didnt overflow, but you spiked past the design limit of " .. (GOAL_MEMORY/1024) .. "MB, hitting " .. (gc_cnt/1024) .. "MB") end
 
   --Debug mouse-to-hex output
   if not Global.PAUSE and not Global.PAUSE_UPDATES then
@@ -125,7 +123,5 @@ end
 
 function love.quit()
   print("Thanks for playing! Come back soon!")
-  ProFi:stop()
-  ProFi:writeReport( 'MyProfilingReport.txt' )
 end
 

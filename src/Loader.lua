@@ -253,6 +253,7 @@ function Loader:debugLoad (save)
 
   --[[ Generate the Game State ]]--
 
+  self:unloadGame(Global.Registry)
   self.loadContext.Registry = Registry:new();
   local debug_gamestate = self.loadContext.Registry--TODO: make this with a Registry:new();
 
@@ -261,7 +262,6 @@ function Loader:debugLoad (save)
   else
     self:debugGenerateMap('default', Assets)
     self:loadGame('default',debug_gamestate)
-    collectgarbage("collect") 
   end
 
   --[[Instantiate Tilemap View ]]--
@@ -331,6 +331,12 @@ function Loader:loadGame( name, registry)
   local raw_save = Tserial.unpack(contents)
   for i, v in pairs(raw_save) do
     GameInfo:reify(registry, v)
+  end
+end
+
+function Loader:unloadGame( registry )
+  for i, v in pairs(registry) do
+    registry[v] = nil
   end
 end
 

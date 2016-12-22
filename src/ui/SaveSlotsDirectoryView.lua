@@ -148,7 +148,7 @@ function SaveSlotsDirectoryView:init (registry, scenegraph, file_extension_filte
 	})
 	self.scenegraph:attach(self.anchor,self.root)
 
-	self:reList()
+	--self:reList()
 
 	local close_btn_handler = TouchDelegate:new()
 	close_btn_handler:setHandler("onTouch",function(this,x,y)
