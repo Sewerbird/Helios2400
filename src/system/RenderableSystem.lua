@@ -60,13 +60,9 @@ function RenderableSystem:renderComponent ( cached )
 	local renderable = cached
 	if renderable ~= nil and cached.r ~= "PLZ_PUSH" and cached.r ~= "PLZ_POP" then
 		if renderable.render ~= nil then
+			local xOffset = self.planet_width * self:getScreenWidthOffsets(renderable)
 			if renderable.render.rtype == "sprite" then
-				local offScreen = self:getScreenWidthOffsets(renderable)
-				if not offScreen then
-					love.graphics.draw(renderable.render.img, renderable.render.quad)
-				else 
-					love.graphics.draw(renderable.render.img, renderable.render.quad, self.planet_width * offScreen)
-				end
+				love.graphics.draw(renderable.render.img, renderable.render.quad,xOffset)
 			elseif renderable.render.rtype == "animation" then
 				renderable.render.ani:draw(renderable.render.sprite)
 			end
