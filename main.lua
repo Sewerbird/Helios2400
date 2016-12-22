@@ -25,10 +25,8 @@ function love.load()
     TickAccumulator = 0,
     TickRate = 0.01,
   }
-  Global.MutatorBus = MutatorBus:new(Global.Registry)
   Global.Loader = Loader:new(Global)
-  EarthSceneGraph, SpaceSceneGraph = Global.Loader:debugLoad()
-  Global.Viewer = Viewer:new(Global.Registry, {EarthSceneGraph,SpaceSceneGraph})
+  Global.Loader:debugLoad()
 
   --Profiling stuff
   ProFi:start()

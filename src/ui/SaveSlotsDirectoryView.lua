@@ -23,6 +23,7 @@ function SaveSlotView:init (registry, scenegraph, path, row_num, click_handler)
 		Transform:new(0,0)
 	}))
 	self.scenegraph = scenegraph
+	self.registry = registry
 
 	local bg_rect = registry:add(GameObject:new("sgdvr_bg_rect", {
 		Transform:new(5, 10 + row_num * 40),
@@ -67,6 +68,30 @@ function SaveSlotsDirectoryView:show (attachTo, save_or_load_mode)
 	self.saves = self:getList(".sav")
 	if not self.is_attached then
 		self.scenegraph:attach(self.root, attachTo)
+		self:reList()
+	end
+end
+
+function SaveSlotsDirectoryView:reList()
+	self.scenegraph:detachAll(self.scenegraph:getChildren(self.anchor))
+	for i = 1, 5 do
+		local click_handler = TouchDelegate:new()
+		local slot_in_use = false
+		for j, sav in ipairs(self.saves) do
+			if sav == ("save_slot_" .. i ..".sav") then
+				print("\nwooo\n")
+				slot_in_use = true
+			else
+				print("SAVE in list is '" .. sav .. "' " .. i .. ":" .. tostring(sav == ("save_slot_" .. i ..".sav")))
+			end
+		end
+		click_handler:setHandler("onTouch", function(this, x, y)
+			if (slot_in_use and (self.mode == "LOAD")) or (self.mode == "SAVE") then
+				self:doAction(self.mode, i)
+			end
+		end)
+		local slot_name = slot_in_use and ("Save Slot " .. "[In Use]") or ("Save Slot " .. "[Empty]")
+		self.scenegraph:attach(SaveSlotView:new(self.registry,self.scenegraph, slot_name ,i-1, click_handler).root, self.anchor)
 	end
 end
 
@@ -81,8 +106,11 @@ function SaveSlotsDirectoryView:doAction ( action, slot )
 	print("Click will cause a " .. action .. " on slot " .. slot)
 	if action == "LOAD" then
 		self.registry:publish("IMMEDIATE_LOAD_GAME","save_slot_" .. slot)
+		Global.Loader:debugLoad("save_slot_" .. slot)
 	elseif action == "SAVE" then
 		self.registry:publish("IMMEDIATE_SAVE_GAME","save_slot_" .. slot)
+		Global.Loader:saveGame("save_slot_" .. slot , self.registry)
+		self:show(nil, action)
 	end
 end
 
@@ -103,6 +131,8 @@ function SaveSlotsDirectoryView:init (registry, scenegraph, file_extension_filte
     end)
 
 	self.scenegraph:attach(self.root, nil)
+
+
 	self.scenegraph:attach(registry:add(GameObject:new("sgdv_bg_rect",{
 		Transform:new(0,0),
 		Renderable:new(
@@ -113,32 +143,12 @@ function SaveSlotsDirectoryView:init (registry, scenegraph, file_extension_filte
 			Polygon:new({ w = 300, h = 300}),
 			Block_Below_Delegate)
 	})), self.root)
+	self.anchor = registry:add(GameObject:new("listanchor"),{
+		Transform:new(0,0)
+	})
+	self.scenegraph:attach(self.anchor,self.root)
 
-	for i = 1, 5 do
-		local click_handler = TouchDelegate:new()
-		local slot_in_use = false
-		for j, sav in ipairs(self.saves) do
-			if sav == ("save_slot_" .. i ..".sav") then
-				print("\nwooo\n")
-				slot_in_use = true
-			else
-				print("SAVE in list is '" .. sav .. "' " .. i .. ":" .. tostring(sav == ("save_slot_" .. i ..".sav")))
-			end
-		end
-		click_handler:setHandler("onTouch", function(this, x, y)
-			if (slot_in_use and (self.mode == "LOAD")) or (self.mode == "SAVE") then
-				self:doAction(self.mode, i)
-			end
-		end)
-		local slot_name = slot_in_use and "In Use" or "[Empty]"
-		self.scenegraph:attach(SaveSlotView:new(registry,scenegraph, slot_name ,i-1, click_handler).root, self.root)
-	end
-
-	--[[
-	for i, save in ipairs(saves) do
-		self.scenegraph:attach(SaveSlotView:new(registry,scenegraph,save,i-1).root, self.root)
-	end
-	]]--
+	self:reList()
 
 	local close_btn_handler = TouchDelegate:new()
 	close_btn_handler:setHandler("onTouch",function(this,x,y)

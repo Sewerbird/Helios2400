@@ -119,9 +119,9 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
 
   registry:subscribe("selectArmy", function(this, msg)
     if msg.icon_type == 'army' then
-      print('Show army inspector for ' .. inspect(msg.address.address))
-      Army_Inspector_View:hide()
-      Army_Inspector_View:show(Inspector_Army_Anchor,msg)
+      --print('Show army inspector for ' .. inspect(msg.address.address))
+      --Army_Inspector_View:hide()
+      --Army_Inspector_View:show(Inspector_Army_Anchor,msg)
     end
   end)
 

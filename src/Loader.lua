@@ -9,6 +9,8 @@ local Transform = require 'src/component/Transform'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 local GameInfo = require 'src/component/GameInfo'
 local GameObject = require 'src/GameObject'
+local MutatorBus = require 'src/mutate/MutatorBus'
+local Viewer = require 'src/ui/Viewer'
 local AssetLoader = require 'src/AssetLoader'
 local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
@@ -251,6 +253,7 @@ function Loader:debugLoad (save)
 
   --[[ Generate the Game State ]]--
 
+  self.loadContext.Registry = Registry:new();
   local debug_gamestate = self.loadContext.Registry--TODO: make this with a Registry:new();
 
   if save then
@@ -258,6 +261,7 @@ function Loader:debugLoad (save)
   else
     self:debugGenerateMap('default', Assets)
     self:loadGame('default',debug_gamestate)
+    collectgarbage("collect") 
   end
 
   --[[Instantiate Tilemap View ]]--
@@ -308,7 +312,10 @@ function Loader:debugLoad (save)
   self.loadContext.Registry:setStructure('Earth', Earth_Map)
   self.loadContext.Registry:setStructure('Space', Space_Map)
 
-  return EarthSceneGraph, SpaceSceneGraph
+
+  Global.MutatorBus = MutatorBus:new(Global.Registry)
+  Global.Viewer = Viewer:new(Global.Registry, {EarthSceneGraph,SpaceSceneGraph})
+
 end
 
 function Loader:saveGame ( name, gamestateRegistry)
