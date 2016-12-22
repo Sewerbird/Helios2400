@@ -179,16 +179,15 @@ function RenderableSystem:drawHeirarchy ( root, big_list )
 end
 
 function RenderableSystem:draw ()
-	if self.dirty > 10 then
+	if self.cache == nil or self.dirty > 3 then
 		self.cache = self:drawHeirarchy(self.registry:get(self.targetCollection:getRoot()), {})
 		self.dirty = 0
-	else
-		for i = 1, #self.cache do
-			self:renderComponent(self.cache[i])
-		end
-		self.dirty = self.dirty + 1
-		--if math.random() > 0.99 then self.dirty = true end
 	end
+
+	for i = 1, #self.cache do
+		self:renderComponent(self.cache[i])
+	end
+	self.dirty = self.dirty + 1
 end
 
 return RenderableSystem
