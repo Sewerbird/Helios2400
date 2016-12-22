@@ -13,7 +13,8 @@ local RenderableSystem = System:extend("RenderableSystem",{
 	renderable_cache = nil,
 	last_publish_count = nil,
 	dirty = 10000,
-	font = nil
+	font = nil,
+	planet_width = 1512
 })
 
 function RenderableSystem:init ( registry, targetCollection )
@@ -60,12 +61,11 @@ function RenderableSystem:renderComponent ( cached )
 	if renderable ~= nil and cached.r ~= "PLZ_PUSH" and cached.r ~= "PLZ_POP" then
 		if renderable.render ~= nil then
 			if renderable.render.rtype == "sprite" then
-				local offScreen = self:isOffScreen(renderable)
+				local offScreen = self:getScreenWidthOffsets(renderable)
 				if not offScreen then
 					love.graphics.draw(renderable.render.img, renderable.render.quad)
 				else 
-					local mapWidth = 1512
-					love.graphics.draw(renderable.render.img, renderable.render.quad, mapWidth * offScreen)
+					love.graphics.draw(renderable.render.img, renderable.render.quad, self.planet_width * offScreen)
 				end
 			elseif renderable.render.rtype == "animation" then
 				renderable.render.ani:draw(renderable.render.sprite)
@@ -101,10 +101,9 @@ end
 
 function RenderableSystem:getScreenWidthOffsets(renderable)
 	local tx = (self.renderable_cache.translation.x:total() or 0) *-1
-	local _, _, rw, _ = renderable.render.quad:getViewport()
+	local _, _, rw = renderable.render.quad:getViewport()
 	tx = tx - rw
-	if tx<= 0 then return nil end
-	return math.ceil(tx/ 1512)
+	return math.ceil(tx/ self.planet_width)
 end
 
 function RenderableSystem:drawHeirarchy ( root, big_list )
