@@ -59,16 +59,15 @@ function RenderableSystem:renderComponent ( cached )
 	--Renderable
 	local renderable = cached
 	if renderable ~= nil and cached.r ~= "PLZ_PUSH" and cached.r ~= "PLZ_POP" then
+		local xOffset = self.planet_width * self:getScreenWidthOffsets(renderable)
+		love.graphics.push()
+		love.graphics.translate(xOffset,0)
 		if renderable.render ~= nil then
-			local xOffset = self.planet_width * self:getScreenWidthOffsets(renderable)
-			love.graphics.push()
-			love.graphics.translate(xOffset,0)
 			if renderable.render.rtype == "sprite" then
 				love.graphics.draw(renderable.render.img, renderable.render.quad)
 			elseif renderable.render.rtype == "animation" then
 				renderable.render.ani:draw(renderable.render.sprite)
 			end
-			love.graphics.pop()
 		elseif renderable.polygon ~= nil then
 			local r, g, b, a = love.graphics.getColor()
 			love.graphics.setColor(renderable.backgroundcolor)
@@ -89,6 +88,7 @@ function RenderableSystem:renderComponent ( cached )
 				love.graphics.print(renderable.text)
 			end
 		end
+		love.graphics.pop()
 	end
 
 	if cached.r == "PLZ_POP" and delta == "PLOXPOPIT" then
@@ -99,12 +99,17 @@ function RenderableSystem:renderComponent ( cached )
 end
 
 function RenderableSystem:getScreenWidthOffsets(renderable)
+	if not renderable then return 0 end
 	local tx = (self.renderable_cache.translation.x:total() or 0) *-1
 	local rw = 0
-	if renderable.render.rtype == "sprite" then 
+	if renderable.polygon then
+		rw = renderable.polygon:getDimensions().w
+	elseif renderable.render then
+		if renderable.render.rtype == "sprite" then 
 		_, _, rw = renderable.render.quad:getViewport()
-	elseif renderable.render.rtype == "animation" then
-		rw = renderable.render.ani.frameWidth
+		elseif renderable.render.rtype == "animation" then
+			rw = renderable.render.ani.frameWidth
+		end
 	end
 	tx = tx - rw
 	return math.ceil(tx/ self.planet_width)
