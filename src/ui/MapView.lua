@@ -48,13 +48,22 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
   local Inspector = registry:add(GameObject:new('Inspector',{
       Transform:new(0,640),
       Renderable:new(
-        Polygon:new({w=1200, h=125}),
+        Polygon:new({w=1200, h=160}),
         nil,
         {50,100,100,125},
         "Inspector Panel (has some commands, cursor information, minimap, etc). Press Escape to bring up the Main Menu"),
       Interfaceable:new(
-        Polygon:new({w=1200, h=125}),
+        Polygon:new({w=1200, h=160}),
         bg_click_interceptor)
+    }))
+  local Inspector_Commands_Anchor = registry:add(GameObject:new('Inspectory_Commands_Anchor',{
+      Transform:new(0,0)
+    }))
+  local Inspector_City_Anchor = registry:add(GameObject:new('Inspectory_City_Anchor',{
+      Transform:new(125,0)
+    }))
+  local Inspector_Army_Anchor = registry:add(GameObject:new('Inspectory_Army_Anchor',{
+      Transform:new(230+125,0)
     }))
 
   local Map_View_Touch_Delegate = TouchDelegate:new()
@@ -85,7 +94,8 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
   scenegraph:attachAll({Map_Layer,UI_Layer}, Map_View)
   scenegraph:attachAll({Tile_Layer,City_Layer,Unit_Layer}, Map_Layer)
   scenegraph:attachAll({Inspector},UI_Layer)
-  scenegraph:attachAll({Quick_Command_Panel_View.root},Inspector)
+  scenegraph:attachAll({Inspector_Commands_Anchor,Inspector_Army_Anchor,Inspector_City_Anchor},Inspector)
+  self.scenegraph:attach(Quick_Command_Panel_View.root,Inspector_Commands_Anchor)
 
   for i, tile in ipairs(tiles) do
     scenegraph:attach(tile.root, Tile_Layer)
@@ -103,16 +113,15 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
     if msg.icon_type == 'city' then
       print('Show city inspector for ' .. inspect(msg.address.address))
       City_Inspector_View:hide()
-      City_Inspector_View:show(Inspector,msg)
+      City_Inspector_View:show(Inspector_City_Anchor,msg)
     end
   end)
 
   registry:subscribe("selectArmy", function(this, msg)
     if msg.icon_type == 'army' then
       print('Show army inspector for ' .. inspect(msg.address.address))
-      City_Inspector_View:hide()
       Army_Inspector_View:hide()
-      Army_Inspector_View:show(Inspector,msg)
+      Army_Inspector_View:show(Inspector_Army_Anchor,msg)
     end
   end)
 

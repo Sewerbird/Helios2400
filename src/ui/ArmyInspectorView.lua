@@ -19,7 +19,7 @@ function ArmyInspectorView:init (registry, scenegraph)
 	self.scenegraph = scenegraph
 
 	local bg_rect = registry:add(GameObject:new("aiv_bg_rect", {
-		Transform:new(625,0),
+		Transform:new(0,0),
 		Renderable:new(
 			Polygon:new({w = 500, h = 125}),
 			nil,
