@@ -1,6 +1,5 @@
 class = require 'lib/30log'
 inspect = require 'lib/inspect'
-ProFi = require 'lib/ProFi'
 debugGraph = require 'lib/debugGraph'
 
 local AssetLoader = require 'src/AssetLoader'
@@ -32,7 +31,6 @@ function love.load()
   my_viewer = Viewer:new(Global.Registry, {EarthSceneGraph,SpaceSceneGraph})
 
   --Profiling stuff
-  ProFi:start()
   fpsGraph = debugGraph:new('fps', 0, 0, 75)
   memGraph = debugGraph:new('mem', 0, 30, 75)
   dtGraph = debugGraph:new('custom', 0, 60, 75)
@@ -128,7 +126,5 @@ end
 
 function love.quit()
   print("Thanks for playing! Come back soon!")
-  ProFi:stop()
-  ProFi:writeReport( 'MyProfilingReport.txt' )
 end
 
