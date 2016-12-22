@@ -9,6 +9,8 @@ local Transform = require 'src/component/Transform'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 local GameInfo = require 'src/component/GameInfo'
 local GameObject = require 'src/GameObject'
+local MutatorBus = require 'src/mutate/MutatorBus'
+local Viewer = require 'src/ui/Viewer'
 local AssetLoader = require 'src/AssetLoader'
 local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
@@ -239,7 +241,7 @@ function Loader:debugGenerateMap ( save_name, assets)
   self:saveGame(save_name, debug_gamestate)
 end
 
-function Loader:debugLoad ()
+function Loader:debugLoad (save)
 
   --[[ Load Assets & Play some music because why not ]]--
   local Assets = self.loadContext.Assets
@@ -251,9 +253,16 @@ function Loader:debugLoad ()
 
   --[[ Generate the Game State ]]--
 
+  self:unloadGame(Global.Registry)
+  self.loadContext.Registry = Registry:new();
   local debug_gamestate = self.loadContext.Registry--TODO: make this with a Registry:new();
-  self:debugGenerateMap('default', Assets)
-  self:loadGame('default',debug_gamestate)
+
+  if save then
+    self:loadGame(save, debug_gamestate)
+  else
+    self:debugGenerateMap('default', Assets)
+    self:loadGame('default',debug_gamestate)
+  end
 
   --[[Instantiate Tilemap View ]]--
 
@@ -303,7 +312,10 @@ function Loader:debugLoad ()
   self.loadContext.Registry:setStructure('Earth', Earth_Map)
   self.loadContext.Registry:setStructure('Space', Space_Map)
 
-  return EarthSceneGraph, SpaceSceneGraph
+
+  Global.MutatorBus = MutatorBus:new(Global.Registry)
+  Global.Viewer = Viewer:new(Global.Registry, {EarthSceneGraph,SpaceSceneGraph})
+
 end
 
 function Loader:saveGame ( name, gamestateRegistry)
@@ -319,6 +331,12 @@ function Loader:loadGame( name, registry)
   local raw_save = Tserial.unpack(contents)
   for i, v in pairs(raw_save) do
     GameInfo:reify(registry, v)
+  end
+end
+
+function Loader:unloadGame( registry )
+  for i, v in pairs(registry) do
+    registry[v] = nil
   end
 end
 

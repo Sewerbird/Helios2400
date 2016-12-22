@@ -91,14 +91,16 @@ end
 
 function IndexTree:detachAll ( detachFromId )
 	local v = self.nodes[detachFromId]
-	for j, p in ipairs(v.children) do
-		for k, c in ipairs(self.nodes[p].parents) do
-			if c == v.nid then
-				table.remove(self.nodes[p].parents, k)
+	if v then
+		for j, p in ipairs(v.children) do
+			for k, c in ipairs(self.nodes[p].parents) do
+				if c == v.nid then
+					table.remove(self.nodes[p].parents, k)
+				end
 			end
 		end
+		v.children = {}
 	end
-	v.children = {}
 end
 
 function IndexTree:detach ( detachee, detachFromId )

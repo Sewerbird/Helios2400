@@ -1,6 +1,5 @@
 class = require 'lib/30log'
 inspect = require 'lib/inspect'
-ProFi = require 'lib/ProFi'
 debugGraph = require 'lib/debugGraph'
 
 local AssetLoader = require 'src/AssetLoader'
@@ -9,7 +8,6 @@ local Viewer = require 'src/ui/Viewer'
 local PubSub = require 'src/PubSub'
 local Registry = require 'src/Registry'
 local MutatorBus = require 'src/mutate/MutatorBus'
-local my_viewer
 
 --TODO: move this into a util lib
 function math.round(n, deci)
@@ -24,15 +22,11 @@ function love.load()
     Registry = Registry:new(),
     Assets = AssetLoader:new():loadAssets("assets/"),
     TickAccumulator = 0,
-    TickRate = 0.01
+    TickRate = 0.01,
   }
-  Global.MutatorBus = MutatorBus:new(Global.Registry)
-  EarthSceneGraph, SpaceSceneGraph = Loader:new(Global):debugLoad()
+  Global.Loader = Loader:new(Global)
+  Global.Loader:debugLoad()
 
-  my_viewer = Viewer:new(Global.Registry, {EarthSceneGraph,SpaceSceneGraph})
-
-  --Profiling stuff
-  ProFi:start()
   fpsGraph = debugGraph:new('fps', 0, 0, 75)
   memGraph = debugGraph:new('mem', 0, 30, 75)
   dtGraph = debugGraph:new('custom', 0, 60, 75)
@@ -41,7 +35,8 @@ function love.load()
 end
 
 function love.update( dt )
-  if collectgarbage('count') > GOAL_MEMORY then error('Using too much memory mate!') end
+  local gc_cnt = collectgarbage('count')
+  if gc_cnt > GOAL_MEMORY then error("Using too much memory mate! \nYou didnt overflow, but you spiked past the design limit of " .. (GOAL_MEMORY/1024) .. "MB, hitting " .. (gc_cnt/1024) .. "MB") end
 
   --Debug mouse-to-hex output
   if not Global.PAUSE and not Global.PAUSE_UPDATES then
@@ -64,7 +59,7 @@ end
 
 function love.draw()
   if not Global.PAUSE then
-    my_viewer.Systems.Render:draw()
+    Global.Viewer.Systems.Render:draw()
   end
 
   -- Profiling stuff
@@ -79,41 +74,41 @@ end
 
 function love.mousepressed( x, y, button )
   Global.DRAGBEGUN = true
-  my_viewer.Systems.Interface:onTouch(x,y)
+  Global.Viewer.Systems.Interface:onTouch(x,y)
 end
 
 function love.mousemoved( x, y, dx, dy, istouch )
   if Global.DRAGBEGUN then
-    my_viewer.Systems.Interface:onDrag(x,y,dx,dy)
+    Global.Viewer.Systems.Interface:onDrag(x,y,dx,dy)
   end
 end
 
 function love.mousereleased( x, y, button )
   Global.DRAGBEGUN = false
-  my_viewer.Systems.Interface:onUntouch(x,y)
+  Global.Viewer.Systems.Interface:onUntouch(x,y)
 end
 
 function love.touchpressed( id, x, y, pressure )
-  my_viewer.Systems.Interface:onTouch(x,y)
+  Global.Viewer.Systems.Interface:onTouch(x,y)
 end
 
 function love.touchmoved( id, x, y, dx, dy, pressure )
   if Global.DRAGBEGUN then
-    my_viewer.Systems.Interface:onDrag(x,y,dx,dy)
+    Global.Viewer.Systems.Interface:onDrag(x,y,dx,dy)
   end
 end
 
 function love.touchreleased( id, x, y, pressure )
-  my_viewer.Systems.Interface:onUntouch(x,y)
+  Global.Viewer.Systems.Interface:onUntouch(x,y)
 end
 
 function love.keypressed( key )
   if key == 'n' then
-    my_viewer:nextView()
+    Global.Viewer:nextView()
   elseif key == 'q' then
-    my_viewer.Registry:publish("endTurn")
+    Global.Viewer.Registry:publish("endTurn")
   end
-  my_viewer.Systems.Interface:onKeypress(key)
+  Global.Viewer.Systems.Interface:onKeypress(key)
 end
 
 function love.focus( f )
@@ -128,7 +123,5 @@ end
 
 function love.quit()
   print("Thanks for playing! Come back soon!")
-  ProFi:stop()
-  ProFi:writeReport( 'MyProfilingReport.txt' )
 end
 
