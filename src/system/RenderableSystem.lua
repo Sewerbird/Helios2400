@@ -95,18 +95,13 @@ function RenderableSystem:renderComponent ( cached )
 end
 
 function RenderableSystem:isOnScreen(renderable)
-	print(self.renderable_cache.translation.x:total())
+	local tx = (self.renderable_cache.translation.x:total() or 0) *-1
 	local rx, ry, rw, rh = renderable.render.quad:getViewport()
-end
-
-function RenderableSystem:getOffsetLocation(render)
-	
+	return tx > rx + rw
 end
 
 function RenderableSystem:drawHeirarchy ( root, big_list )
 	--Pop the coordinate system
-	self.renderable_cache.translation.x:clear()
-	self.renderable_cache.translation.y:clear()
 	local delta
 	if root:hasComponent('Transform') then
 		delta = root:getComponent('Transform')
