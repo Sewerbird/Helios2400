@@ -61,11 +61,14 @@ function RenderableSystem:renderComponent ( cached )
 	if renderable ~= nil and cached.r ~= "PLZ_PUSH" and cached.r ~= "PLZ_POP" then
 		if renderable.render ~= nil then
 			local xOffset = self.planet_width * self:getScreenWidthOffsets(renderable)
+			love.graphics.push()
+			love.graphics.translate(xOffset,0)
 			if renderable.render.rtype == "sprite" then
-				love.graphics.draw(renderable.render.img, renderable.render.quad,xOffset)
+				love.graphics.draw(renderable.render.img, renderable.render.quad)
 			elseif renderable.render.rtype == "animation" then
 				renderable.render.ani:draw(renderable.render.sprite)
 			end
+			love.graphics.pop()
 		elseif renderable.polygon ~= nil then
 			local r, g, b, a = love.graphics.getColor()
 			love.graphics.setColor(renderable.backgroundcolor)
@@ -97,7 +100,12 @@ end
 
 function RenderableSystem:getScreenWidthOffsets(renderable)
 	local tx = (self.renderable_cache.translation.x:total() or 0) *-1
-	local _, _, rw = renderable.render.quad:getViewport()
+	local rw = 0
+	if renderable.render.rtype == "sprite" then 
+		_, _, rw = renderable.render.quad:getViewport()
+	elseif renderable.render.rtype == "animation" then
+		rw = renderable.render.ani.frameWidth
+	end
 	tx = tx - rw
 	return math.ceil(tx/ self.planet_width)
 end
