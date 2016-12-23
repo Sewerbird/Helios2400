@@ -55,96 +55,113 @@ function MainMenuView:init (registry, scenegraph)
     	return true
     end)
 
+	local windowW = love.graphics:getWidth()
+	local windowH = love.graphics:getHeight()
+
 	local gray_out = registry:add(GameObject:new("mmv_grayout", {
 		Transform:new(0,0),
 		Renderable:new(
-			Polygon:new({w = 1200, h = 800}),
+			Polygon:new({w = windowW, h = windowH}),
 			nil,
 			{0,0,0,128},
 			math.floor(math.random()*100000)),
 		Interfaceable:new(
-			Polygon:new({w = 1200, h = 800}),
+			Polygon:new({w = windowW, h = windowH}),
 			Block_Below_Delegate)
 	}))
 
+	local panelW = 400
+	local panelH = 600
+	local panelX = ( windowW - panelW ) / 2
+	local panelY = ( windowH - panelH ) / 2
+	local margin = 10
+
 	local bg_rect = registry:add(GameObject:new("mmv_bgrect", {
-		Transform:new(400,100),
+		Transform:new(panelX,panelY),
 		Renderable:new(
-			Polygon:new({w = 400, h = 600}),
+			Polygon:new({w = panelW, h = panelH}),
 			nil,
 			{128, 60, 128})
 		}))
 
+	local subPanelW = panelW - 2 * margin
+	local buttonW = subPanelW - 2 * margin
+	local titleH = 40
 	local title_panel = registry:add(GameObject:new("mmv_title",{
-		Transform:new(50,20),
+		Transform:new(margin,margin),
 		Renderable:new(
-			Polygon:new({w = 300, h = 80}),
+			Polygon:new({w = subPanelW, h = titleH}),
 			nil,
 			{200,100,200},
 			"HELIOS 2400 DEBUG MENU")
 		}))
 
+	local saveLoadY = titleH + 2 * margin
+	local buttonH = 30
+	local bigMargin = 40
+	local saveLoadH = buttonH * 4 + margin * 4 + bigMargin
 	local saveload_panel = registry:add(GameObject:new("mmv_saveloadpanel",{
-		Transform:new(50,120),
+		Transform:new(margin,saveLoadY),
 		Renderable:new(
-			Polygon:new({w = 300, h = 200}),
+			Polygon:new({w = subPanelW, h = saveLoadH}),
 			nil,
 			{200,100,200})
 		}))
 
 	local save_btn = registry:add(GameObject:new("mmv_save_btn",{
-		Transform:new(10, 10),
+		Transform:new(margin, margin),
 		Renderable:new(
-			Polygon:new({w = 280, h = 30}),
+			Polygon:new({w = buttonW, h = buttonH}),
 			nil,
 			{150,100,180},
 			"Save Game"),
 		Interfaceable:new(
-			Polygon:new({w = 280, h = 30}),
+			Polygon:new({w = buttonW, h = buttonH}),
 			save_button_handler)
 		}))
 
 	local load_btn = registry:add(GameObject:new("mmv_load_btn",{
-		Transform:new(10, 50),
+		Transform:new(margin, margin + buttonH + margin),
 		Renderable:new(
-			Polygon:new({w = 280, h = 30}),
+			Polygon:new({w = buttonW, h = buttonH}),
 			nil,
 			{150,100,180},
 			"Load Game"),
 		Interfaceable:new(
-			Polygon:new({w = 280, h = 30}),
+			Polygon:new({w = buttonW, h = buttonH}),
 			load_button_handler)
 		}))
 
 	local quit_btn = registry:add(GameObject:new("mmv_quit_btn",{
-		Transform:new(10,90),
+		Transform:new(margin , margin + (buttonH + margin) * 2),
 		Renderable:new(
-			Polygon:new({w = 280, h = 30}),
+			Polygon:new({w = buttonW, h = buttonH}),
 			nil,
 			{150,100,180},
 			"Quit Game"),
 		Interfaceable:new(
-			Polygon:new({w = 280, h = 30}),
+			Polygon:new({w = buttonW, h = buttonH}),
 			quit_button_handler)
 		}))
 
 	local return_btn = registry:add(GameObject:new("mmv_return_btn",{
-		Transform:new(10,150),
+		Transform:new(margin , margin + buttonH * 3 + margin * 2 + bigMargin),
 		Renderable:new(
-			Polygon:new({w = 280, h = 30}),
+			Polygon:new({w = buttonW, h = buttonH}),
 			nil,
 			{150,100,180},
 			"Return (or press Escape)"),
 		Interfaceable:new(
-			Polygon:new({w = 280, h = 30}),
+			Polygon:new({w = buttonW, h = buttonH}),
 			return_button_handler)
 		}))
 
-
+	local view_switcher_panelH = buttonH + 2 * margin
+	local view_switcher_panelY = saveLoadY + saveLoadH + margin
 	local view_switcher_panel = registry:add(GameObject:new("mmv_switcher_panel",{
-		Transform:new(50,340),
+		Transform:new(margin,view_switcher_panelY),
 		Renderable:new(
-			Polygon:new({w = 300, h = 50}),
+			Polygon:new({w = subPanelW, h = view_switcher_panelH}),
 			nil,
 			{200,100,200},
 			nil)
