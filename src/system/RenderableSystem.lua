@@ -80,10 +80,15 @@ function RenderableSystem:renderComponent ( cached )
 		end
 		if renderable.text ~= nil then
 			if renderable.polygon then
-				love.graphics.printf(renderable.text,
-					renderable.polygon.vertices[1], 
-					renderable.polygon.vertices[2], 
-					renderable.polygon.vertices[3],'center')
+				local centerX,centerY = renderable.polygon:getCenter()
+				local polyWidth = renderable.polygon:getDimensions().w
+				local fontH = love.graphics:getFont():getHeight()
+				love.graphics.printf(
+					renderable.text,
+					-1 * fontH / 2, 
+					centerY,
+					polyWidth - 8,
+					'center')
 			else
 				love.graphics.print(renderable.text)
 			end

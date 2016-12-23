@@ -95,4 +95,9 @@ function Polygon:getDimensions ()
 	}
 end
 
+function Polygon:getCenter()
+	local dim = self:getDimensions()
+	return dim.w/2,dim.h/2
+end
+
 return Polygon
