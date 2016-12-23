@@ -59,7 +59,7 @@ function RenderableSystem:renderComponent ( cached )
 	--Renderable
 	local renderable = cached
 	if renderable ~= nil and cached.r ~= "PLZ_PUSH" and cached.r ~= "PLZ_POP" then
-		local xOffset = self.planet_width * self:getScreenWidthOffsets(renderable)
+		local xOffset = (love.graphics:getWidth() < self.planet_width) and self.planet_width * self:getScreenWidthOffsets(renderable) or 0
 		love.graphics.push()
 		love.graphics.translate(xOffset,0)
 		if renderable.render ~= nil then
