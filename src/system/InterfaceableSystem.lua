@@ -37,7 +37,6 @@ function InterfaceableSystem:propogateEvent ( iobj, func, x, y, dx, dy, btn )
 		l_x = x - transform.x
 		l_y = y - transform.y
 	end
-	print("@",l_x,l_y)
 	local tl_x = l_x % self.planet_width
 	--Propogate on children
 	local children = self.targetCollection:getChildren(iobj)
