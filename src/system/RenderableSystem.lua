@@ -80,7 +80,7 @@ function RenderableSystem:renderComponent ( cached )
 		end
 		if renderable.text ~= nil then
 			if renderable.polygon then
-				local centerX,centerY = renderable.polygon:getCenter()
+				local centerX,centerY = renderable.polygon:getPrintLoc()
 				local polyWidth = renderable.polygon:getDimensions().w
 				local fontH = love.graphics:getFont():getHeight()
 				love.graphics.printf(
