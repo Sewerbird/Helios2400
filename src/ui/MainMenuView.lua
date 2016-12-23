@@ -155,8 +155,8 @@ function MainMenuView:init (registry, scenegraph)
 			Polygon:new({w = buttonW, h = buttonH}),
 			return_button_handler)
 		}))
-
-	local view_switcher_panelH = buttonH + 2 * margin
+	local switchButtonH = 60
+	local view_switcher_panelH = switchButtonH + 2 * margin
 	local view_switcher_panelY = saveLoadY + saveLoadH + margin
 	local view_switcher_panel = registry:add(GameObject:new("mmv_switcher_panel",{
 		Transform:new(margin,view_switcher_panelY),
@@ -167,10 +167,23 @@ function MainMenuView:init (registry, scenegraph)
 			nil)
 		}))
 
+	local switchButtonW = (subPanelW - margin) / 2
+
+	local AHO = switchButtonH/4
+	local AHW = switchButtonW/4
+
 	local switch_prev_btn = registry:add(GameObject:new("mmv_switchprev_btn",{
-		Transform:new(10,10),
+		Transform:new(margin,margin),
 		Renderable:new(
-			Polygon:new({0,15 , 30,-5 , 30,0 , 135,0 , 135,30 , 30,30 , 30,35}),
+			Polygon:new({
+				0,switchButtonH/2,
+				AHW,0,
+				AHW,AHO,
+				switchButtonW,AHO,
+				switchButtonW,switchButtonH-AHO,
+				AHW,switchButtonH-AHO,
+				AHW,switchButtonH}
+				),
 			nil,
 			{150,100,180},
 			"Previous View"),
@@ -180,7 +193,7 @@ function MainMenuView:init (registry, scenegraph)
 		}))
 
 	local switch_next_btn = registry:add(GameObject:new("mmv_switchnext_btn",{
-		Transform:new(155,10),
+		Transform:new(2 * margin + switchButtonW,margin),
 		Renderable:new(
 			Polygon:new({0,0 , 105,0 , 105,-5 , 135,15 , 105,35 , 105,30 , 0,30}),
 			nil,
