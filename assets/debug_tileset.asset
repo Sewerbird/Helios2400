@@ -108,6 +108,14 @@
 			y = 218,
 			width = 84,
 			height = 73
+		},
+		{
+			assetId = "TILE_FOREST_1",
+			assetType = "sprite",
+			x = 252,
+			y = 218,
+			width = 84,
+			height = 73
 		}
 	}
 }

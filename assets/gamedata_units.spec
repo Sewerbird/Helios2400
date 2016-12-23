@@ -101,6 +101,31 @@
 				close = 0
 			},
 			available_to_players = true
+		},
+		{
+			specId = "SPEC_UNIT_SANTA_1",
+			specType = "UnitData",
+			icon_sprite = "UNIT_SANTA_1",
+			movement_types = { "LAND" },
+			max_move = 20,
+			army_type = "walker",
+			army_description = "'Santa' Kris Kringle",
+			base_cash_cost = 10,
+			base_build_point_cost = 10,
+			max_hp = 50,
+			assault_rating = {
+				ewar = 50,
+				indirect = 0,
+				direct = 0,
+				close = 0
+			},
+			defense_rating = {
+				ewar = 3,
+				indirect = 0,
+				direct = 0,
+				close = 0
+			},
+			available_to_players = true
 		}
 
 	}

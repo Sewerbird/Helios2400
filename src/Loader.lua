@@ -44,7 +44,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
       if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
       local isCapitol = (i == 5) and (j == 5)
       local ioffset = (i-1) * -21
-      local hex = (j==1 or j==num_rows) and "TILE_ARCTIC_1" or ((math.random() < 0.7 or isCapitol) and "TILE_GRASS_1" or "TILE_WATER_1")
+      local hex = (j==1 or j==num_rows or math.random()>0.5) and "TILE_ARCTIC_1" or ((math.random() < 0.7 or isCapitol) and "TILE_GRASS_1" or "TILE_WATER_1")
       local army = (math.random() < 0.05) and "SPEC_UNIT_INFANTRY_1" or (math.random() < 0.5 and "SPEC_UNIT_ARTILLERY_1" or "SPEC_UNIT_MECH_1")
       local player = math.random(1,#players)
       local playerInfo = players[player]:getComponent('GameInfo')
@@ -100,7 +100,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
         owner = playerInfo.player_name,
         is_planetary_capitol = isCapitol,
         turns_owned = {[playerInfo.player_name] = 0},
-        city_name = isCapitol and 'BYZANTIUM' or city_names[math.floor(math.random()*#city_names)+1],
+        city_name = isCapitol and 'NORTH POLE' or city_names[math.floor(math.random()*#city_names)+1],
         map = 'Earth',
         address = hex_info.address,
         icon_sprite = "CITY_1",
