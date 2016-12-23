@@ -56,6 +56,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
         terrain_sprite = hex,
         neighbors = {},
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset},
+        decorations = (math.random() > 0.85 and hex ~= "TILE_WATER_1") and {"TILE_FOREST_1"} or (hex ~= "TILE_GRASS_1" and math.random() > 0.6 and {"ANIM_SNOWFALL"}) or (hex ~= "TILE_WATER_1" and math.random() > 0.8 and {"TILE_CANDY_1"}) or nil,
         terrain_info = {
           type = (hex == "TILE_WATER_1") and "water" or "land",
           land = (hex == "TILE_WATER_1") and 0 or 1,
