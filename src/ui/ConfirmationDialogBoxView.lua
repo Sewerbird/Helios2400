@@ -45,55 +45,73 @@ function ConfirmationDialogBoxView:init (registry, scenegraph, attachTo)
 		return true
 	end)
 
+	local windowW = love.graphics:getWidth()
+	local windowH = love.graphics:getHeight()
+
 	local gray_out = registry:add(GameObject:new("mmv_grayout", {
 		Transform:new(0,0),
 		Renderable:new(
-			Polygon:new({w = 1200, h = 800}),
+			Polygon:new({w = windowW, h = windowH}),
 			nil,
 			{0,0,0,128}),
 		Interfaceable:new(
-			Polygon:new({w = 1200, h = 800}),
+			Polygon:new({w = windowW, h = windowH}),
 			Block_Below_Delegate)
 	}))
+	
+	local panelW = 300
+	local panelH = 170
+	local panelX = (windowW - panelW) / 2
+	local panelY = (windowH - panelH) / 2
+	local margin = 10
+	local subPanelW = panelW - 2 * margin
+	local btnH = 40
+	local btnW = (subPanelW - margin)/ 2 
 
 	local bg_rect = registry:add(GameObject:new("qcpv_bg_rect", {
-		Transform:new(600-150,400-75),
+		Transform:new(panelX,panelY),
 		Renderable:new(
-			Polygon:new({w = 300, h = 150}),
+			Polygon:new({w = panelW, h = panelH}),
 			nil,
 			{64, 128, 128,200}),
 		}))
 
+	local text_panelH = panelH - 3 * margin - btnH
+
 	local text_panel = registry:add(GameObject:new("cdbv_text_panel",{
-		Transform:new(10, 10),
+		Transform:new(margin, margin),
 		Renderable:new(
-			Polygon:new({w = 280, h = 80}),
+			Polygon:new({w = subPanelW, h = text_panelH}),
 			nil,
 			{100,200,200},
 			"Are you Sure?")
 		}))
 
+	local buttonY = panelH - margin - btnH
+
 	local confirm_btn = registry:add(GameObject:new("cdbv_confirm_btn",{
-		Transform:new(10, 100),
+		Transform:new(margin, buttonY),
 		Renderable:new(
-			Polygon:new({w = 135, h = 40}),
+			Polygon:new({w = btnW, h = btnH}),
 			nil,
 			{100,200,200},
 			"Confirm"),
 		Interfaceable:new(
-			Polygon:new({w = 135, h = 40}),
+			Polygon:new({w = btnW, h = btnH}),
 			confirm_button_handler)
 		}))
 
+	local cancel_btnX = btnW + 2 * margin
+
 	local cancel_btn = registry:add(GameObject:new("cdbv_cancel_btn",{
-		Transform:new(155, 100),
+		Transform:new(cancel_btnX, buttonY),
 		Renderable:new(
-			Polygon:new({w = 135, h = 40}),
+			Polygon:new({w = btnW, h = btnH}),
 			nil,
 			{100,200,200},
 			"Cancel"),
 		Interfaceable:new(
-			Polygon:new({w = 135, h = 40}),
+			Polygon:new({w = btnW, h = btnH}),
 			cancel_button_handler)
 		}))
 
