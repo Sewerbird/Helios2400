@@ -6,6 +6,15 @@ local Interfaceable = require 'src/component/Interfaceable'
 local Polygon = require 'src/datatype/Polygon'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 
+local color_pallete = {
+	shadow = {4, 3, 30},
+	dark = {26, 58, 58},
+	midtone = {113, 103, 124},
+	alttone = {106, 123, 118},
+	highlight = {196,231,212},
+	bright = {209, 213, 222}
+}
+
 local SaveSlotsDirectoryView = class("SaveSlotsDirectoryView", {
 	root = nil,
 	is_attached = false,
@@ -30,7 +39,7 @@ function SaveSlotView:init (registry, scenegraph, path, row_num, click_handler)
 		Renderable:new(
 			Polygon:new({ w = 290, h = 30 }),
 			nil,
-			{200,150,150},
+			color_pallete.midtone,
 			path),
 		Interfaceable:new(
 			Polygon:new({ w = 290, h = 30 }),
@@ -138,7 +147,7 @@ function SaveSlotsDirectoryView:init (registry, scenegraph, file_extension_filte
 		Renderable:new(
 			Polygon:new({ w = 300, h = 300}),
 			nil,
-			{100,200,200}),
+			color_pallete.dark),
 		Interfaceable:new(
 			Polygon:new({ w = 300, h = 300}),
 			Block_Below_Delegate)
@@ -160,7 +169,7 @@ function SaveSlotsDirectoryView:init (registry, scenegraph, file_extension_filte
 		Renderable:new(
 			Polygon:new({ w = 290, h = 40}),
 			nil,
-			{244,20,20},
+			color_pallete.midtone,
 			"Cancel"),
 		Interfaceable:new(
 			Polygon:new({ w = 290, h = 40}),

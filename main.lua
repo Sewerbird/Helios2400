@@ -27,6 +27,7 @@ function love.load()
   Global.Loader = Loader:new(Global)
   Global.Loader:debugLoad()
 
+  --Profiling stuff
   fpsGraph = debugGraph:new('fps', 0, 0, 75)
   memGraph = debugGraph:new('mem', 0, 30, 75)
   dtGraph = debugGraph:new('custom', 0, 60, 75)

@@ -7,6 +7,15 @@ local Polygon = require 'src/datatype/Polygon'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 local SaveSlotsDirectoryView = require 'src/ui/SaveSlotsDirectoryView'
 
+local color_pallete = {
+	shadow = {4, 3, 3},
+	dark = {26, 58, 58},
+	midtone = {113, 103, 124},
+	alttone = {106, 123, 118},
+	highlight = {196,231,212},
+	bright = {209, 213, 222}
+}
+
 local MainMenuView = class("MainMenuView", {
 	root = nil,
 	is_attached = false,
@@ -64,8 +73,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = 1200, h = 800}),
 			nil,
-			{0,0,0,128},
-			math.floor(math.random()*100000)),
+			{0,0,0,128}),
 		Interfaceable:new(
 			Polygon:new({w = 1200, h = 800}),
 			Block_Below_Delegate)
@@ -76,7 +84,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = 400, h = 600}),
 			nil,
-			{128, 60, 128})
+			{color_pallete.shadow[1],color_pallete.shadow[2],color_pallete.shadow[3],200})
 		}))
 
 	local title_panel = registry:add(GameObject:new("mmv_title",{
@@ -84,7 +92,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = 300, h = 80}),
 			nil,
-			{200,100,200},
+			color_pallete.dark,
 			"HELIOS 2400 DEBUG MENU")
 		}))
 
@@ -93,7 +101,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = 300, h = 400}),
 			nil,
-			{200,100,200})
+			color_pallete.dark)
 		}))
 
 	local save_btn = registry:add(GameObject:new("mmv_save_btn",{
@@ -101,7 +109,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = 280, h = 30}),
 			nil,
-			{150,100,180},
+			color_pallete.midtone,
 			"Save Game"),
 		Interfaceable:new(
 			Polygon:new({w = 280, h = 30}),
@@ -113,7 +121,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = 280, h = 30}),
 			nil,
-			{150,100,180},
+			color_pallete.midtone,
 			"Load Game"),
 		Interfaceable:new(
 			Polygon:new({w = 280, h = 30}),
@@ -125,7 +133,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = 280, h = 30}),
 			nil,
-			{150,100,180},
+			color_pallete.midtone,
 			"Quit Game"),
 		Interfaceable:new(
 			Polygon:new({w = 280, h = 30}),
@@ -137,7 +145,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = 280, h = 30}),
 			nil,
-			{150,100,180},
+			color_pallete.midtone,
 			"Return (or press Escape)"),
 		Interfaceable:new(
 			Polygon:new({w = 280, h = 30}),
@@ -150,7 +158,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = 300, h = 50}),
 			nil,
-			{200,100,200},
+			color_pallete.dark,
 			nil)
 		}))
 
@@ -159,7 +167,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({0,15 , 30,-5 , 30,0 , 135,0 , 135,30 , 30,30 , 30,35}),
 			nil,
-			{150,100,180},
+			color_pallete.midtone,
 			"Previous View"),
 		Interfaceable:new(
 			Polygon:new({0,15 , 30,-5 , 30,0 , 135,0 , 135,30 , 30,30 , 30,35}),
@@ -171,7 +179,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({0,0 , 105,0 , 105,-5 , 135,15 , 105,35 , 105,30 , 0,30}),
 			nil,
-			{150,100,180},
+			color_pallete.midtone,
 			"Next View"),
 		Interfaceable:new(
 			Polygon:new({0,0 , 105,0 , 105,-5 , 135,15 , 105,35 , 105,30 , 0,30}),
@@ -189,6 +197,13 @@ function MainMenuView:init (registry, scenegraph)
 	self.save_view:hide()
 
 	self.bg_rect = bg_rect
+
+	self.registry:subscribe("IMMEDIATE_SAVE_GAME",function(this,msg)
+		self.save_view:hide()
+	end)
+	self.registry:subscribe("IMMEDIATE_LOAD_GAME",function(this,msg)
+		self.save_view:hide()
+	end)
 end
 
 function MainMenuView:show( attachTo )
