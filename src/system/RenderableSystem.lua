@@ -80,15 +80,30 @@ function RenderableSystem:renderComponent ( cached )
 		end
 		if renderable.text ~= nil then
 			if renderable.polygon then
-				local centerX,centerY = renderable.polygon:getPrintLoc()
-				local polyWidth = renderable.polygon:getDimensions().w
-				local fontH = love.graphics:getFont():getHeight()
-				love.graphics.printf(
-					renderable.text,
-					-1 * fontH / 2, 
-					centerY,
-					polyWidth - 8,
-					'center')
+
+				local minX = 100000000
+				local maxX = -100000000
+				local minY = 100000000
+
+				for i = 1, #renderable.polygon.vertices do
+					if i % 2 == 0 then
+						--y
+						if renderable.polygon.vertices[i] < minY then
+							minY = renderable.polygon.vertices[i]
+						end
+					else
+						--x
+						if renderable.polygon.vertices[i] < minX then
+							minX = renderable.polygon.vertices[i]
+						elseif renderable.polygon.vertices[i] > maxX then
+							maxX = renderable.polygon.vertices[i]
+						end
+					end
+				end
+				love.graphics.printf(renderable.text,
+					minX, 
+					minY, 
+					maxX - minX,'center')
 			else
 				love.graphics.print(renderable.text)
 			end
