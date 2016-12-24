@@ -15,6 +15,10 @@ local color_pallete = {
 	bright = {209, 213, 222}
 }
 
+local width = 400
+local height = 300
+local margin = 10
+
 local ConfirmActionDialog = class("ConfirmActionDialog", {
 	root = nil,
 	is_attached = false,
@@ -40,6 +44,11 @@ function ConfirmActionDialog:init (registry, scenegraph, text, ok_cb, no_cb)
 	self.scenegraph = scenegraph
 	self.registry = registry
 
+	self.block_handler = TouchDelegate:new()
+	self.block_handler:setHandler('onTouch', function(this, x, y)
+		return true
+	end)
+
 	self.okay_handler = TouchDelegate:new()
 	self.okay_handler:setHandler('onTouch',function(this, x, y)
 		self:hide()
@@ -52,35 +61,38 @@ function ConfirmActionDialog:init (registry, scenegraph, text, ok_cb, no_cb)
 	end)
 
 	self.bg_rect = registry:add(GameObject:new("sgdvr_bg_rect", {
-		Transform:new(5, 5),
+		Transform:new(0, 0),
 		Renderable:new(
-			Polygon:new({ w = 290, h = 30 }),
+			Polygon:new({ w = width - 2 * margin, h = height }),
 			nil,
 			color_pallete.dark,
-			text)
+			text),
+		Interfaceable:new(
+			Polygon:new({ w = width, h = height }),
+			self.block_handler)
 		}))
 
 	local okay_rect = registry:add(GameObject:new("cad_okay_rect", {
-		Transform:new(5, 30),
+		Transform:new(margin, 30),
 		Renderable:new(
-			Polygon:new({ w = 140, h = 30}),
+			Polygon:new({ w = width / 2 - 2 * margin - margin / 2, h = 30}),
 			nil,
 			color_pallete.midtone,
 			"Confirm"),
 		Interfaceable:new(
-			Polygon:new({ w = 140, h = 30}),
+			Polygon:new({ w = width / 2 - 2 * margin - margin / 2, h = 30}),
 			self.okay_handler)
 	}))
 
 	local cancel_rect = registry:add(GameObject:new("cad_cancel_rect", {
-		Transform:new(150, 30),
+		Transform:new(width/2 - margin/2, 30),
 		Renderable:new(
-			Polygon:new({ w = 140, h = 30}),
+			Polygon:new({ w = width / 2 - 2 * margin - margin / 2, h = 30}),
 			nil,
 			color_pallete.midtone,
 			"Cancel"),
 		Interfaceable:new(
-			Polygon:new({ w = 140, h = 30}),
+			Polygon:new({ w = width / 2 - 2 * margin - margin / 2, h = 30}),
 			self.cancel_handler)
 	}))
 
@@ -97,8 +109,14 @@ function ConfirmActionDialog:hide()
 	self.scenegraph:detach(self.root)
 end
 function ConfirmActionDialog:refresh(text, ok_cb, no_cb)
-	self.okay_handler:setHandler("onTouch",ok_cb)
-	self.cancel_handler:setHandler("onTouch",no_cb)
+	self.okay_handler:setHandler("onTouch", function () 
+		ok_cb()
+		self:hide()
+	end)
+	self.cancel_handler:setHandler("onTouch", function () 
+		no_cb()
+		self:hide()
+	end)
 	self.registry:getComponent(self.bg_rect, "Renderable").text = text
 end
 
@@ -111,14 +129,14 @@ function SaveSlotView:init (registry, scenegraph, path, row_num, click_handler)
 	self.registry = registry
 
 	local bg_rect = registry:add(GameObject:new("sgdvr_bg_rect", {
-		Transform:new(5, 10 + row_num * 40),
+		Transform:new(10, 10 + row_num * 40),
 		Renderable:new(
-			Polygon:new({ w = 290, h = 30 }),
+			Polygon:new({ w = 360, h = 30 }),
 			nil,
 			color_pallete.midtone,
 			path),
 		Interfaceable:new(
-			Polygon:new({ w = 290, h = 30 }),
+			Polygon:new({ w = 360, h = 30 }),
 			click_handler)
 		}))
 
@@ -128,7 +146,7 @@ end
 
 function SaveSlotsDirectoryView:init (registry, scenegraph, file_extension_filter, save_or_load_mode)
 	self.root = registry:add(GameObject:new("qcpv_root", {
-		Transform:new(50,120)
+		Transform:new(10,60)
 	}))
 	self.scenegraph = scenegraph
 	self.registry = registry
@@ -148,11 +166,11 @@ function SaveSlotsDirectoryView:init (registry, scenegraph, file_extension_filte
 	self.scenegraph:attach(registry:add(GameObject:new("sgdv_bg_rect",{
 		Transform:new(0,0),
 		Renderable:new(
-			Polygon:new({ w = 300, h = 300}),
+			Polygon:new({ w = width - 2 * margin, h = height}),
 			nil,
 			color_pallete.dark),
 		Interfaceable:new(
-			Polygon:new({ w = 300, h = 300}),
+			Polygon:new({ w = width - 2 * margin, h = height}),
 			Block_Below_Delegate)
 	})), self.root)
 	self.anchor = registry:add(GameObject:new("listanchor"),{
@@ -168,14 +186,14 @@ function SaveSlotsDirectoryView:init (registry, scenegraph, file_extension_filte
 	end)
 
 	local close_btn = registry:add(GameObject:new("sgdvr_close_btn",{
-		Transform:new(5, 10 + 6 * 40),
+		Transform:new(10, 10 + 6 * 40),
 		Renderable:new(
-			Polygon:new({ w = 290, h = 40}),
+			Polygon:new({ w = 360, h = 40}),
 			nil,
 			color_pallete.midtone,
 			"Cancel"),
 		Interfaceable:new(
-			Polygon:new({ w = 290, h = 40}),
+			Polygon:new({ w = 360, h = 40}),
 			close_btn_handler)
 		}))
 
@@ -257,17 +275,20 @@ end
 
 function SaveSlotsDirectoryView:doAction ( action, slot )
 	print("Click will cause a " .. action .. " on slot " .. slot)
-	--self.confirmation:show(self.root)
-	--
-	if action == "LOAD" then
-		self.registry:publish("IMMEDIATE_LOAD_GAME","save_slot_" .. slot)
-		Global.Loader:debugLoad("save_slot_" .. slot)
-	elseif action == "SAVE" then
-		self.registry:publish("IMMEDIATE_SAVE_GAME","save_slot_" .. slot)
-		Global.Loader:saveGame("save_slot_" .. slot , self.registry)
-		self:show(nil, action)
-	end
-	--]]
+	self.confirmation:refresh("Are you sure you wish to " .. action .. "?", 
+		function() 
+			if action == "LOAD" then
+				self.registry:publish("IMMEDIATE_LOAD_GAME","save_slot_" .. slot)
+				Global.Loader:debugLoad("save_slot_" .. slot)
+			elseif action == "SAVE" then
+				self.registry:publish("IMMEDIATE_SAVE_GAME","save_slot_" .. slot)
+				Global.Loader:saveGame("save_slot_" .. slot , self.registry)
+				self:show(nil, action)
+			end
+		end, 
+		function() 
+		end)
+	self.confirmation:show(self.root)
 end
 
 return SaveSlotsDirectoryView
