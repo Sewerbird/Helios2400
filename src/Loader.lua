@@ -46,7 +46,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
       if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
       local isCapitol = (i == 5) and (j == 5)
       local ioffset = (i-1) * -21
-      local hex = (j==1 or j==num_rows) and "TILE_ARCTIC_1" or ((math.random() < 0.7 or isCapitol) and "TILE_GRASS_1" or "TILE_WATER_1")
+      local hex = (j==1 or j==num_rows or math.random()>0.5) and "TILE_ARCTIC_1" or ((math.random() < 0.7 or isCapitol) and "TILE_GRASS_1" or "TILE_WATER_1")
       local army = (math.random() < 0.05) and "SPEC_UNIT_INFANTRY_1" or (math.random() < 0.5 and "SPEC_UNIT_ARTILLERY_1" or "SPEC_UNIT_MECH_1")
       local player = math.random(1,#players)
       local playerInfo = players[player]:getComponent('GameInfo')
@@ -58,6 +58,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
         terrain_sprite = hex,
         neighbors = {},
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset},
+        decorations = (math.random() > 0.85 and hex ~= "TILE_WATER_1") and {"TILE_FOREST_1"} or (hex ~= "TILE_GRASS_1" and math.random() > 0.6 and {"ANIM_SNOWFALL"}) or (hex ~= "TILE_WATER_1" and math.random() > 0.8 and {"TILE_CANDY_1"}) or nil,
         terrain_info = {
           type = (hex == "TILE_WATER_1") and "water" or "land",
           land = (hex == "TILE_WATER_1") and 0 or 1,
@@ -90,12 +91,19 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
       if self.inBounds(i-1,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i-1,j):toString()) end
       if self.inBounds(i+1,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(i+1,j):toString()) end
           
+      if i == 1 then 
+        if self.inBounds(i,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(num_cols,j):toString()) end
+        if self.inBounds(i,j-1,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(num_cols,j-1):toString()) end
+      elseif i == num_cols then
+        if self.inBounds(i,j,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(1,j):toString()) end
+        if self.inBounds(i,j+1,num_cols,num_rows) then table.insert(hex_info.neighbors,'Earth' .. HexCoord:new(1,j+1):toString()) end
+      end
       local city_info = (isCapitol or (hex == "TILE_GRASS_1" and math.random() < 0.05)) and {
         gs_type = "city",
         owner = playerInfo.player_name,
         is_planetary_capitol = isCapitol,
         turns_owned = {[playerInfo.player_name] = 0},
-        city_name = isCapitol and 'BYZANTIUM' or city_names[math.floor(math.random()*#city_names)+1],
+        city_name = isCapitol and 'NORTH POLE' or city_names[math.floor(math.random()*#city_names)+1],
         map = 'Earth',
         address = hex_info.address,
         icon_sprite = "CITY_1",

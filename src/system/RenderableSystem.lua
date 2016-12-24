@@ -7,16 +7,19 @@
 ]]--
 
 local System = require 'src/System'
+local Stack = require 'src/structure/Stack'
 
 local RenderableSystem = System:extend("RenderableSystem",{
 	renderable_cache = nil,
 	last_publish_count = nil,
 	dirty = 10000,
-	font = nil
+	font = nil,
+	planet_width = 1512
 })
 
 function RenderableSystem:init ( registry, targetCollection )
 	RenderableSystem.super.init(self, registry, targetCollection)
+	self.renderable_cache = {translation = {x = Stack:new(),y = Stack:new()}}
 	--love.graphics.setNewFont("assets/InputSansNarrow-Light.ttf",12)
 end
 
@@ -47,6 +50,8 @@ function RenderableSystem:renderComponent ( cached )
 	local delta = cached.t
 	if cached.r == "PLZ_PUSH" and delta then
 		love.graphics.push()
+		self.renderable_cache.translation.x:push(delta.x)
+		self.renderable_cache.translation.y:push(delta.y)
 		love.graphics.translate(delta.x, delta.y)
 	end
 
@@ -54,6 +59,9 @@ function RenderableSystem:renderComponent ( cached )
 	--Renderable
 	local renderable = cached
 	if renderable ~= nil and cached.r ~= "PLZ_PUSH" and cached.r ~= "PLZ_POP" then
+		local xOffset = (love.graphics:getWidth() < self.planet_width) and self.planet_width * self:getScreenWidthOffsets(renderable) or 0
+		love.graphics.push()
+		love.graphics.translate(xOffset,0)
 		if renderable.render ~= nil then
 			if renderable.render.rtype == "sprite" then
 				love.graphics.draw(renderable.render.img, renderable.render.quad)
@@ -80,11 +88,31 @@ function RenderableSystem:renderComponent ( cached )
 				love.graphics.print(renderable.text)
 			end
 		end
+		love.graphics.pop()
 	end
 
 	if cached.r == "PLZ_POP" and delta == "PLOXPOPIT" then
 		love.graphics.pop()
+		self.renderable_cache.translation.x:pop()
+		self.renderable_cache.translation.y:pop()
 	end
+end
+
+function RenderableSystem:getScreenWidthOffsets(renderable)
+	if not renderable then return 0 end
+	local tx = (self.renderable_cache.translation.x:total() or 0) *-1
+	local rw = 0
+	if renderable.polygon then
+		rw = renderable.polygon:getDimensions().w
+	elseif renderable.render then
+		if renderable.render.rtype == "sprite" then 
+		_, _, rw = renderable.render.quad:getViewport()
+		elseif renderable.render.rtype == "animation" then
+			rw = renderable.render.ani.frameWidth
+		end
+	end
+	tx = tx - rw
+	return math.ceil(tx/ self.planet_width)
 end
 
 function RenderableSystem:drawHeirarchy ( root, big_list )
@@ -151,16 +179,15 @@ function RenderableSystem:drawHeirarchy ( root, big_list )
 end
 
 function RenderableSystem:draw ()
-	if self.dirty > 10 then
+	if self.cache == nil or self.dirty > 3 then
 		self.cache = self:drawHeirarchy(self.registry:get(self.targetCollection:getRoot()), {})
 		self.dirty = 0
-	else
-		for i = 1, #self.cache do
-			self:renderComponent(self.cache[i])
-		end
-		self.dirty = self.dirty + 1
-		--if math.random() > 0.99 then self.dirty = true end
 	end
+
+	for i = 1, #self.cache do
+		self:renderComponent(self.cache[i])
+	end
+	self.dirty = self.dirty + 1
 end
 
 return RenderableSystem

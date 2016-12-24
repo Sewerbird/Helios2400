@@ -37,6 +37,19 @@ function TileMapViewIcon:init (registry, scenegraph, map, gamestate)
 		Stateful:new(gamestate),
 		Addressable:new(gameinfo.address)
 	}))
+	if gameinfo.decorations then
+		scenegraph:attach(self.root, nil)
+		for i, deco in ipairs(gameinfo.decorations) do
+			local decor = registry:add(GameObject:new('Tile_Decor',{
+				Transform:new(0,0),
+				Renderable:new(
+					Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37}),
+					Global.Assets:getAsset(deco))
+				}))
+			scenegraph:attach(decor, self.root)
+		end
+		scenegraph:detach(self.root)
+	end
 end
 
 return TileMapViewIcon

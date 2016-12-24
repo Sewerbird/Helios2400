@@ -2,7 +2,7 @@
 local System = require 'src/System'
 
 local InterfaceableSystem = System:extend("InterfaceableSystem",{
-		
+	planet_width = 1512
 })
 
 function InterfaceableSystem:onTouch ( x, y )
@@ -37,17 +37,18 @@ function InterfaceableSystem:propogateEvent ( iobj, func, x, y, dx, dy, btn )
 		l_x = x - transform.x
 		l_y = y - transform.y
 	end
+	local tl_x = l_x % self.planet_width
 	--Propogate on children
 	local children = self.targetCollection:getChildren(iobj)
 	for i = #children, 1, -1 do
 		local ele = children[i]
-		has_consumed = self:propogateEvent( ele, func, l_x, l_y, dx, dy, btn)
+		has_consumed = self:propogateEvent( ele, func, tl_x, l_y, dx, dy, btn)
 		if has_consumed then return true end
 	end
 	--Execute on self
 	if obj:hasComponent('Interfaceable') then
 		local inter = obj:getComponent('Interfaceable')
-		if inter[func] ~= nil and (func == 'onKeypress' or inter.polygon:containsPoint(l_x,l_y)) then
+		if inter[func] ~= nil and (func == 'onKeypress' or inter.polygon:containsPoint(tl_x,l_y)) then
 			if func == 'onKeypress' then
 				has_consumed = inter[func](inter, btn)
 			else

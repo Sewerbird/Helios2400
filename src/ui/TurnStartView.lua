@@ -25,39 +25,46 @@ function TurnStartView:init (registry, scenegraph, attachTo)
 		print("Let's go!")
 		self:hide()
 	end)
-
+	local windowW = love.graphics:getWidth()
+	local windowH = love.graphics:getHeight()
 	local gray_out = registry:add(GameObject:new("tsv_grayout", {
 		Transform:new(0,0),
 		Renderable:new(
-			Polygon:new({w = 1200, h = 800}),
+			Polygon:new({w = windowW, h = windowH}),
 			nil,
 			{10,20,30,255}),
 		Interfaceable:new(
-			Polygon:new({w = 1200, h = 800}),
+			Polygon:new({w = windowW, h = windowH}),
 			Block_Below_Delegate)
 	}))
-
+	local panelW = 300
+	local panelH = 170
+	local panelX = (windowW - panelW) / 2
+	local panelY = (windowH - panelH) / 2
+	local margin = 10
+	local subPanelW = panelW - 2 * margin
+	local start_btnH = 40
 	local bg_rect = registry:add(GameObject:new("tsv_bg_rect", {
-		Transform:new(600-150,400-95),
+		Transform:new(panelX,panelY),
 		Renderable:new(
-			Polygon:new({w = 300, h = 170}),
+			Polygon:new({w = panelW, h = panelH}),
 			nil,
 			{64, 128, 128,200}),
 		}))
-
+	local text_panelH = panelH - 3 * margin - start_btnH
 	local text_panel = registry:add(GameObject:new("tsv_text_panel",{
-		Transform:new(10, 10),
+		Transform:new(margin, margin),
 		Renderable:new(
-			Polygon:new({w = 280, h = 100}),
+			Polygon:new({w = subPanelW, h = text_panelH}),
 			nil,
 			{100,200,200},
 			"Your Turn")
 		}))
-
+	local start_btnY = panelH - start_btnH - margin
 	local start_btn = registry:add(GameObject:new("tsv_confirm_btn",{
-		Transform:new(10, 120),
+		Transform:new(margin, start_btnY),
 		Renderable:new(
-			Polygon:new({w = 280, h = 40}),
+			Polygon:new({w = subPanelW, h = start_btnH}),
 			nil,
 			{100,200,200},
 			"Begin"),
