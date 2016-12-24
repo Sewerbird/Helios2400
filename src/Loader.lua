@@ -9,6 +9,8 @@ local Transform = require 'src/component/Transform'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 local GameInfo = require 'src/component/GameInfo'
 local GameObject = require 'src/GameObject'
+local MutatorBus = require 'src/mutate/MutatorBus'
+local Viewer = require 'src/ui/Viewer'
 local AssetLoader = require 'src/AssetLoader'
 local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
@@ -44,7 +46,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
       if (i - 1) % 2 == 0 then joffset = 0 else joffset = 37 end
       local isCapitol = (i == 5) and (j == 5)
       local ioffset = (i-1) * -21
-      local hex = (j==1 or j==num_rows) and "TILE_ARCTIC_1" or ((math.random() < 0.7 or isCapitol) and "TILE_GRASS_1" or "TILE_WATER_1")
+      local hex = (j==1 or j==num_rows or math.random()>0.5) and "TILE_ARCTIC_1" or ((math.random() < 0.7 or isCapitol) and "TILE_GRASS_1" or "TILE_WATER_1")
       local army = (math.random() < 0.05) and "SPEC_UNIT_INFANTRY_1" or (math.random() < 0.5 and "SPEC_UNIT_ARTILLERY_1" or "SPEC_UNIT_MECH_1")
       local player = math.random(1,#players)
       local playerInfo = players[player]:getComponent('GameInfo')
@@ -56,6 +58,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
         terrain_sprite = hex,
         neighbors = {},
         worldspace_coord = {(i-1) * 84 + ioffset, (j-1) * 73 + joffset},
+        decorations = (math.random() > 0.85 and hex ~= "TILE_WATER_1") and {"TILE_FOREST_1"} or (hex ~= "TILE_GRASS_1" and math.random() > 0.6 and {"ANIM_SNOWFALL"}) or (hex ~= "TILE_WATER_1" and math.random() > 0.8 and {"TILE_CANDY_1"}) or nil,
         terrain_info = {
           type = (hex == "TILE_WATER_1") and "water" or "land",
           land = (hex == "TILE_WATER_1") and 0 or 1,
@@ -100,7 +103,7 @@ function Loader:debugGenerateEarthMap (debug_gamestate, assets)
         owner = playerInfo.player_name,
         is_planetary_capitol = isCapitol,
         turns_owned = {[playerInfo.player_name] = 0},
-        city_name = isCapitol and 'BYZANTIUM' or city_names[math.floor(math.random()*#city_names)+1],
+        city_name = isCapitol and 'NORTH POLE' or city_names[math.floor(math.random()*#city_names)+1],
         map = 'Earth',
         address = hex_info.address,
         icon_sprite = "CITY_1",
@@ -246,7 +249,7 @@ function Loader:debugGenerateMap ( save_name, assets)
   self:saveGame(save_name, debug_gamestate)
 end
 
-function Loader:debugLoad ()
+function Loader:debugLoad (save)
 
   --[[ Load Assets & Play some music because why not ]]--
   local Assets = self.loadContext.Assets
@@ -258,9 +261,16 @@ function Loader:debugLoad ()
 
   --[[ Generate the Game State ]]--
 
+  self:unloadGame(Global.Registry)
+  self.loadContext.Registry = Registry:new();
   local debug_gamestate = self.loadContext.Registry--TODO: make this with a Registry:new();
-  self:debugGenerateMap('default', Assets)
-  self:loadGame('default',debug_gamestate)
+
+  if save then
+    self:loadGame(save, debug_gamestate)
+  else
+    self:debugGenerateMap('default', Assets)
+    self:loadGame('default',debug_gamestate)
+  end
 
   --[[Instantiate Tilemap View ]]--
 
@@ -310,7 +320,10 @@ function Loader:debugLoad ()
   self.loadContext.Registry:setStructure('Earth', Earth_Map)
   self.loadContext.Registry:setStructure('Space', Space_Map)
 
-  return EarthSceneGraph, SpaceSceneGraph
+
+  Global.MutatorBus = MutatorBus:new(Global.Registry)
+  Global.Viewer = Viewer:new(Global.Registry, {EarthSceneGraph,SpaceSceneGraph})
+
 end
 
 function Loader:saveGame ( name, gamestateRegistry)
@@ -326,6 +339,12 @@ function Loader:loadGame( name, registry)
   local raw_save = Tserial.unpack(contents)
   for i, v in pairs(raw_save) do
     GameInfo:reify(registry, v)
+  end
+end
+
+function Loader:unloadGame( registry )
+  for i, v in pairs(registry) do
+    registry[v] = nil
   end
 end
 

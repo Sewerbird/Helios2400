@@ -28,7 +28,7 @@ function QuickCommandPanelView:init (registry, scenegraph)
 	local bg_rect = registry:add(GameObject:new("qcpv_bg_rect", {
 		Transform:new(0,0),
 		Renderable:new(
-			Polygon:new({w = 125, h = 125}),
+			Polygon:new({w = 125, h = 160}),
 			nil,
 			{64, 128, 128}):bindTo("beginTurn", function (this, cmp, msg)
 			cmp.backgroundcolor = msg.midtone_color
@@ -38,7 +38,7 @@ function QuickCommandPanelView:init (registry, scenegraph)
 	local end_turn_btn = registry:add(GameObject:new("qcpv_end_turn_btn",{
 		Transform:new(10, 10),
 		Renderable:new(
-			Polygon:new({w = 105, h = 105}),
+			Polygon:new({w = 105, h = 50}),
 			nil,
 			{150,200,200},
 			"Quit Turn"

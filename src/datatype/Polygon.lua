@@ -95,4 +95,14 @@ function Polygon:getDimensions ()
 	}
 end
 
+function Polygon:getCenter()
+	local dim = self:getDimensions()
+	return dim.w/2,dim.h/2
+end
+
+function Polygon:getPrintLoc()
+	if self.num_vertices < 5 then return 0,0 end
+	return self:getCenter()
+end
+
 return Polygon

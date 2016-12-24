@@ -108,6 +108,32 @@
 			y = 218,
 			width = 84,
 			height = 73
+		},
+		{
+			assetId = "TILE_FOREST_1",
+			assetType = "sprite",
+			x = 252,
+			y = 218,
+			width = 84,
+			height = 73
+		},
+		{
+			assetId = "ANIM_SNOWFALL",
+			assetType = "animation",
+			x = 0,
+			y = 291,
+			frameWidth = 84,
+			frameHeight = 73,
+			amountOfFrames = 3,
+			frameTime = 10.0
+		},
+		{
+			assetId = "TILE_CANDY_1",
+			assetType = "sprite",
+			x = 252,
+			y = 291,
+			width = 84,
+			height = 73
 		}
 	}
 }

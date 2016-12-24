@@ -26,8 +26,8 @@ function GameInfo:serialize ()
 end
 
 function GameInfo:reify ( registry, string )
-	local exo = Tserial.unpack(string)
-	local desc = '' .. exo.gob_desc
+	local exo = Tserial.unpack(string,true)
+	local desc = exo.gob_desc
 	exo.gob_desc = nil
 	return registry:add(GameObject:new(desc, {GameInfo:new(exo)}))
 end

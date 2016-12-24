@@ -5,6 +5,16 @@ local Renderable = require 'src/component/Renderable'
 local Interfaceable = require 'src/component/Interfaceable'
 local Polygon = require 'src/datatype/Polygon'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
+local SaveSlotsDirectoryView = require 'src/ui/SaveSlotsDirectoryView'
+
+local color_pallete = {
+	shadow = {4, 3, 3},
+	dark = {26, 58, 58},
+	midtone = {113, 103, 124},
+	alttone = {106, 123, 118},
+	highlight = {196,231,212},
+	bright = {209, 213, 222}
+}
 
 local MainMenuView = class("MainMenuView", {
 	root = nil,
@@ -19,14 +29,17 @@ function MainMenuView:init (registry, scenegraph)
 	self.scenegraph = scenegraph
 	self.registry = registry
 
+	self.save_view = SaveSlotsDirectoryView:new(registry, scenegraph,".sav")
+
 	local save_button_handler = TouchDelegate:new()
 	save_button_handler:setHandler('onTouch', function(this, x, y)
+		self.save_view:show(self.bg_rect, "SAVE")
 		print('Button pressed: save')
 	end)
 	local load_button_handler = TouchDelegate:new()
 	load_button_handler:setHandler('onTouch', function(this, x, y)
-		print('Button pressed: load. Loading disabled for the moment')
-		self:hide()
+		self.save_view:show(self.bg_rect, "LOAD")
+		print('Button pressed: load.')
 	end)
 	local return_button_handler = TouchDelegate:new()
 	return_button_handler:setHandler('onTouch', function(this, x, y)
@@ -63,8 +76,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = windowW, h = windowH}),
 			nil,
-			{0,0,0,128},
-			math.floor(math.random()*100000)),
+			{0,0,0,128}),
 		Interfaceable:new(
 			Polygon:new({w = windowW, h = windowH}),
 			Block_Below_Delegate)
@@ -81,7 +93,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = panelW, h = panelH}),
 			nil,
-			{128, 60, 128})
+			{color_pallete.shadow[1],color_pallete.shadow[2],color_pallete.shadow[3],200})
 		}))
 
 	local subPanelW = panelW - 2 * margin
@@ -92,7 +104,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = subPanelW, h = titleH}),
 			nil,
-			{200,100,200},
+			color_pallete.dark,
 			"HELIOS 2400 DEBUG MENU")
 		}))
 
@@ -105,7 +117,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = subPanelW, h = saveLoadH}),
 			nil,
-			{200,100,200})
+			color_pallete.dark)
 		}))
 
 	local save_btn = registry:add(GameObject:new("mmv_save_btn",{
@@ -113,7 +125,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = buttonW, h = buttonH}),
 			nil,
-			{150,100,180},
+			color_pallete.midtone,
 			"Save Game"),
 		Interfaceable:new(
 			Polygon:new({w = buttonW, h = buttonH}),
@@ -125,7 +137,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = buttonW, h = buttonH}),
 			nil,
-			{150,100,180},
+			color_pallete.midtone,
 			"Load Game"),
 		Interfaceable:new(
 			Polygon:new({w = buttonW, h = buttonH}),
@@ -137,7 +149,7 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = buttonW, h = buttonH}),
 			nil,
-			{150,100,180},
+			color_pallete.midtone,
 			"Quit Game"),
 		Interfaceable:new(
 			Polygon:new({w = buttonW, h = buttonH}),
@@ -149,54 +161,88 @@ function MainMenuView:init (registry, scenegraph)
 		Renderable:new(
 			Polygon:new({w = buttonW, h = buttonH}),
 			nil,
-			{150,100,180},
+			color_pallete.midtone,
 			"Return (or press Escape)"),
 		Interfaceable:new(
 			Polygon:new({w = buttonW, h = buttonH}),
 			return_button_handler)
 		}))
-
-	local view_switcher_panelH = buttonH + 2 * margin
+	local switchButtonH = 60
+	local view_switcher_panelH = switchButtonH + 2 * margin
 	local view_switcher_panelY = saveLoadY + saveLoadH + margin
 	local view_switcher_panel = registry:add(GameObject:new("mmv_switcher_panel",{
 		Transform:new(margin,view_switcher_panelY),
 		Renderable:new(
 			Polygon:new({w = subPanelW, h = view_switcher_panelH}),
 			nil,
-			{200,100,200},
+			color_pallete.dark,
 			nil)
 		}))
 
+	local switchButtonW = (subPanelW - 3 * margin) / 2
+
+	local AHO = switchButtonH/4
+	local AHW = switchButtonW/4
+	local prevPoly = Polygon:new({
+				0,switchButtonH/2,
+				AHW,0,
+				AHW,AHO,
+				switchButtonW,AHO,
+				switchButtonW,switchButtonH-AHO,
+				AHW,switchButtonH-AHO,
+				AHW,switchButtonH}
+				)
 	local switch_prev_btn = registry:add(GameObject:new("mmv_switchprev_btn",{
-		Transform:new(10,10),
+		Transform:new(margin,margin),
 		Renderable:new(
-			Polygon:new({0,15 , 30,-5 , 30,0 , 135,0 , 135,30 , 30,30 , 30,35}),
+			prevPoly,
 			nil,
-			{150,100,180},
+			color_pallete.midtone,
 			"Previous View"),
 		Interfaceable:new(
-			Polygon:new({0,15 , 30,-5 , 30,0 , 135,0 , 135,30 , 30,30 , 30,35}),
+			prevPoly,
 			switch_prev_handler)
 		}))
 
+	local nextPoly = Polygon:new({
+				switchButtonW,switchButtonH/2,
+				switchButtonW - AHW,0,
+				switchButtonW - AHW,AHO,
+				0,AHO,
+				0,switchButtonH-AHO,
+				switchButtonW - AHW,switchButtonH-AHO,
+				switchButtonW - AHW,switchButtonH}
+				)
 	local switch_next_btn = registry:add(GameObject:new("mmv_switchnext_btn",{
-		Transform:new(155,10),
+		Transform:new(2 * margin + switchButtonW,margin),
 		Renderable:new(
-			Polygon:new({0,0 , 105,0 , 105,-5 , 135,15 , 105,35 , 105,30 , 0,30}),
+			nextPoly,
 			nil,
-			{150,100,180},
+			color_pallete.midtone,
 			"Next View"),
 		Interfaceable:new(
-			Polygon:new({0,0 , 105,0 , 105,-5 , 135,15 , 105,35 , 105,30 , 0,30}),
+			nextPoly,
 			switch_next_handler)
 		}))
 
 	self.scenegraph:attach(self.root, nil)
 	self.scenegraph:attachAll({gray_out, bg_rect}, self.root)
+
 	self.scenegraph:attachAll({title_panel, saveload_panel, view_switcher_panel}, bg_rect)
 	self.scenegraph:attachAll({save_btn, load_btn, return_btn, quit_btn}, saveload_panel)
 	self.scenegraph:attachAll({switch_next_btn, switch_prev_btn}, view_switcher_panel)
 	self.scenegraph:detach(self.root)
+
+	self.save_view:hide()
+
+	self.bg_rect = bg_rect
+
+	self.registry:subscribe("IMMEDIATE_SAVE_GAME",function(this,msg)
+		self.save_view:hide()
+	end)
+	self.registry:subscribe("IMMEDIATE_LOAD_GAME",function(this,msg)
+		self.save_view:hide()
+	end)
 end
 
 function MainMenuView:show( attachTo )
