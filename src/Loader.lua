@@ -24,6 +24,7 @@ local CityMapViewIcon = require 'src/ui/CityMapViewIcon'
 local ArmyMapViewIcon = require 'src/ui/ArmyMapViewIcon'
 local TileMapViewIcon = require 'src/ui/TileMapViewIcon'
 local class = require 'lib/30log'
+local DebugGameGenerator = require 'src/DebugGameGenerator'
 
 local Loader = class("Loader", {
   loadContext = nil
@@ -53,7 +54,8 @@ function Loader:debugLoad (save)
   if save then
     self:loadGame(save, debug_gamestate)
   else
-    self:saveGame('default',self:debugGenerateMap(Assets))
+    local scn_gen = DebugGameGenerator:new()
+    self:saveGame('default',scn_gen:debugGenerateMap(Assets))
     self:loadGame('default',debug_gamestate)
   end
 
