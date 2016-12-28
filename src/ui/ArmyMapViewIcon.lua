@@ -1,9 +1,6 @@
 --armyMapViewIcon.lua
 local class = require 'lib/30log'
 local Renderable = require 'src/component/Renderable'
-local Addressable = require 'src/component/Addressable'
-local Placeable = require 'src/component/Placeable'
-local Moveable = require 'src/component/Moveable'
 local Interfaceable = require 'src/component/Interfaceable'
 local Transform = require 'src/component/Transform'
 local Stateful = require 'src/component/Stateful'
@@ -40,11 +37,7 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
         Interfaceable:new(
           Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73, 0,37}),
           Unit_Touch_Delegate),
-        Stateful:new(gamestate),
-        Placeable:new(gameinfo.address):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
-          cmp.address = msg.address
-        end),
-        Moveable:new()
+        Stateful:new(gamestate)
       }))
       debug_army_bg = registry:add(GameObject:new('Army_BG', {
         Transform:new((84-50)/2, (73-50)/2),

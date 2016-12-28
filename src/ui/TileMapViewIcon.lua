@@ -1,8 +1,6 @@
 --TileMapViewIcon.lua
 local class = require 'lib/30log'
 local Renderable = require 'src/component/Renderable'
-local Addressable = require 'src/component/Addressable'
-local Placeable = require 'src/component/Placeable'
 local Interfaceable = require 'src/component/Interfaceable'
 local Stateful = require 'src/component/Stateful'
 local Transform = require 'src/component/Transform'
@@ -34,8 +32,7 @@ function TileMapViewIcon:init (registry, scenegraph, map, gamestate)
 			Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 			Global.Assets:getAsset(gameinfo.terrain_sprite)
 			),
-		Stateful:new(gamestate),
-		Addressable:new(gameinfo.address)
+		Stateful:new(gamestate)
 	}))
 	if gameinfo.decorations then
 		scenegraph:attach(self.root, nil)

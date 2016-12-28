@@ -5,7 +5,6 @@ local System = require 'src/System'
 local GameObject = require 'src/GameObject'
 local Renderable = require 'src/component/Renderable'
 local Transform = require 'src/component/Transform'
-local Placeable = require 'src/component/Placeable'
 local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
 
@@ -27,8 +26,7 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 	    Renderable:new(
 	      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 	      Global.Assets:getAsset("ANIM_CURSOR_1")
-	      ),
-	    Placeable:new()
+	      )
 	}))
 	self.path_overlays = {}
 
@@ -221,8 +219,7 @@ function SelectableSystem:displayPathOverlay (map, selection_budget)
 			    Renderable:new(
 			      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 			      Global.Assets:getAsset(cursor)
-			      ),
-			    Placeable:new()
+			      )
 			}))
 			table.insert(self.path_overlays, overlay)
 			self.targetCollection:attach(overlay,tileOnWay)
