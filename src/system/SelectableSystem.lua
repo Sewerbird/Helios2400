@@ -5,7 +5,6 @@ local System = require 'src/System'
 local GameObject = require 'src/GameObject'
 local Renderable = require 'src/component/Renderable'
 local Transform = require 'src/component/Transform'
-local Placeable = require 'src/component/Placeable'
 local Polygon = require 'src/datatype/Polygon'
 local Sprite = require 'src/datatype/Sprite'
 
@@ -27,8 +26,7 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 	    Renderable:new(
 	      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 	      Global.Assets:getAsset("ANIM_CURSOR_1")
-	      ),
-	    Placeable:new()
+	      )
 	}))
 	self.path_overlays = {}
 
@@ -48,7 +46,7 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 		},
 		callbacks = {
 			onstatechange = function(this, event, from, to, msg)
-				print('\27[31mSELECTABLE SYSTEM going from ' .. from .. ' to ' .. to .. '\27[0m') 
+				print('\27[31mSELECTABLE SYSTEM going from ' .. from .. ' to ' .. to .. ' in response to ' .. event ..'\27[0m') 
 			end,
 			onclickedUnit = function(this, event, from, to, msg) 
 				self:select(msg.uid)
@@ -76,14 +74,9 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 			onleaveunitPathing = function(this, event, from, to, msg)
 			end,
 			onclickedOtherHex = function(this, event, from, to, msg) 
-				local fromAddress = self.registry:get(self.current_selection):getComponent("Placeable").address
-				local tgt = self.registry:get(msg.uid)
-				local toAddress = nil
-				if tgt:hasComponent("Addressable") then
-					toAddress = tgt:getComponent("Addressable").address
-				elseif tgt:hasComponent("Placeable") then
-					toAddress = tgt:getComponent("Placeable").address
-				end
+				local fromAddress = self.registry:get(self.registry:get(self.current_selection):getComponent("Stateful").ref):getComponent("GameInfo").address
+				local toAddress = self.registry:get(self.registry:get(msg.uid):getComponent("Stateful").ref):getComponent("GameInfo").address
+
 				self:pathTo(fromAddress, toAddress, self.registry:getStructure("Earth"))
 				local budget = self.registry:get(self.registry:get(self.current_selection):getComponent("Stateful").ref):getComponent("GameInfo").curr_move
 				self:displayPathOverlay(msg.map, budget)
@@ -125,11 +118,12 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 		self.current_selection = nil
 	end)
 	local unsubSelect = self.registry:subscribe("selectIcon", function (this, msg)
+		print('selecting ' .. msg.uid .. ' and current selection is ' .. inspect(self.current_selection))
 		if self.targetCollection:has(msg.uid) then
 			local selected = self.registry:get(msg.uid)
 			if msg.uid == self.current_selection then
 				return msg.icon_type == 'army' and self.fsm:reclickedUnit(msg) or self.fsm:reclickedOtherHex(msg)
-			elseif self.path and msg.address.address == self.path[1] then
+			elseif self.path and msg.address == self.path[1] then
 				self.fsm:reclickedOtherHex(msg)
 			else
 				return msg.icon_type == 'army' and (self:targetIsMineToClickOn(msg.uid) and self.fsm:clickedUnit(msg)) or self.fsm:clickedOtherHex(msg)
@@ -141,7 +135,7 @@ end
 
 function SelectableSystem:targetIsMineToClickOn ( uid )
 	local tgt = self.registry:get(uid)
-	if tgt:hasComponent("Stateful") and tgt:hasComponent("Placeable") then
+	if tgt:hasComponent("Stateful") then
 		local info = self.registry:get(tgt:getComponent("Stateful").ref):getComponent("GameInfo")
 		return self.registry:findComponent("GameInfo", {gs_type="player", is_current=true}).player_name == info.owner
 	end
@@ -190,25 +184,14 @@ function SelectableSystem:displayPathOverlay (map, selection_budget)
 	if not self.path then return end
 	self:clearPathOverlay()
 
-
-	local tilesOnWay = self.registry:getIdsByPool("Addressable", function(obj)
-		local transform = obj:getComponent("Transform")
-		local renObj = obj:getComponent("Renderable")
-		local addObj = obj:getComponent("Addressable")
-
-		for i, step in ipairs(self.path) do
-			if renObj and addObj.address == step then
-				return true
-			end
-		end
-	end)
-	for i, tileOnWay in ipairs(tilesOnWay) do
-		local s = self.registry:get(tileOnWay)
-		if s then
-			local addObj = s:getComponent("Addressable")
+	for i, address in ipairs(self.path) do
+		local t_ref = self.registry:findComponent("GameInfo",{gs_type = "tile", address = address}).gid
+		local s = self.registry:findComponent("Stateful", {ref = t_ref})
+		if s ~= nil then
+			local tileTransform = s:getSiblingComponent("Transform")
 			local cursor = nil
 			for j, addressIDX in ipairs(self.path) do
-				if cursor == nil and addressIDX == addObj.address then
+				if cursor == nil and addressIDX == address then
 					if self.path_costs[j] <= selection_budget then
 						cursor = "CURSOR_2"
 					else
@@ -217,15 +200,14 @@ function SelectableSystem:displayPathOverlay (map, selection_budget)
 				end
 			end
 			local overlay = self.registry:add(GameObject:new('Cursor',{
-				Transform:new(s.x,s.y),
+				Transform:new(0,0),
 			    Renderable:new(
 			      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 			      Global.Assets:getAsset(cursor)
-			      ),
-			    Placeable:new()
+			      )
 			}))
 			table.insert(self.path_overlays, overlay)
-			self.targetCollection:attach(overlay,tileOnWay)
+			self.targetCollection:attach(overlay,s.gid)
 		end
 	end
 end

@@ -15,7 +15,14 @@ function GameObject:init ( description, array_components, systems_to_register )
 	end
 end
 
+function deprecation_guard(type)
+	if type == "Placeable" then error("Tried to access a placeable object") end
+	if type == "Addressable" then error("Tried to access an addressable object") end
+	if type == "Moveable" then error("Tried to access a moveable object") end
+end
+
 function GameObject:hasComponent ( type )
+	deprecation_guard(type)
 	return self.components[type] ~= nil
 end
 
@@ -29,6 +36,7 @@ function GameObject:addComponent ( component )
 end
 
 function GameObject:getComponent ( type )
+	deprecation_guard(type)
 	return self.components[type]
 end
 

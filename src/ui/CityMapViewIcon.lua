@@ -1,8 +1,6 @@
 --CityMapViewIcon.lua
 local class = require 'lib/30log'
 local Renderable = require 'src/component/Renderable'
-local Addressable = require 'src/component/Addressable'
-local Placeable = require 'src/component/Placeable'
 local Interfaceable = require 'src/component/Interfaceable'
 local Transform = require 'src/component/Transform'
 local Stateful = require 'src/component/Stateful'
@@ -20,10 +18,7 @@ function CityMapViewIcon:init(registry, scenegraph, map, gamestate)
     local playerinfo = registry:findComponent("GameInfo", {player_name = gameinfo.owner})
 	local City_Touch_Delegate = TouchDelegate:new()
 	City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
-		if this.component.gob:hasComponent('Placeable') then
-          	registry:publish("selectCity",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), map = map, gamestate = gamestate, icon_type = 'city'})
-			print('Clicked on a city (' .. this.component.gob.uid .. ')! Is situated at address: ' .. map:summarizeAddress(this.component:getSiblingComponent('Placeable').address))
-		end
+		registry:publish("selectCity",{uid = this.component.gob.uid, address = registry:get(this.component:getSiblingComponent('Stateful').ref):getComponent("GameInfo").address, map = map, gamestate = gamestate, icon_type = 'city'})	
 	end)
 	debug_city = registry:add(GameObject:new('City', {
 		Transform:new(gameinfo.worldspace_coord[1],gameinfo.worldspace_coord[2]),
@@ -34,8 +29,7 @@ function CityMapViewIcon:init(registry, scenegraph, map, gamestate)
 			Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 			Global.Assets:getAsset(gameinfo.icon_sprite)
 			),
-		Stateful:new(gamestate),
-		Placeable:new(gameinfo.address)
+		Stateful:new(gamestate)
 	}))
 	debug_city_label = registry:add(GameObject:new('Name', {
 		Transform:new(0,60),

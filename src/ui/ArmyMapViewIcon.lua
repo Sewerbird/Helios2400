@@ -1,9 +1,6 @@
 --armyMapViewIcon.lua
 local class = require 'lib/30log'
 local Renderable = require 'src/component/Renderable'
-local Addressable = require 'src/component/Addressable'
-local Placeable = require 'src/component/Placeable'
-local Moveable = require 'src/component/Moveable'
 local Interfaceable = require 'src/component/Interfaceable'
 local Transform = require 'src/component/Transform'
 local Stateful = require 'src/component/Stateful'
@@ -22,11 +19,9 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
       local playerinfo = registry:findComponent("GameInfo", {player_name = gameinfo.owner})
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
-        if this.component.gob:hasComponent('Placeable') then
-					registry:publish("selectIcon",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), gamestate = gamestate, icon_type = 'army'})
-					registry:publish("selectArmy",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), gamestate = gamestate, icon_type = 'army'})
+					registry:publish("selectIcon",{uid = this.component.gob.uid, address = registry:get(this.component:getSiblingComponent('Stateful').ref):getComponent("GameInfo").address, gamestate = gamestate, icon_type = 'army'})
+					registry:publish("selectArmy",{uid = this.component.gob.uid, address = registry:get(this.component:getSiblingComponent('Stateful').ref):getComponent("GameInfo").address, gamestate = gamestate, icon_type = 'army'})
 					return true
-        end
       end)
       debug_army = registry:add(GameObject:new('Army', {
         Transform:new(
@@ -40,11 +35,7 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
         Interfaceable:new(
           Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73, 0,37}),
           Unit_Touch_Delegate),
-        Stateful:new(gamestate),
-        Placeable:new(gameinfo.address):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
-          cmp.address = msg.address
-        end),
-        Moveable:new()
+        Stateful:new(gamestate)
       }))
       debug_army_bg = registry:add(GameObject:new('Army_BG', {
         Transform:new((84-50)/2, (73-50)/2),

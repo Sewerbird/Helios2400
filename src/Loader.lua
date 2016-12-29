@@ -1,10 +1,7 @@
 --Loader.lua
 require 'lib/my_utils'
 local Renderable = require 'src/component/Renderable'
-local Addressable = require 'src/component/Addressable'
-local Placeable = require 'src/component/Placeable'
 local Interfaceable = require 'src/component/Interfaceable'
-local Moveable = require 'src/component/Moveable'
 local Transform = require 'src/component/Transform'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 local GameInfo = require 'src/component/GameInfo'

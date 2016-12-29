@@ -1,8 +1,6 @@
 --TileMapViewIcon.lua
 local class = require 'lib/30log'
 local Renderable = require 'src/component/Renderable'
-local Addressable = require 'src/component/Addressable'
-local Placeable = require 'src/component/Placeable'
 local Interfaceable = require 'src/component/Interfaceable'
 local Stateful = require 'src/component/Stateful'
 local Transform = require 'src/component/Transform'
@@ -19,11 +17,8 @@ function TileMapViewIcon:init (registry, scenegraph, map, gamestate)
 	local gameinfo = registry:get(gamestate):getComponent("GameInfo")
 	local Hex_Touch_Delegate = TouchDelegate:new();
 	Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
-		if this.component.gob:hasComponent('Addressable') then
-			local addr = this.component.gob:getComponent('Addressable')
-			registry:publish("selectIcon",{uid = this.component.gob.uid, address = addr, gamestate = gamestate, icon_type = 'tile'})
-			--registry:publish("moveTo",{uid = this.component.gob.uid, address = addr})
-		end
+		registry:publish("selectIcon",{uid = this.component.gob.uid, address = registry:get(this.component:getSiblingComponent('Stateful').ref):getComponent("GameInfo").address, gamestate = gamestate, icon_type = 'tile'})
+		--registry:publish("moveTo",{uid = this.component.gob.uid, address = addr})
 	end)
 	self.root = registry:add(GameObject:new('Tile',{
 		Transform:new(gameinfo.worldspace_coord[1],gameinfo.worldspace_coord[2]),
@@ -34,8 +29,7 @@ function TileMapViewIcon:init (registry, scenegraph, map, gamestate)
 			Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 			Global.Assets:getAsset(gameinfo.terrain_sprite)
 			),
-		Stateful:new(gamestate),
-		Addressable:new(gameinfo.address)
+		Stateful:new(gamestate)
 	}))
 	if gameinfo.decorations then
 		scenegraph:attach(self.root, nil)
