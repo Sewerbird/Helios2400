@@ -17,11 +17,8 @@ function TileMapViewIcon:init (registry, scenegraph, map, gamestate)
 	local gameinfo = registry:get(gamestate):getComponent("GameInfo")
 	local Hex_Touch_Delegate = TouchDelegate:new();
 	Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
-		if this.component.gob:hasComponent('Addressable') then
-			local addr = this.component.gob:getComponent('Addressable')
-			registry:publish("selectIcon",{uid = this.component.gob.uid, address = addr, gamestate = gamestate, icon_type = 'tile'})
-			--registry:publish("moveTo",{uid = this.component.gob.uid, address = addr})
-		end
+		registry:publish("selectIcon",{uid = this.component.gob.uid, address = registry:get(this.component:getSiblingComponent('Stateful').ref):getComponent("GameInfo").address, gamestate = gamestate, icon_type = 'tile'})
+		--registry:publish("moveTo",{uid = this.component.gob.uid, address = addr})
 	end)
 	self.root = registry:add(GameObject:new('Tile',{
 		Transform:new(gameinfo.worldspace_coord[1],gameinfo.worldspace_coord[2]),

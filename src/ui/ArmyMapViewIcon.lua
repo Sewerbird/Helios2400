@@ -19,11 +19,9 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
       local playerinfo = registry:findComponent("GameInfo", {player_name = gameinfo.owner})
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
-        if this.component.gob:hasComponent('Placeable') then
-					registry:publish("selectIcon",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), gamestate = gamestate, icon_type = 'army'})
-					registry:publish("selectArmy",{uid = this.component.gob.uid, address = this.component:getSiblingComponent('Placeable'), gamestate = gamestate, icon_type = 'army'})
+					registry:publish("selectIcon",{uid = this.component.gob.uid, address = registry:get(this.component:getSiblingComponent('Stateful').ref):getComponent("GameInfo").address, gamestate = gamestate, icon_type = 'army'})
+					registry:publish("selectArmy",{uid = this.component.gob.uid, address = registry:get(this.component:getSiblingComponent('Stateful').ref):getComponent("GameInfo").address, gamestate = gamestate, icon_type = 'army'})
 					return true
-        end
       end)
       debug_army = registry:add(GameObject:new('Army', {
         Transform:new(
