@@ -18,10 +18,10 @@ function Polygon:init ( vertices )
 	--convenience rectangular overload to allow ({x = 0, y = 0} {w = width, h = height}) intiialization
 	else
 		self.vertices = {
-			0,0 , 
-			vertices.w,0 , 
+			vertices.x or 0, vertices.y or 0 , 
+			vertices.w, vertices.y or 0 , 
 			vertices.w,vertices.h, 
-			0,vertices.h
+			vertices.x or 0, vertices.h
 		}
 	end
 	local isX = true
