@@ -38,9 +38,9 @@ local SaveSlotView = class("SaveSlotView", {
 })
 
 function ConfirmActionDialog:init (registry, scenegraph, text, ok_cb, no_cb)
-	self.root = registry:add(GameObject:new("sgdvr_root", {
+	self.root = registry:make("sgdvr_root", {
 		Transform:new(0,0)
-	}))
+	})
 	self.scenegraph = scenegraph
 	self.registry = registry
 
@@ -60,7 +60,7 @@ function ConfirmActionDialog:init (registry, scenegraph, text, ok_cb, no_cb)
 		no_cb()
 	end)
 
-	self.bg_rect = registry:add(GameObject:new("sgdvr_bg_rect", {
+	self.bg_rect = registry:make("sgdvr_bg_rect", {
 		Transform:new(0, 0),
 		Renderable:new(
 			Polygon:new({ w = width - 2 * margin, h = height }),
@@ -70,9 +70,9 @@ function ConfirmActionDialog:init (registry, scenegraph, text, ok_cb, no_cb)
 		Interfaceable:new(
 			Polygon:new({ w = width, h = height }),
 			self.block_handler)
-		}))
+		})
 
-	local okay_rect = registry:add(GameObject:new("cad_okay_rect", {
+	local okay_rect = registry:make("cad_okay_rect", {
 		Transform:new(margin, 30),
 		Renderable:new(
 			Polygon:new({ w = width / 2 - 2 * margin - margin / 2, h = 30}),
@@ -82,9 +82,9 @@ function ConfirmActionDialog:init (registry, scenegraph, text, ok_cb, no_cb)
 		Interfaceable:new(
 			Polygon:new({ w = width / 2 - 2 * margin - margin / 2, h = 30}),
 			self.okay_handler)
-	}))
+	})
 
-	local cancel_rect = registry:add(GameObject:new("cad_cancel_rect", {
+	local cancel_rect = registry:make("cad_cancel_rect", {
 		Transform:new(width/2 - margin/2, 30),
 		Renderable:new(
 			Polygon:new({ w = width / 2 - 2 * margin - margin / 2, h = 30}),
@@ -94,7 +94,7 @@ function ConfirmActionDialog:init (registry, scenegraph, text, ok_cb, no_cb)
 		Interfaceable:new(
 			Polygon:new({ w = width / 2 - 2 * margin - margin / 2, h = 30}),
 			self.cancel_handler)
-	}))
+	})
 
 	self.scenegraph:attach(self.root, nil)
 	self.scenegraph:attach(self.bg_rect, self.root)
@@ -122,13 +122,13 @@ end
 
 
 function SaveSlotView:init (registry, scenegraph, path, row_num, click_handler)
-	self.root = registry:add(GameObject:new("sgdvr_root", {
+	self.root = registry:make("sgdvr_root", {
 		Transform:new(0,0)
-	}))
+	})
 	self.scenegraph = scenegraph
 	self.registry = registry
 
-	local bg_rect = registry:add(GameObject:new("sgdvr_bg_rect", {
+	local bg_rect = registry:make("sgdvr_bg_rect", {
 		Transform:new(10, 10 + row_num * 40),
 		Renderable:new(
 			Polygon:new({ w = 360, h = 30 }),
@@ -138,16 +138,16 @@ function SaveSlotView:init (registry, scenegraph, path, row_num, click_handler)
 		Interfaceable:new(
 			Polygon:new({ w = 360, h = 30 }),
 			click_handler)
-		}))
+		})
 
 	self.scenegraph:attach(self.root, nil)
 	self.scenegraph:attach(bg_rect, self.root)
 end
 
 function SaveSlotsDirectoryView:init (registry, scenegraph, file_extension_filter, save_or_load_mode)
-	self.root = registry:add(GameObject:new("qcpv_root", {
+	self.root = registry:make("qcpv_root", {
 		Transform:new(10,60)
-	}))
+	})
 	self.scenegraph = scenegraph
 	self.registry = registry
 	self.mode = save_or_load_mode
@@ -163,7 +163,7 @@ function SaveSlotsDirectoryView:init (registry, scenegraph, file_extension_filte
 	self.scenegraph:attach(self.root, nil)
 
 
-	self.scenegraph:attach(registry:add(GameObject:new("sgdv_bg_rect",{
+	self.scenegraph:attach(registry:make("sgdv_bg_rect",{
 		Transform:new(0,0),
 		Renderable:new(
 			Polygon:new({ w = width - 2 * margin, h = height}),
@@ -172,8 +172,8 @@ function SaveSlotsDirectoryView:init (registry, scenegraph, file_extension_filte
 		Interfaceable:new(
 			Polygon:new({ w = width - 2 * margin, h = height}),
 			Block_Below_Delegate)
-	})), self.root)
-	self.anchor = registry:add(GameObject:new("listanchor"),{
+	}), self.root)
+	self.anchor = registry:make("listanchor",{
 		Transform:new(0,0)
 	})
 	self.scenegraph:attach(self.anchor,self.root)
@@ -185,7 +185,7 @@ function SaveSlotsDirectoryView:init (registry, scenegraph, file_extension_filte
 		self:hide()
 	end)
 
-	local close_btn = registry:add(GameObject:new("sgdvr_close_btn",{
+	local close_btn = registry:make("sgdvr_close_btn",{
 		Transform:new(10, 10 + 6 * 40),
 		Renderable:new(
 			Polygon:new({ w = 360, h = 40}),
@@ -195,7 +195,7 @@ function SaveSlotsDirectoryView:init (registry, scenegraph, file_extension_filte
 		Interfaceable:new(
 			Polygon:new({ w = 360, h = 40}),
 			close_btn_handler)
-		}))
+		})
 
 	self.scenegraph:attach(close_btn, self.root)
 

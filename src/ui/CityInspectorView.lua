@@ -15,9 +15,9 @@ local CityInspectorView = class("CityInspectorView", {
 })
 
 function CityInspectorView:init (registry, scenegraph)
-	self.root = registry:add(GameObject:new("civ_root", {
+	self.root = registry:make("civ_root", {
 		Transform:new(0,0)
-	}))
+	})
 	self.scenegraph = scenegraph
 	self.registry = registry
 

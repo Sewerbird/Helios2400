@@ -26,13 +26,13 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
   self.scenegraph = scenegraph
   self.map = map
 
-  local Map_Layer = registry:add(GameObject:new('Map Layer', {
+  local Map_Layer = registry:make('Map Layer', {
     Transform:new()
-    }))
-  local Tile_Layer = registry:add(GameObject:new('Tile_Layer',{}))
-  local City_Layer = registry:add(GameObject:new('City_Layer',{}))
-  local Unit_Layer = registry:add(GameObject:new('Unit_Layer',{}))
-  local UI_Layer = registry:add(GameObject:new('UI_Layer',{}))
+    })
+  local Tile_Layer = registry:make('Tile_Layer',{})
+  local City_Layer = registry:make('City_Layer',{})
+  local Unit_Layer = registry:make('Unit_Layer',{})
+  local UI_Layer = registry:make('UI_Layer',{})
   local Turn_Start_View = TurnStartView:new(registry, scenegraph)
   local Main_Menu_View = MainMenuView:new(registry, scenegraph)
   local Quick_Command_Panel_View = QuickCommandPanelView:new(registry, scenegraph)
@@ -45,7 +45,7 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
       return true
   end)
 
-  local Inspector = registry:add(GameObject:new('Inspector',{
+  local Inspector = registry:make('Inspector',{
       Transform:new(0,640),
       Renderable:new(
         Polygon:new({w=1200, h=160}),
@@ -55,16 +55,16 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
       Interfaceable:new(
         Polygon:new({w=1200, h=160}),
         bg_click_interceptor)
-    }))
-  local Inspector_Commands_Anchor = registry:add(GameObject:new('Inspectory_Commands_Anchor',{
+    })
+  local Inspector_Commands_Anchor = registry:make('Inspectory_Commands_Anchor',{
       Transform:new(0,0)
-    }))
-  local Inspector_City_Anchor = registry:add(GameObject:new('Inspectory_City_Anchor',{
+    })
+  local Inspector_City_Anchor = registry:make('Inspectory_City_Anchor',{
       Transform:new(125,0)
-    }))
-  local Inspector_Army_Anchor = registry:add(GameObject:new('Inspectory_Army_Anchor',{
+    })
+  local Inspector_Army_Anchor = registry:make('Inspectory_Army_Anchor',{
       Transform:new(230+125,0)
-    }))
+    })
 
   local Map_View_Touch_Delegate = TouchDelegate:new()
   Map_View_Touch_Delegate:setHandler('onDrag', function(this, x,y,dx,dy)
@@ -83,12 +83,12 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
       end
     end
   end)
-  local Map_View = registry:add(GameObject:new('Map_View',{
+  local Map_View = registry:make('Map_View',{
     Transform:new(0,0),
     Interfaceable:new(
       Polygon:new({w=1200, h=800}),
       Map_View_Touch_Delegate)
-    }))
+    })
 
   scenegraph:attach(Map_View)
   scenegraph:attachAll({Map_Layer,UI_Layer}, Map_View)

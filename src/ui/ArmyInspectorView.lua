@@ -13,28 +13,28 @@ local ArmyInspectorView = class("ArmyInspectorView", {
 })
 
 function ArmyInspectorView:init (registry, scenegraph)
-	self.root = registry:add(GameObject:new("aiv_root", {
+	self.root = registry:make("aiv_root", {
 		Transform:new(0,0)
-	}))
+	})
 	self.scenegraph = scenegraph
 
-	local bg_rect = registry:add(GameObject:new("aiv_bg_rect", {
+	local bg_rect = registry:make("aiv_bg_rect", {
 		Transform:new(0,0),
 		Renderable:new(
 			Polygon:new({w = 500, h = 125}),
 			nil,
 			{80,80,80,200},
 			"ARMY INSPECTOR VIEW")
-		}))
+		})
     
-    local info_rect = registry:add(GameObject:new("aiv_info_rect", {
+    local info_rect = registry:make("aiv_info_rect", {
     	Transform:new(0,10),
     	Renderable:new(
     		Polygon:new({w=200, h = 115}),
     		nil,
     		{100,100,90},
     		"Info about the unit goes here\n Like its name: \n And owner: \n and address perhaps.\n 10/10 hp?")
-    	}))
+    	})
 
 	self.scenegraph:attach(self.root, nil)
 	self.scenegraph:attachAll({bg_rect}, self.root)

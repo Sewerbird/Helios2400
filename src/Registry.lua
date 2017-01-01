@@ -1,141 +1,92 @@
---Registry.lua
-local class = require 'lib/30log'
-local Tserial = require 'lib/Tserial'
-local GameObject = require 'src/GameObject'
-local GameInfo = require 'src/component/GameInfo'
 local PubSub = require 'src/PubSub'
-local Graph = require 'src/structure/Graph'
-local UUID = require 'lib/uuid'
+local Binding = require 'src/datatype/Binding'
 
-local Registry = class('Registry', {
-	bind_graph = nil,
-	registry = {},
-	structures = {},
-	pubsub = nil,
-	historicCounter = 0,
-	publish_count = 0
-})
+local Registry = class('Registry', {})
 
 function Registry:init ( )
+	self.structures = {}
+	self.index = {}
+	self.gid_autoincrement = 0
 	self.pubsub = PubSub:new()
-	self.bind_graph = Graph:new()
 end
 
-function Registry:setStructure( name, structure )
-	self.structures[name] = structure
+--Object Lifecycle
+
+function Registry:make( debug_description, components )
+	local component_ids = {}
+	local gid = 0 + self.gid_autoincrement
+
+	self.index[gid] = { uid = gid }
+	--Fill in cells with Components
+	for i = 1, #components do
+		local cmp = components[i]
+		cmp.registry = self
+		cmp.gid = gid
+		cmp.uid = gid .. "." .. cmp.name
+		self.index[cmp.gid][cmp.name] = cmp
+	end
+	--TODO: Hook up Components' Bindings
+	self.gid_autoincrement = self.gid_autoincrement + 1
+	return gid
 end
 
-function Registry:getStructure( name )
-	return self.structures[name]
-end
-
-function Registry:add ( tgtObject )
-	assert(tgtObject ~= nil, 'tgtObject being registered is nil')
-
-	tgtObject.uid = self.historicCounter + 1
-	tgtObject.registry = self
-	self.historicCounter = self.historicCounter + 1
-
-	if self.registry[tgtObject.uid] ~= nil then
-		error('Registry object with uid already exists ' .. tgtObject.uid) --TODO; fails for now if we have a uid collision. Perhaps do a smart-update in the future
+function Registry:destroy( gid )
+	if self.index[gid] then
+		self.index[gid] = nil
+		--TODO: publish/tidy up
 	else
-		self.registry[tgtObject.uid] = tgtObject
-		for key, component in pairs(tgtObject:getComponents()) do
-			component.registry = self
-			component.gid = tgtObject.uid
-			component.uid = tgtObject.uid .. '_' .. key
-			if component.deferred_bindings then
-				for i, binding in ipairs(component.deferred_bindings) do
-					component:bindTo(binding.topic, binding.fn, binding.init_with)
+		error("Attempting to remove non-existent game object '" .. gid .. "'")
+	end
+end
+
+function Registry:get( gid, ctype )
+	if self.index[gid] then
+		if not ctype then
+			return self.index[gid]
+		elseif string.find(ctype, "%.") then
+			local result = self.index[gid]
+			for ele in string.gmatch(ctype, "%.") do
+				result = result[ele]
+				if result and result.instanceOf and result:instanceOf(Binding) then
+					result = self:get(result.target,result.component)
 				end
-				component.deferred_bindings = nil
 			end
-			if component.onFinalized then
-				component:onFinalized(self)
-			end
+			return result
+		else
+			return self.index[gid][ctype]
 		end
+	else
+		error("Getting cell failed: no game object with gid '" .. gid .."'")
 	end
-
-	return tgtObject.uid
 end
 
-function Registry:remove ( tgtUid )
-	self.registry[tgtUid] = nil
-end
-
-function Registry:get ( tgtObjectId )
-	return self.registry[tgtObjectId]
-end
-
-function Registry:findComponent(poolType, where)
-	for i, v in ipairs(self:getGameObjects(poolType)) do
-		local isOkay = true
-		local component = v:getComponent(poolType)
-		for key, value in pairs(where) do
-			if not (component[key] == value) then 
-				isOkay = false 
-			end
-		end
-		if isOkay then
-			return component
-		end
-	end
-	return nil
-end
-
-function Registry:findComponents(poolType, where)
+function Registry:find( ctype, where, multi)
 	local results = {}
-	for i, v in ipairs(self:getGameObjects(poolType)) do
-		local isOkay = true
-		local component = v:getComponent(poolType)
-		for key, value in pairs(where) do
-			if not (component[key] == value) then 
-				isOkay = false 
+	for gid, gob in ipairs(self.index) do
+		local component = self:get(gid,ctype)
+		if ctype and component then
+			local isOkay = true
+			for key, value in pairs(where) do
+				if not (component[key] == value) then
+					isOkay = false
+				end
 			end
-		end
-		if isOkay then
-			table.insert(results, component)
+			if isOkay and multi then
+				table.insert(results, component)
+			elseif isOkay then
+				return component
+			end
 		end
 	end
 	return results
 end
-
-function Registry:getIdsByPool ( pool, fn)
-	local poolIds = {}
-	if fn == nil then
-		fn = function () return true end
-	end
-	for i, v in ipairs(self.registry) do
-		if v:hasComponent(pool) and fn(v) then
-			table.insert(poolIds, i)
-		end
-	end
-	return poolIds
+function Registry:findAll( ctype, where )
+	return self:find(ctype, where or {}, true)
 end
 
-function Registry:getComponent ( tgtObjectUID, poolType )
-	local obj = self.registry[tgtObjectUID]
-	if not obj then error("Object " .. tostring(tgtObjectUID) .. " not found trying to get its " .. tostring(poolType)) end
-
-	return self.registry[tgtObjectUID]:getComponent(poolType)
-end
-
-function Registry:getGameObjects ( pool_filter)
-	if pool_filter then
-		local filtered = {}
-		for i, v in pairs(self.registry) do
-			if v:hasComponent(pool_filter) then
-				table.insert(filtered, v)
-			end
-		end
-		return filtered
-	else
-		return self.registry
-	end
-end
+--PubSub
 
 function Registry:publish(topic, message)
-	self.publish_count = self.publish_count+1
 	return self.pubsub:publish(topic, message)
 end
 
@@ -143,38 +94,100 @@ function Registry:subscribe(topic, callback)
 	return self.pubsub:subscribe(topic, callback)
 end
 
-function Registry:bind( component, source, onSourceChange, initWith)
-	--Add bound component to bind graph if missing
-	if not self.bind_graph:hasNode(component.uid) then
-		self.bind_graph:addNode(component.uid)
-	end
-	--Add source component to bind graph if missing
-	if not self.bind_graph:hasNode(source) then
-		self.bind_graph:addNode(source)
-	end
-	--Add bind path
-	self.bind_graph:addEdge(source, component.uid)
-	self:subscribe(source, function (cmp, msg) 
-		onSourceChange(component, component, msg)
-	end)
-	if initWith then
-		onSourceChange(component, component, initWith)
-	end
+--Structures
+
+function Registry:defineStructure ( name, structure )
+	self.structures[name] = structure
 end
 
-function Registry:summarize ( )
-	print("Registry has " .. #self.registry .. " entries ")
-	for i, v in pairs(self:getGameObjects("GameInfo")) do
-		local info = v:getComponent("GameInfo")
-	end
+function Registry:undefineStructure( name )
+	self.structures[name] = nil
 end
 
-function Registry:getCount ()
-	local cnt = 0
-	for i, v in pairs(self.registry) do
-		cnt = cnt + 1
-	end
-	return cnt
+function Registry:view ( name )
+	return self.structures[name]
 end
 
 return Registry
+
+
+--[[
+
+Sample usages
+
+gidPlayer = registry:makeObject("Cool player dude", { --310
+	PlayerInfo:new({
+		highlight_color = {200,200,200},
+		midtone_color = {100,100,100},
+		darkened_color = {50,50,50}
+	})
+})
+gidArmy = registry:makeObject("A particular army", { --9310
+	ArmyInfo:new({
+		sprite = "FooSprite",
+		name = "FooArmy",
+		owner = Binding:new("310","PlayerInfo"),
+		address = "WesternEurope_0",
+		map = "Earth"
+	})
+})
+gidIcon = registry:makeObject("A army view icon", {
+	ArmyInfo:link("9310"),
+	Transform:link("288309", function(src, tgt) 
+		return src:copy():translate(5,5)
+	end),
+	Renderable:new([ --drawn front-to-back
+		{ --background
+			polygon = Polygon:new({w = 10, h = 10}),
+			bg_color = Binding:new("this","ArmyInfo.owner.darkened_color"), --'owner' is a link in the source to a PlayerInfo
+		},
+		{ --unit sprite
+			polygon = Polygon:new({w = 10, h = 10}),
+			render = Binding:new("this","ArmyInfo.sprite"),
+			bg_color = Binding:new("this","ArmyInfo.owner.midtone_color"), --'owner' is a link in the source to a PlayerInfo
+			text = Binding:new("this","ArmyInfo", function(src, tgt)
+				return src.name + " (" + src.owner:lookup("name") + ")"
+			end
+		},
+		{ --health bar
+			polygon = Binding:new("this","ArmyInfo", function(src, tgt)
+				return Polygon:new({x = 0, y = 9, w = (src.curr_hp / src.max_hp) * 10, h})
+			end),
+			bg_color = Binding:new("this","ArmyInfo.owner.highlight_color")
+		},
+		{ --name
+			polygon = Polygon:new({x = 0, y = 0, w = 10, h = 3}),
+			text = Binding:new("this","ArmyInfo", function(src, tgt)
+				return src.name + " (" + src.owner:lookup("name") + ")"
+			end)
+		},
+		{ --move counter
+			polygon = Polygon:new({x = 0, y = 6, w = 3, h = 3}),
+			text = Binding:new("this","ArmyInfo", function(src, tgt)
+				return src.curr_move
+			end)
+		},
+		{ --shader for when unit is 'done'
+			polygon = Binding:new("this","ArmyInfo", function(src, tgt)
+				if src.curr_move == 0 or src.sleeping then
+					return Polygon:new({w = 0, h = 0})
+				else 
+					return Polygon:new({w = 10, h = 10}) 
+				end
+			end),
+			bg_color = {0,0,0,100}
+		}
+	]),
+	Interfaceable:new({
+		polygon = Binding:new("this",{w = 10, h = 10}),
+		delegate = TouchDelegate:new(function() ... end)
+	})
+})
+registry:get("9310", "ArmyInfo") --returns the ArmyInfo component for GameObject 9310
+registry:find("ArmyInfo", {"map" = "Earth"}) --returns the ArmyInfo(s) that have `map` == "Earth"
+registry:defineStructure('z-order', Tree:new()) --defines a structure (ring, array, stack, queue, graph...) over gameobject ids
+registry:in('z-order'):attach(gidIcon, gidLayer) --attaches the view icon to a view layer in the `z-order` structure graph
+registry:remove("9310") --deletes GameObject9310, and orphaned components thereof
+registry:undefineStructure('z-order')
+
+--]]

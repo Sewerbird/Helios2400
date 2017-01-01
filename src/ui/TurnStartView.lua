@@ -12,9 +12,9 @@ local TurnStartView = class("TurnStartView", {
 })
 
 function TurnStartView:init (registry, scenegraph, attachTo)
-	self.root = registry:add(GameObject:new("tsv_root", {
+	self.root = registry:make("tsv_root", {
 		Transform:new(0,0)
-	}))
+	})
 	self.scenegraph = scenegraph
 	self.registry = registry
 
@@ -27,7 +27,7 @@ function TurnStartView:init (registry, scenegraph, attachTo)
 	end)
 	local windowW = love.graphics:getWidth()
 	local windowH = love.graphics:getHeight()
-	local gray_out = registry:add(GameObject:new("tsv_grayout", {
+	local gray_out = registry:make("tsv_grayout", {
 		Transform:new(0,0),
 		Renderable:new(
 			Polygon:new({w = windowW, h = windowH}),
@@ -36,7 +36,7 @@ function TurnStartView:init (registry, scenegraph, attachTo)
 		Interfaceable:new(
 			Polygon:new({w = windowW, h = windowH}),
 			Block_Below_Delegate)
-	}))
+	})
 	local panelW = 300
 	local panelH = 170
 	local panelX = (windowW - panelW) / 2
@@ -44,24 +44,24 @@ function TurnStartView:init (registry, scenegraph, attachTo)
 	local margin = 10
 	local subPanelW = panelW - 2 * margin
 	local start_btnH = 40
-	local bg_rect = registry:add(GameObject:new("tsv_bg_rect", {
+	local bg_rect = registry:make("tsv_bg_rect", {
 		Transform:new(panelX,panelY),
 		Renderable:new(
 			Polygon:new({w = panelW, h = panelH}),
 			nil,
 			{64, 128, 128,200}),
-		}))
+		})
 	local text_panelH = panelH - 3 * margin - start_btnH
-	local text_panel = registry:add(GameObject:new("tsv_text_panel",{
+	local text_panel = registry:make("tsv_text_panel",{
 		Transform:new(margin, margin),
 		Renderable:new(
 			Polygon:new({w = subPanelW, h = text_panelH}),
 			nil,
 			{100,200,200},
 			"Your Turn")
-		}))
+		})
 	local start_btnY = panelH - start_btnH - margin
-	local start_btn = registry:add(GameObject:new("tsv_confirm_btn",{
+	local start_btn = registry:make("tsv_confirm_btn",{
 		Transform:new(margin, start_btnY),
 		Renderable:new(
 			Polygon:new({w = subPanelW, h = start_btnH}),
@@ -71,7 +71,7 @@ function TurnStartView:init (registry, scenegraph, attachTo)
 		Interfaceable:new(
 			Polygon:new({w = 280, h = 40}),
 			start_button_handler)
-		}))
+		})
 
 	self.scenegraph:attach(self.root, nil)
 	self.scenegraph:attach(gray_out, self.root)

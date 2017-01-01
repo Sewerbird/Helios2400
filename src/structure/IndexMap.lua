@@ -33,32 +33,28 @@ function IndexMap:load(registry, map)
 	local cities = {}
 	self.map_name = map
 	
-	for id, obj in pairs(registry:getGameObjects("GameInfo")) do
-    	local tgt = obj:getComponent("GameInfo")
-		if obj.description == "gsHex" and tgt.map == map then
-			table.insert(hexes, obj)
-		elseif obj.description == "gsCity" and tgt.map == map then
-			table.insert(cities, obj)
-		elseif obj.description == "gsArmy" and tgt.map == map then
-			table.insert(armies, obj)
+	for id, tgt in ipairs(registry:findAll("GameInfo")) do
+		if tgt.description == "gsHex" and tgt.map == map then
+			table.insert(hexes, tgt)
+		elseif tgt.description == "gsCity" and tgt.map == map then
+			table.insert(cities, tgt)
+		elseif tgt.description == "gsArmy" and tgt.map == map then
+			table.insert(armies, tgt)
 		end
 	end
 
-	for i, obj in ipairs(hexes) do
+	for i, hex in ipairs(hexes) do
 		local my_cities = {}
 		local my_armies = {}
-		local hex = obj:getComponent("GameInfo")
 		self:addAddress(hex.address, hex.neighbors,hex.terrain_info)
 		for j, city in ipairs(cities) do
-			local myc = city:getComponent("GameInfo")
-			if myc.address == hex.address then
-				self:addPlaceable(city.uid, hex.address)
+			if city.address == hex.address then
+				self:addPlaceable(city.gid, hex.address)
 			end
 		end
 		for j, army in ipairs(armies) do
-			local mya = army:getComponent("GameInfo")
-			if mya.address == hex.address then
-				self:addPlaceable(army.uid, hex.address)
+			if army.address == hex.address then
+				self:addPlaceable(army.gid, hex.address)
 			end
 		end
 	end

@@ -21,15 +21,12 @@ function GameInfo:serialize ()
 		endo[key] = self[key]
 	end
 	endo.gid = self.gid
-	endo.gob_desc = self.gob.description
 	return Tserial.pack(endo)
 end
 
 function GameInfo:reify ( registry, string )
 	local exo = Tserial.unpack(string,true)
-	local desc = exo.gob_desc
-	exo.gob_desc = nil
-	return registry:add(GameObject:new(desc, {GameInfo:new(exo)}))
+	return registry:make('TODO:fill this in the reify',{GameInfo:new(exo)})
 end
 
 

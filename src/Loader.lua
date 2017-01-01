@@ -74,8 +74,8 @@ function Loader:debugLoad (save)
   Space_Map:load(debug_gamestate,'Space');
 
   local desiredMap = "Space"
-  for key, obj in pairs(debug_gamestate.registry) do
-    local tgt = obj:getComponent("GameInfo")
+  for key, obj in ipairs(debug_gamestate.index) do
+    local tgt = debug_gamestate:get(key,"GameInfo")
     if obj.description == 'gsHex' then
       if tgt.map == 'Earth' then
         table.insert(Earth_Tiles, TileMapViewIcon:new(debug_gamestate,EarthSceneGraph,Earth_Map,key))
@@ -101,8 +101,8 @@ function Loader:debugLoad (save)
   local Space_View = MapView:new(debug_gamestate, SpaceSceneGraph, 'Space', Space_Tiles, Space_Cities, Space_Units)
 
 
-  self.loadContext.Registry:setStructure('Earth', Earth_Map)
-  self.loadContext.Registry:setStructure('Space', Space_Map)
+  self.loadContext.Registry:defineStructure('Earth', Earth_Map)
+  self.loadContext.Registry:defineStructure('Space', Space_Map)
 
 
   Global.MutatorBus = MutatorBus:new(Global.Registry)
@@ -112,8 +112,8 @@ end
 
 function Loader:saveGame ( name, gamestateRegistry)
   local serialized_gamestate = {}
-  for i, obj in pairs(gamestateRegistry:getGameObjects("GameInfo")) do
-    table.insert(serialized_gamestate, obj:getComponent("GameInfo"):serialize())
+  for i, obj in ipairs(gamestateRegistry:findAll("GameInfo")) do
+    table.insert(serialized_gamestate, obj:serialize())
   end
   love.filesystem.write((name .. '.sav'), Tserial.pack(serialized_gamestate))
 end

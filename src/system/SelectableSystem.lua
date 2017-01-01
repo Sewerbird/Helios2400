@@ -21,13 +21,13 @@ local SelectableSystem = System:extend({
 
 function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 	SelectableSystem.super.init(self, registry, targetCollection)
-	self.selected_unit_cursor_object = self.registry:add(GameObject:new('Cursor',{
+	self.selected_unit_cursor_object = self.registry:make('Cursor',{
 		Transform:new(0,0),
 	    Renderable:new(
 	      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 	      Global.Assets:getAsset("ANIM_CURSOR_1")
 	      )
-	}))
+	})
 	self.path_overlays = {}
 
 	self.fsm = statemachine.create({

@@ -13,9 +13,9 @@ local QuickCommandPanelView = class("QuickCommandPanelView", {
 })
 
 function QuickCommandPanelView:init (registry, scenegraph)
-	self.root = registry:add(GameObject:new("qcpv_root", {
+	self.root = registry:make("qcpv_root", {
 		Transform:new(0,0)
-	}))
+	})
 	self.scenegraph = scenegraph
 
 	local end_turn_button_handler = TouchDelegate:new()
@@ -25,7 +25,7 @@ function QuickCommandPanelView:init (registry, scenegraph)
 		return true
 	end)
 
-	local bg_rect = registry:add(GameObject:new("qcpv_bg_rect", {
+	local bg_rect = registry:make("qcpv_bg_rect", {
 		Transform:new(0,0),
 		Renderable:new(
 			Polygon:new({w = 125, h = 160}),
@@ -33,9 +33,9 @@ function QuickCommandPanelView:init (registry, scenegraph)
 			{64, 128, 128}):bindTo("beginTurn", function (this, cmp, msg)
 			cmp.backgroundcolor = msg.midtone_color
         end)
-		}))
+		})
 
-	local end_turn_btn = registry:add(GameObject:new("qcpv_end_turn_btn",{
+	local end_turn_btn = registry:make("qcpv_end_turn_btn",{
 		Transform:new(10, 10),
 		Renderable:new(
 			Polygon:new({w = 105, h = 50}),
@@ -49,7 +49,7 @@ function QuickCommandPanelView:init (registry, scenegraph)
 		Interfaceable:new(
 			Polygon:new({w = 105, h = 105}),
 			end_turn_button_handler)
-		}))
+		})
 
 
 	self.scenegraph:attach(self.root, nil)

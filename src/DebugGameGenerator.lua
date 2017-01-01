@@ -5,6 +5,7 @@ local Interfaceable = require 'src/component/Interfaceable'
 local Transform = require 'src/component/Transform'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 local GameInfo = require 'src/component/GameInfo'
+local PlayerInfo = require 'src/component/PlayerInfo'
 local GameObject = require 'src/GameObject'
 local MutatorBus = require 'src/mutate/MutatorBus'
 local Viewer = require 'src/ui/Viewer'
@@ -36,7 +37,7 @@ function DebugScenarioGenerator:debugGenerateEarthMap (debug_gamestate, assets)
   local joffset = 0
   local num_rows = 12
   local num_cols = 24
-  local players = debug_gamestate:getGameObjects("GameInfo")
+  local players = debug_gamestate:findAll("PlayerInfo")
 
   for i = 1 , num_cols do --x
     for j = 1 , num_rows do
@@ -46,7 +47,8 @@ function DebugScenarioGenerator:debugGenerateEarthMap (debug_gamestate, assets)
       local hex = (j==1 or j==num_rows or math.random()>0.5) and "TILE_ARCTIC_1" or ((math.random() < 0.7 or isCapitol) and "TILE_GRASS_1" or "TILE_WATER_1")
       local army = (math.random() < 0.05) and "SPEC_UNIT_INFANTRY_1" or (math.random() < 0.5 and "SPEC_UNIT_ARTILLERY_1" or "SPEC_UNIT_MECH_1")
       local player = math.random(1,#players)
-      local playerInfo = players[player]:getComponent('GameInfo')
+      local playerInfo = players[player]
+      print("The playerInfo is " .. inspect(playerInfo))
 
       local hex_info = {
         gs_type = "tile",
@@ -123,9 +125,9 @@ function DebugScenarioGenerator:debugGenerateEarthMap (debug_gamestate, assets)
         army_info.curr_move = army_info.max_move
       end
 
-      local oHex = debug_gamestate:add(GameObject:new('gsHex',{GameInfo:new(hex_info)}))
-      local oCity = city_info and debug_gamestate:add(GameObject:new('gsCity',{GameInfo:new(city_info)})) or nil
-      local oArmy = army_info and debug_gamestate:add(GameObject:new('gsArmy',{GameInfo:new(army_info)})) or nil
+      local oHex = hex_info and debug_gamestate:make('gsHex',{GameInfo:new(hex_info)}) or nil
+      local oCity = city_info and debug_gamestate:make('gsCity',{GameInfo:new(city_info)}) or nil
+      local oArmy = army_info and debug_gamestate:make('gsArmy',{GameInfo:new(army_info)}) or nil
 
     end
   end
@@ -194,7 +196,7 @@ function DebugScenarioGenerator:debugGenerateSpaceMap (debug_gamestate, assets)
     }
   }
   for i, v in ipairs(space_hexes) do
-    debug_gamestate:add(GameObject:new('gsHex',{GameInfo:new(v)}))
+    debug_gamestate:make('gsHex',{GameInfo:new(v)})
   end
 end
 
@@ -203,8 +205,8 @@ function DebugScenarioGenerator:debugGenerateMap ( assets)
 
   local debug_gamestate = Registry:new()
 
-  debug_gamestate:add(GameObject:new('gsPlayer',{
-    GameInfo:new({
+  debug_gamestate:make('gsPlayer',{
+    PlayerInfo:new({
       gs_type = 'player',
       is_current = true,
       is_alive = true,
@@ -214,9 +216,9 @@ function DebugScenarioGenerator:debugGenerateMap ( assets)
       midtone_color = {20,130,150},
       shadow_color = {5,80,100}
     })
-  }))
-  debug_gamestate:add(GameObject:new('gsPlayer',{
-    GameInfo:new({
+  })
+  debug_gamestate:make('gsPlayer',{
+    PlayerInfo:new({
       gs_type = 'player',
       is_current = false,
       is_alive = true,
@@ -226,9 +228,9 @@ function DebugScenarioGenerator:debugGenerateMap ( assets)
       midtone_color = {60,100,180},
       shadow_color = {30,50,120}
     })
-  }))
-  debug_gamestate:add(GameObject:new('gsPlayer',{
-    GameInfo:new({
+  })
+  debug_gamestate:make('gsPlayer',{
+    PlayerInfo:new({
       gs_type = 'player',
       is_current = false,
       is_alive = true,
@@ -238,7 +240,7 @@ function DebugScenarioGenerator:debugGenerateMap ( assets)
       midtone_color = {160,60,60},
       shadow_color = {120,30,30}
     })
-  }))
+  })
 
   self:debugGenerateEarthMap(debug_gamestate, assets)
   self:debugGenerateSpaceMap(debug_gamestate, assets)

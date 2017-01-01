@@ -54,8 +54,8 @@ function love.update( dt )
   memGraph:update(dt)
   dtGraph:update(dt, math.floor(dt * 1000))
   dtGraph.label = 'DT: ' ..  math.round(dt, 4)
-  objGraph:update(dt, Global.Registry:getCount())
-  objGraph.label = 'CNT: ' .. Global.Registry:getCount()
+  objGraph:update(dt, #Global.Registry.index)
+  objGraph.label = 'CNT: ' .. #Global.Registry.index
 end
 
 function love.draw()

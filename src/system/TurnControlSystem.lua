@@ -17,7 +17,7 @@ function TurnControlSystem:init( registry, targetCollection )
 	TurnControlSystem.super.init(self, registry, targetCollection)
 
 	if not targetCollection then
-		local players = registry:findComponents("GameInfo", {gs_type="player"})
+		local players = registry:findAll("PlayerInfo")
 		self.targetCollection = Ring:new()
 		for i, player in ipairs(players) do
 			self.targetCollection:add(player.player_name)
@@ -30,7 +30,7 @@ function TurnControlSystem:init( registry, targetCollection )
 end
 
 function TurnControlSystem:begin()
-	local new_player = self.registry:findComponent("GameInfo",{gs_type="player", player_name=self.targetCollection:current()})
+	local new_player = self.registry:find("PlayerInfo",{player_name=self.targetCollection:current()})
 	self.registry:publish("beginTurn",new_player)
 end
 

@@ -17,9 +17,9 @@ local ConfirmationDialogBoxView = class("ConfirmationDialogBoxView", {
 })
 
 function ConfirmationDialogBoxView:init (registry, scenegraph, attachTo)
-	self.root = registry:add(GameObject:new("qcpv_root", {
+	self.root = registry:make("qcpv_root", {
 		Transform:new(0,0)
-	}))
+	})
 	self.scenegraph = scenegraph
 	self.registry = registry
 
@@ -48,7 +48,7 @@ function ConfirmationDialogBoxView:init (registry, scenegraph, attachTo)
 	local windowW = love.graphics:getWidth()
 	local windowH = love.graphics:getHeight()
 
-	local gray_out = registry:add(GameObject:new("mmv_grayout", {
+	local gray_out = registry:make("mmv_grayout", {
 		Transform:new(0,0),
 		Renderable:new(
 			Polygon:new({w = windowW, h = windowH}),
@@ -57,7 +57,7 @@ function ConfirmationDialogBoxView:init (registry, scenegraph, attachTo)
 		Interfaceable:new(
 			Polygon:new({w = windowW, h = windowH}),
 			Block_Below_Delegate)
-	}))
+	})
 	
 	local panelW = 300
 	local panelH = 170
@@ -68,28 +68,28 @@ function ConfirmationDialogBoxView:init (registry, scenegraph, attachTo)
 	local btnH = 40
 	local btnW = (subPanelW - margin)/ 2 
 
-	local bg_rect = registry:add(GameObject:new("qcpv_bg_rect", {
+	local bg_rect = registry:make("qcpv_bg_rect", {
 		Transform:new(panelX,panelY),
 		Renderable:new(
 			Polygon:new({w = panelW, h = panelH}),
 			nil,
 			{64, 128, 128,200}),
-		}))
+		})
 
 	local text_panelH = panelH - 3 * margin - btnH
 
-	local text_panel = registry:add(GameObject:new("cdbv_text_panel",{
+	local text_panel = registry:make("cdbv_text_panel",{
 		Transform:new(margin, margin),
 		Renderable:new(
 			Polygon:new({w = subPanelW, h = text_panelH}),
 			nil,
 			{100,200,200},
 			"Are you Sure?")
-		}))
+		})
 
 	local buttonY = panelH - margin - btnH
 
-	local confirm_btn = registry:add(GameObject:new("cdbv_confirm_btn",{
+	local confirm_btn = registry:make("cdbv_confirm_btn",{
 		Transform:new(margin, buttonY),
 		Renderable:new(
 			Polygon:new({w = btnW, h = btnH}),
@@ -99,11 +99,11 @@ function ConfirmationDialogBoxView:init (registry, scenegraph, attachTo)
 		Interfaceable:new(
 			Polygon:new({w = btnW, h = btnH}),
 			confirm_button_handler)
-		}))
+		})
 
 	local cancel_btnX = btnW + 2 * margin
 
-	local cancel_btn = registry:add(GameObject:new("cdbv_cancel_btn",{
+	local cancel_btn = registry:make("cdbv_cancel_btn",{
 		Transform:new(cancel_btnX, buttonY),
 		Renderable:new(
 			Polygon:new({w = btnW, h = btnH}),
@@ -113,7 +113,7 @@ function ConfirmationDialogBoxView:init (registry, scenegraph, attachTo)
 		Interfaceable:new(
 			Polygon:new({w = btnW, h = btnH}),
 			cancel_button_handler)
-		}))
+		})
 
 	self.scenegraph:attach(self.root, nil)
 	self.scenegraph:attach(gray_out, self.root)
