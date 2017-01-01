@@ -138,8 +138,8 @@ end
 function RenderableSystem:drawHeirarchy ( root, big_list )
 	--Pop the coordinate system
 	local delta
-	if root:hasComponent('Transform') then
-		delta = root:getComponent('Transform')
+	if self.registry:get(root, "Transform") then
+		delta = self.registry:get(root, "Transform")
 		if delta.x == 0 and delta.y == 0 then
 			delta = nil
 		else
@@ -151,7 +151,7 @@ function RenderableSystem:drawHeirarchy ( root, big_list )
 
 	--Do draw
 	--Renderable
-	local renderable = root:getComponent('Renderable')
+	local renderable = self.registry:get(root, 'Renderable')
 	if renderable ~= nil then
 		if renderable.render ~= nil then
 			if renderable.render.rtype == "sprite" then
@@ -184,8 +184,8 @@ function RenderableSystem:drawHeirarchy ( root, big_list )
 	table.insert(big_list, renderable )
 
 	--Draw children
-	for i, gid in ipairs(self.targetCollection:getChildren(root.uid)) do
-		self:drawHeirarchy(self.registry:get(gid), big_list)
+	for i, gid in ipairs(self.targetCollection:getChildren(root)) do
+		self:drawHeirarchy(gid, big_list)
 	end
 
 	--Unpop the coordinate system
@@ -200,7 +200,7 @@ end
 
 function RenderableSystem:draw ()
 	if self.cache == nil or self.dirty > 3 then
-		self.cache = self:drawHeirarchy(self.registry:get(self.targetCollection:getRoot()), {})
+		self.cache = self:drawHeirarchy(self.targetCollection:getRoot(), {})
 		self.dirty = 0
 	end
 
