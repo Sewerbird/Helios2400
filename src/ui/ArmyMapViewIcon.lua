@@ -15,15 +15,26 @@ local ArmyMapViewIcon = class("ArmyMapViewIcon",{
 })
 
 function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
-      local gameinfo = registry:getComponent(gamestate, "GameInfo")
-      local playerinfo = registry:findComponent("GameInfo", {player_name = gameinfo.owner})
+      local gameinfo = registry:get(gamestate, "GameInfo")
+      local playerinfo = registry:find("GameInfo", {player_name = gameinfo.owner})
       local Unit_Touch_Delegate = TouchDelegate:new()
       Unit_Touch_Delegate:setHandler('onTouch', function(this, x, y)
-					registry:publish("selectIcon",{uid = this.component.gob.uid, address = registry:get(this.component:getSiblingComponent('Stateful').ref):getComponent("GameInfo").address, gamestate = gamestate, icon_type = 'army'})
-					registry:publish("selectArmy",{uid = this.component.gob.uid, address = registry:get(this.component:getSiblingComponent('Stateful').ref):getComponent("GameInfo").address, gamestate = gamestate, icon_type = 'army'})
+					registry:publish("selectIcon",
+            {
+              uid = this.component.gid, 
+              address = registry:get(registry:get(this.component.gid,'Stateful').ref, 'GameInfo').address, 
+              gamestate = gamestate, 
+              icon_type = 'army'})
+
+          registry:publish("selectArmy",
+            {
+              uid = this.component.gid, 
+              address = registry:get(registry:get(this.component.gid,'Stateful').ref, 'GameInfo').address, 
+              gamestate = gamestate, 
+              icon_type = 'army'})
 					return true
       end)
-      debug_army = registry:add(GameObject:new('Army', {
+      debug_army = registry:make('Army', {
         Transform:new(
           gameinfo.worldspace_coord[1], 
           gameinfo.worldspace_coord[2]
@@ -36,38 +47,38 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
           Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73, 0,37}),
           Unit_Touch_Delegate),
         Stateful:new(gamestate)
-      }))
-      debug_army_bg = registry:add(GameObject:new('Army_BG', {
+      })
+      debug_army_bg = registry:make('Army_BG', {
         Transform:new((84-50)/2, (73-50)/2),
         Renderable:new(
           Polygon:new({ w = 50, h = 50}),
           nil,
           playerinfo.midtone_color
           ):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
-            local new_playerinfo = registry:findComponent("GameInfo", {player_name = msg.owner})
+            local new_playerinfo = registry:find("GameInfo", {player_name = msg.owner})
             if new_playerinfo then cmp.backgroundcolor = new_playerinfo.midtone_color end
         end),
         Stateful:new(gamestate)
-      }))
-      debug_army_bg_shadow = registry:add(GameObject:new('Army_BGb', {
+      })
+      debug_army_bg_shadow = registry:make('Army_BGb', {
         Transform:new(0, 0),
         Renderable:new(
           Polygon:new({0,0 , 3,3 , 3,45 , 45,45 , 50,50 , 0,50}),
           nil,
           playerinfo.shadow_color):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
-            local new_playerinfo = registry:findComponent("GameInfo", {player_name = msg.owner})
+            local new_playerinfo = registry:find("GameInfo", {player_name = msg.owner})
             if new_playerinfo then cmp.backgroundcolor = new_playerinfo.shadow_color end
         end),
         Stateful:new(gamestate)
-      }))
-      debug_army_sprite = registry:add(GameObject:new('Troop', {
+      })
+      debug_army_sprite = registry:make('Troop', {
         Transform:new(12,12),
         Renderable:new(
           Polygon:new({ w = 25, h = 30 }),
           Global.Assets:getAsset(gameinfo.icon_sprite)),
         Stateful:new(gamestate)
-      }))
-      debug_army_name = registry:add(GameObject:new('Name', {
+      })
+      debug_army_name = registry:make('Name', {
         Transform:new(-3,0),
         Renderable:new(
           nil,
@@ -77,22 +88,22 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
             cmp.text = msg.army_name
         end),
         Stateful:new(gamestate)
-      }))
-      debug_army_health = registry:add(GameObject:new('HealthBar', {
+      })
+      debug_army_health = registry:make('HealthBar', {
         Transform:new(0,45),
         Renderable:new(
           Polygon:new({ w = 50 * (gameinfo.curr_hp / gameinfo.max_hp), h=5}),
           nil,
           playerinfo.highlight_color):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
-            local new_playerinfo = registry:findComponent("GameInfo", {player_name = msg.owner})
+            local new_playerinfo = registry:find("GameInfo", {player_name = msg.owner})
             if new_playerinfo then 
               cmp.backgroundcolor = new_playerinfo.highlight_color 
               cmp.polygon = Polygon:new({w = 50 * (msg.curr_hp / msg.max_hp), h = 5})
             end
         end),
         Stateful:new(gamestate)
-      }))
-      debug_army_moves = registry:add(GameObject:new('MovePointsCounter', {
+      })
+      debug_army_moves = registry:make('MovePointsCounter', {
         Transform:new(0,33),
         Renderable:new(
           Polygon:new({ w = 12, h = 12 }),
@@ -100,7 +111,7 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
           {10,10,10},
           gameinfo.curr_move
           ):bindTo(gamestate .. "_GameInfo", function(this, cmp, msg) 
-          cmp.text = registry:getComponent(gamestate,"GameInfo").curr_move
+          cmp.text = registry:get(gamestate,"GameInfo").curr_move
           if cmp.text <= 0 then
             cmp.text = ""
             cmp.polygon = Polygon:new({0,-33 , 50,-33 , 50,12 , 0,12})
@@ -114,7 +125,7 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
           end
         end),
         Stateful:new(gamestate)
-      }))
+      })
       scenegraph:attach(debug_army,nil)
       scenegraph:attach(debug_army_bg, debug_army)
       scenegraph:attachAll({debug_army_bg_shadow, debug_army_sprite, debug_army_name, debug_army_health, debug_army_moves}, debug_army_bg)

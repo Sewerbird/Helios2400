@@ -26,14 +26,13 @@ function InterfaceableSystem:onKeypress ( key )
 end
 
 function InterfaceableSystem:propogateEvent ( iobj, func, x, y, dx, dy, btn )
-	local transform = nil
+	local transform = self.registry:get(iobj,'Transform')
+	local inter = self.registry:get(iobj,'Interfaceable')
 	local l_x = x
 	local l_y = y
 	local has_consumed = false
-	local obj = self.registry:get(iobj)
 	--Push transform
-	if obj:hasComponent('Transform') then
-		transform = obj:getComponent('Transform')
+	if transform then
 		l_x = x - transform.x
 		l_y = y - transform.y
 	end
@@ -46,13 +45,12 @@ function InterfaceableSystem:propogateEvent ( iobj, func, x, y, dx, dy, btn )
 		if has_consumed then return true end
 	end
 	--Execute on self
-	if obj:hasComponent('Interfaceable') then
-		local inter = obj:getComponent('Interfaceable')
+	if inter then
 		if inter[func] ~= nil and (func == 'onKeypress' or inter.polygon:containsPoint(tl_x,l_y)) then
 			if func == 'onKeypress' then
 				has_consumed = inter[func](inter, btn)
 			else
-				has_consumed = inter[func](inter,x,y,dx,dy,btn)
+				has_consumed = inter[func](inter,tl_x,l_y,dx,dy,btn)
 			end
 			if has_consumed then return true end
 		end

@@ -76,23 +76,26 @@ function Loader:debugLoad (save)
   local desiredMap = "Space"
   for key, obj in ipairs(debug_gamestate.index) do
     local tgt = debug_gamestate:get(key,"GameInfo")
-    if obj.description == 'gsHex' then
-      if tgt.map == 'Earth' then
-        table.insert(Earth_Tiles, TileMapViewIcon:new(debug_gamestate,EarthSceneGraph,Earth_Map,key))
-      elseif tgt.map == 'Space' then
-        table.insert(Space_Tiles, TileMapViewIcon:new(debug_gamestate,SpaceSceneGraph,Space_Map,key))
-      end
-    elseif obj.description == 'gsCity' then
-      if tgt.map == 'Earth' then
-        table.insert(Earth_Cities, CityMapViewIcon:new(debug_gamestate,EarthSceneGraph,Earth_Map,key))
-      elseif tgt.map == 'Space' then
-        table.insert(Space_Cities, CityMapViewIcon:new(debug_gamestate,SpaceSceneGraph,Space_Map,key))
-      end
-    elseif obj.description == 'gsArmy' then
-      if tgt.map == 'Earth' then
-        table.insert(Earth_Units, ArmyMapViewIcon:new(debug_gamestate,EarthSceneGraph,key))
-      elseif tgt.map == 'Space' then
-        table.insert(Space_Units, ArmyMapViewIcon:new(debug_gamestate,SpaceSceneGraph,key))
+    if tgt then
+      if tgt.gs_type == 'tile' then
+        print('found a hex')
+        if tgt.map == 'Earth' then
+          table.insert(Earth_Tiles, TileMapViewIcon:new(debug_gamestate,EarthSceneGraph,Earth_Map,key))
+        elseif tgt.map == 'Space' then
+          table.insert(Space_Tiles, TileMapViewIcon:new(debug_gamestate,SpaceSceneGraph,Space_Map,key))
+        end
+      elseif tgt.gs_type == 'city' then
+        if tgt.map == 'Earth' then
+          table.insert(Earth_Cities, CityMapViewIcon:new(debug_gamestate,EarthSceneGraph,Earth_Map,key))
+        elseif tgt.map == 'Space' then
+          table.insert(Space_Cities, CityMapViewIcon:new(debug_gamestate,SpaceSceneGraph,Space_Map,key))
+        end
+      elseif tgt.gs_type == 'army' then
+        if tgt.map == 'Earth' then
+          table.insert(Earth_Units, ArmyMapViewIcon:new(debug_gamestate,EarthSceneGraph,key))
+        elseif tgt.map == 'Space' then
+          table.insert(Space_Units, ArmyMapViewIcon:new(debug_gamestate,SpaceSceneGraph,key))
+        end
       end
     end
   end

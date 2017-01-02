@@ -14,13 +14,18 @@ local CityMapViewIcon = class("CityMapViewIcon", {
 })
 
 function CityMapViewIcon:init(registry, scenegraph, map, gamestate)
-	local gameinfo = registry:get(gamestate):getComponent("GameInfo")
-    local playerinfo = registry:findComponent("GameInfo", {player_name = gameinfo.owner})
+	local gameinfo = registry:get(gamestate, "GameInfo")
+    local playerinfo = registry:find("GameInfo", {player_name = gameinfo.owner})
 	local City_Touch_Delegate = TouchDelegate:new()
 	City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
-		registry:publish("selectCity",{uid = this.component.gob.uid, address = registry:get(this.component:getSiblingComponent('Stateful').ref):getComponent("GameInfo").address, map = map, gamestate = gamestate, icon_type = 'city'})	
+		registry:publish("selectCity",{
+			uid = this.component.gid, 
+			address = registry:get(registry:get(this.component.gid, 'Stateful').ref, "GameInfo").address, 
+			map = map, 
+			gamestate = gamestate, 
+			icon_type = 'city'})	
 	end)
-	debug_city = registry:add(GameObject:new('City', {
+	debug_city = registry:make('City', {
 		Transform:new(gameinfo.worldspace_coord[1],gameinfo.worldspace_coord[2]),
 		Interfaceable:new(
 			Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37}),
@@ -30,8 +35,8 @@ function CityMapViewIcon:init(registry, scenegraph, map, gamestate)
 			Global.Assets:getAsset(gameinfo.icon_sprite)
 			),
 		Stateful:new(gamestate)
-	}))
-	debug_city_label = registry:add(GameObject:new('Name', {
+	})
+	debug_city_label = registry:make('Name', {
 		Transform:new(0,60),
 		Renderable:new(
 			Polygon:new({ w=84, h=13 }),
@@ -39,11 +44,11 @@ function CityMapViewIcon:init(registry, scenegraph, map, gamestate)
 			playerinfo and playerinfo.midtone_color or {120,120,200,200},
 			gameinfo.city_name
 		):bindTo(gamestate .. "_GameInfo", function (this, cmp, msg)
-            local new_playerinfo = registry:findComponent("GameInfo", {player_name = msg.owner, gs_type = "player"})
+            local new_playerinfo = registry:find("GameInfo", {player_name = msg.owner, gs_type = "player"})
             if new_playerinfo then cmp.backgroundcolor = new_playerinfo.midtone_color end
         end),
 		Stateful:new(gamestate)
-	}))
+	})
 	scenegraph:attach(debug_city, nil)
 	scenegraph:attach(debug_city_label, debug_city)
 

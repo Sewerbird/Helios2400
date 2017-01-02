@@ -26,7 +26,7 @@ end
 
 function GameInfo:reify ( registry, string )
 	local exo = Tserial.unpack(string,true)
-	return registry:make('TODO:fill this in the reify',{GameInfo:new(exo)})
+	return registry:make(exo.description,{GameInfo:new(exo)})
 end
 
 

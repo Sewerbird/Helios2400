@@ -3,7 +3,7 @@ local Component = require 'src/Component'
 local Interfaceable = Component:extend("Interfaceable", {
 	name = "Interfaceable",
 	delegate = nil,
-	transform = nil,
+	--transform = nil,
 	polygon = nil,
 	current = nil
 })
@@ -21,34 +21,28 @@ end
 
 function Interfaceable:onAdd ( parent )
 	Interfaceable.super.onAdd(self, parent)
-	self.transform = self:getSiblingComponent('Transform')
+	--self.transform = self:getSiblingComponent('Transform')
 end
 
 function Interfaceable:receivesTouch ( x, y )
-	if self.polygon:containsPoint(x - self.transform.x, y - self.transform.y) then
-		return true
-	end
-	return false
+	return self.polygon:containsPoint( x, y ) 
+	--return self.polygon:containsPoint(x - self.transform.x, y - self.transform.y)
 end
 
 function Interfaceable:onTouch ( x, y )
-	if not self:receivesTouch(x,y) then return false end
-	return self.delegate:onTouch(x - self.transform.x, y - self.transform.y)
+	return self.polygon:containsPoint( x, y ) and self.delegate:onTouch(x, y) or false
 end
 
 function Interfaceable:onDrag ( x, y, dx, dy )
-	if not self:receivesTouch(x,y) then return false end
-	return self.delegate:onDrag(x - self.transform.x, y - self.transform.y, dx, dy)
+	return self.polygon:containsPoint( x, y ) and self.delegate:onDrag(x, y, dx, dy) or false
 end
 
 function Interfaceable:onHover ( x, y )
-	if not self:receivesTouch(x,y) then return false end
-	return self.delegate:onHover(x - self.transform.x, y - self.transform.y)
+	return self.polygon:containsPoint( x, y ) and self.delegate:onHover(x, y) or false
 end
 
 function Interfaceable:onUntouch ( x, y )
-	if not self:receivesTouch(x,y) then return false end
-	return self.delegate:onUntouch(x - self.transform.x, y - self.transform.y)
+	return self.polygon:containsPoint( x, y ) and self.delegate:onUntouch(x, y) or false
 end
 
 function Interfaceable:onKeypress ( key )
