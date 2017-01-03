@@ -16,12 +16,12 @@ end
 
 function StartTurnMutator:apply ( registry )
 
-	local new_player = registry:findComponent("GameInfo",{gs_type="player", player_name=self.new_player})
+	local new_player = registry:find("GameInfo",{gs_type="player", player_name=self.new_player})
 	local turn_income = 0
 	local playerControlsByzantium = false
 	local playerHasWonTheGame = false
 	local byzantium = nil
-	for i, city in ipairs(registry:findComponents("GameInfo", {gs_type="city", owner=self.new_player})) do
+	for i, city in ipairs(registry:findAll("GameInfo", {gs_type="city", owner=self.new_player})) do
 
 		--Check the Win Condition
 		city.turns_owned[self.new_player] = city.turns_owned[self.new_player] and city.turns_owned[self.new_player] + 1 or 1
@@ -59,7 +59,7 @@ function StartTurnMutator:apply ( registry )
 
 	--Refresh all Players' units' movement budgets
 	local turn_upkeep = 0
-	for i, army in ipairs(registry:findComponents("GameInfo", {gs_type="army", owner=self.new_player})) do
+	for i, army in ipairs(registry:findAll("GameInfo", {gs_type="army", owner=self.new_player})) do
 		army.curr_move = army.max_move
 		registry:publish(army.gid .. "_GameInfo", army)
 		turn_upkeep = turn_upkeep + 1

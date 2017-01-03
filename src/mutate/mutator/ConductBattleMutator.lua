@@ -16,8 +16,8 @@ function ConductBattleMutator:init ( attacker, defender )
 end
 
 function ConductBattleMutator:apply ( registry )
-	local attacker = registry:getComponent(self.attacker, "GameInfo")
-	local defender = registry:getComponent(self.defender, "GameInfo")
+	local attacker = registry:get(self.attacker, "GameInfo")
+	local defender = registry:get(self.defender, "GameInfo")
 
 	local phase_order = {'ewar','indirect','direct','close'}
 	local combat_finished = false
@@ -29,8 +29,8 @@ function ConductBattleMutator:apply ( registry )
 			DamageArmyMutator:new(self.attacker, attacker_casualties):apply(registry)
 			DamageArmyMutator:new(self.defender, defender_casualties):apply(registry)
 
-			attacker = registry:getComponent(self.attacker, "GameInfo")
-			defender = registry:getComponent(self.defender, "GameInfo")
+			attacker = registry:get(self.attacker, "GameInfo")
+			defender = registry:get(self.defender, "GameInfo")
 
 			if attacker.is_destroyed or defender.is_destroyed then
 				combat_finished = true

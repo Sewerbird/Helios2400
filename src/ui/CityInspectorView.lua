@@ -34,15 +34,15 @@ function CityInspectorView:show ( attachTo, city )
         self.scenegraph:attach(self.root, attachTo)
 		self.is_attached = true
 
-        local cityInfo = self.registry:get(city.gamestate):getComponent("GameInfo")
-        local currentPlayerInfo = self.registry:findComponent("GameInfo",{gs_type = "player", is_current = true})
-        local cityPlayerInfo = self.registry:findComponent("GameInfo",{gs_type = "player", player_name = cityInfo.owner})
+        local cityInfo = self.registry:get(city.gamestate, "GameInfo")
+        local currentPlayerInfo = self.registry:find("GameInfo",{gs_type = "player", is_current = true})
+        local cityPlayerInfo = self.registry:find("GameInfo",{gs_type = "player", player_name = cityInfo.owner})
         self.summary_card:show( currentPlayerInfo, cityPlayerInfo, cityInfo )
 
         self.citySubscription = self.registry:subscribe(city.gamestate .. "_GameInfo", function(this,msg)
-            local cityInfo = self.registry:get(city.gamestate):getComponent("GameInfo")
-            local currentPlayerInfo = self.registry:findComponent("GameInfo",{gs_type = "player", is_current = true})
-            local cityPlayerInfo = self.registry:findComponent("GameInfo",{gs_type = "player", player_name = cityInfo.owner})
+            local cityInfo = self.registry:get(city.gamestate,"GameInfo")
+            local currentPlayerInfo = self.registry:find("GameInfo",{gs_type = "player", is_current = true})
+            local cityPlayerInfo = self.registry:find("GameInfo",{gs_type = "player", player_name = cityInfo.owner})
             self.summary_card:show(currentPlayerInfo, cityPlayerInfo, cityInfo)
         end)
     else

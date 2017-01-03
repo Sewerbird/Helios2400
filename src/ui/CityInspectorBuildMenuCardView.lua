@@ -14,9 +14,9 @@ local CityInspectorBuildMenuCardView = class("CityInspectorBuildMenuCardView", {
 })
 
 function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player, onChoose)
-    self.root = registry:add(GameObject:new("civScard", {
+    self.root = registry:make("civScard", {
         Transform:new(0,0)
-    }))
+    })
 
     self.registry = registry
     self.scenegraph = scenegraph
@@ -34,7 +34,7 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
 
     --[[Components]]--
 
-    self.inset = registry:add(GameObject:new("cibmc_inset",{
+    self.inset = registry:make("cibmc_inset",{
         Transform:new(0,0),
         Renderable:new(
             Polygon:new({10,10 , 40,10 , 60,30 , 180,30 , 200,10 , 230,10 , 230,150 , 10,150}),
@@ -45,33 +45,33 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
             Polygon:new({10,10 , 40,10 , 60,30 , 180,30 , 200,10 , 230,10 , 230,150 , 10,150}),
             bg_click_interceptor
             )
-        }))
-    self.instruct_rect = registry:add(GameObject:new("cibmc_instruction",{
+        })
+    self.instruct_rect = registry:make("cibmc_instruction",{
         Transform:new(10,30),
         Renderable:new(
             Polygon:new({w = 220, h = 15}),
             nil,
             nil,
             "Choose a Unit To Build")
-        }))
+        })
 
-    self.choose_rect = registry:add(GameObject:new("cibmc_choose_rect",{
+    self.choose_rect = registry:make("cibmc_choose_rect",{
         Transform:new(10,45),
         Renderable:new(
             Polygon:new({w = 220, h = 105}),
             nil,
             {255,255,255,25} --TODO: player highlight color
             )
-        }))
-    self.money_rect = registry:add(GameObject:new("cibmc_money_rect",{
+        })
+    self.money_rect = registry:make("cibmc_money_rect",{
         Transform:new(0,0),
         Renderable:new(
             Polygon:new({10,10 , 40,10 , 60,30 , 10,30}),
             nil,
             {0,200,100},
             "$"..player.cash_balance)
-        }))
-    self.exit_rect = registry:add(GameObject:new("cibmc_exit_rect",{
+        })
+    self.exit_rect = registry:make("cibmc_exit_rect",{
         Transform:new(200,10),
         Renderable:new(
             Polygon:new({0,0 , 30,0 , 30,20 , -20,20}),
@@ -81,7 +81,7 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
         Interfaceable:new(
             Polygon:new({0,0 , 30,0 , 30,20 , -20,20}),
             self.exit_button_handler)
-        }))
+        })
 
 
     scenegraph:attach(self.root,nil)
@@ -107,7 +107,7 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
                     print("Not enough cash, honey")
                 end
             end)
-            self["slot_" .. row .. "_" .. col] = registry:add(GameObject:new("cibmc_slot",{
+            self["slot_" .. row .. "_" .. col] = registry:make("cibmc_slot",{
                 Transform:new( (col-1)*55 + 2, (row-1)*51 +2),
                 Renderable:new(
                     Polygon:new({w = 50, h = 50}),
@@ -117,16 +117,16 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
                 Interfaceable:new(
                     Polygon:new({w = 50, h = 50}),
                     select_this_one)
-            }))
-            self["slot_" .. row .. "_" .. col .. "_img"] = registry:add(GameObject:new("cibmc_slot_img",{
+            })
+            self["slot_" .. row .. "_" .. col .. "_img"] = registry:make("cibmc_slot_img",{
                 Transform:new(12,5),
                 Renderable:new(
                     Polygon:new({w = 25, h = 30}),
                     (spec and Global.Assets:getAsset(spec.icon_sprite)) or nil,
                     {255,255,255,25}
                     )
-            }))
-            self["slot_" .. row .. "_" .. col .. "_cost"] = registry:add(GameObject:new("cibmc_slot_cost",{
+            })
+            self["slot_" .. row .. "_" .. col .. "_cost"] = registry:make("cibmc_slot_cost",{
                 Transform:new(0,35),
                 Renderable:new(
                     Polygon:new({w = 50, h = 15}),
@@ -134,15 +134,15 @@ function CityInspectorBuildMenuCardView:init (registry, scenegraph, city, player
                     player.cash_balance >= (spec and spec.base_cash_cost or 0) and {200,255,200,100} or {255,200,200,100},
                     spec and spec.base_cash_cost or ""
                     )
-            }))
-            self["slot_" .. row .. "_" .. col .. "_grayout"] = registry:add(GameObject:new("cibmc_slot_grayout",{
+            })
+            self["slot_" .. row .. "_" .. col .. "_grayout"] = registry:make("cibmc_slot_grayout",{
                 Transform:new(0,0),
                 Renderable:new(
                     Polygon:new({w = 50, h = 50}),
                     nil,
                     {0,0,0,64}
                     )
-            }))
+            })
             scenegraph:attach(self["slot_" .. row .. "_" .. col],self.choose_rect)
             scenegraph:attach(self["slot_" .. row .. "_" .. col .. "_cost"], self["slot_" .. row .. "_" .. col])
  

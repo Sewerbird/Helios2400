@@ -117,7 +117,7 @@ function ConfirmActionDialog:refresh(text, ok_cb, no_cb)
 		no_cb()
 		self:hide()
 	end)
-	self.registry:getComponent(self.bg_rect, "Renderable").text = text
+	self.registry:get(self.bg_rect, "Renderable").text = text
 end
 
 

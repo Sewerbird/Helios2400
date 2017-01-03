@@ -74,7 +74,7 @@ function Loader:debugLoad (save)
   Space_Map:load(debug_gamestate,'Space');
 
   local desiredMap = "Space"
-  for key, obj in ipairs(debug_gamestate.index) do
+  for key, obj in pairs(debug_gamestate.index) do
     local tgt = debug_gamestate:get(key,"GameInfo")
     if tgt then
       if tgt.gs_type == 'tile' then

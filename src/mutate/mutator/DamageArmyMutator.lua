@@ -14,7 +14,7 @@ function DamageArmyMutator:init ( damagedArmy, damageInflicted)
 end
 
 function DamageArmyMutator:apply ( registry )
-	local damaged = registry:getComponent(self.target,"GameInfo")
+	local damaged = registry:get(self.target,"GameInfo")
 	damaged.curr_hp = damaged.curr_hp - self.damage
 	if damaged.curr_hp <= 0 then
 		damaged.is_destroyed = true
@@ -24,7 +24,7 @@ function DamageArmyMutator:apply ( registry )
 end
 
 function DamageArmyMutator:rollback ( registry )
-	local damaged = registry:getComponent(self.target,"GameInfo")
+	local damaged = registry:get(self.target,"GameInfo")
 	damaged.curr_hp = damaged.curr_hp + self.damage
 	if damaged.curr_hp > 0 then
 		damaged.is_destroyed = nil

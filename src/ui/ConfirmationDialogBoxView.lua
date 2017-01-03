@@ -129,7 +129,7 @@ end
 
 function ConfirmationDialogBoxView:show ( attachTo, text )
 	if not self.is_attached then
-		self.registry:get(self.text_panel):getComponent("Renderable").text = text
+		self.registry:get(self.text_panel, "Renderable").text = text
 		self.scenegraph:attach(self.root, attachTo)
 		self.is_attached = true
 	end

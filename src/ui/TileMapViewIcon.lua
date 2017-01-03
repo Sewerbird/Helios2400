@@ -19,7 +19,7 @@ function TileMapViewIcon:init (registry, scenegraph, map, gamestate)
 	Hex_Touch_Delegate:setHandler('onTouch', function(this, x, y)
 		registry:publish("selectIcon",{
 			uid = this.component.gid, 
-			address = registry:get(registry:get(this.component.gid,'Stateful').ref,"GameInfo").address, 
+			address = registry:get(this.component.gid,'Stateful.ref.GameInfo.address'), 
 			gamestate = gamestate, 
 			icon_type = 'tile'})
 		--registry:publish("moveTo",{uid = this.component.gob.uid, address = addr})
@@ -33,7 +33,7 @@ function TileMapViewIcon:init (registry, scenegraph, map, gamestate)
 			Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 			Global.Assets:getAsset(gameinfo.terrain_sprite)
 			),
-		Stateful:new(gamestate)
+		Stateful:new(gamestate, 'GameInfo')
 	})
 	if gameinfo.decorations then
 		scenegraph:attach(self.root, nil)

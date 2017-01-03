@@ -68,8 +68,8 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
 
   local Map_View_Touch_Delegate = TouchDelegate:new()
   Map_View_Touch_Delegate:setHandler('onDrag', function(this, x,y,dx,dy)
-    if not Main_Menu_View.is_attached and registry:get(Map_Layer):hasComponent('Transform') then
-      local t = registry:get(Map_Layer):getComponent('Transform')
+    if not Main_Menu_View.is_attached and registry:get(Map_Layer, 'Transform') then
+      local t = registry:get(Map_Layer, 'Transform')
       t:translateWithBounds(dx,dy,nil,{-74 * 3.5,0}) -- temp fix, 3.5 needs to be 1.5
     end
   end)
@@ -111,7 +111,7 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
 
   registry:subscribe("selectCity", function(this, msg)
     if msg.icon_type == 'city' then
-      print('Show city inspector for ' .. inspect(msg.address.address))
+      print('Show city inspector for ' .. inspect(msg))
       City_Inspector_View:hide()
       City_Inspector_View:show(Inspector_City_Anchor,msg)
     end
@@ -133,7 +133,7 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
   end)
 
   registry:subscribe(Quick_Command_Panel_View.root .. ":startTurnRequest", function(this, msg)
-    Turn_Start_View:show(UI_Layer, self.registry:findComponent("GameInfo",{gs_type="player", is_current=true}))
+    Turn_Start_View:show(UI_Layer, self.registry:find("GameInfo",{gs_type="player", is_current=true}))
   end)
 
   registry:subscribe(Quick_Command_Panel_View.root .. ":endTurnRequest", function(this, msg)

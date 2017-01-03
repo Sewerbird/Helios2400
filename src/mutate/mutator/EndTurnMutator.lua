@@ -16,11 +16,11 @@ end
 function EndTurnMutator:apply ( registry )
 
 	--Update gsPlayer objects: set only the new player to 'current'
-	local old_player = registry:findComponent("GameInfo",{gs_type="player", player_name=self.old_player})
-	for i, player in ipairs(registry:findComponents("GameInfo", {gs_type="player"})) do
+	local old_player = registry:find("GameInfo",{gs_type="player", player_name=self.old_player})
+	for i, player in ipairs(registry:find("GameInfo", {gs_type="player"})) do
 		player.is_current = false
 	end
-	local new_player = registry:findComponent("GameInfo",{gs_type="player", player_name=self.new_player})
+	local new_player = registry:find("GameInfo",{gs_type="player", player_name=self.new_player})
 	new_player.is_current = true
 
 	registry:publish("endTurn",old_player)

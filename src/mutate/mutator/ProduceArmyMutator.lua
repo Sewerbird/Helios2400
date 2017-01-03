@@ -15,7 +15,7 @@ function ProduceArmyMutator:init ( unit_spec, target_address )
 end
 
 function ProduceArmyMutator:apply ( registry )
-	local producing_city = registry:findComponent("GameInfo", {address = self.target_address, gs_type = "city"})
+	local producing_city = registry:find("GameInfo", {address = self.target_address, gs_type = "city"})
 	print("Placing unit at world coords " .. inspect(producing_city.worldspace_coord) .. " at city named " .. producing_city.city_name)
 	local army_info = self.unit_spec
     army_info.gs_type = "army"
@@ -28,10 +28,10 @@ function ProduceArmyMutator:apply ( registry )
     army_info.curr_hp = army_info.max_hp
     army_info.curr_move = army_info.max_move
 
-    self.produced_unit = registry:add(GameObject:new('gsArmy',{GameInfo:new(army_info)})) or nil
+    self.produced_unit = registry:make('gsArmy',{GameInfo:new(army_info)}) or nil
 
     registry:publish("placeArmy", {map = army_info.map, unit = self.produced_unit})
-	registry:publish(producing_city.gob.uid .. '_GameInfo', producing_city)
+	registry:publish(producing_city.gid .. '_GameInfo', producing_city)
 end
 
 function ProduceArmyMutator:rollback ( registry )

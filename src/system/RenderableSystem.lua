@@ -26,7 +26,7 @@ end
 function RenderableSystem:update( dt )
 
 	local function updateHeirarchy ( root , dt)
-		local renderable = root:getComponent('Renderable')
+		local renderable = self.registry:get(root,'Renderable')
 		if renderable ~= nil then
 			if renderable.render ~= nil then
 				if renderable.render.rtype == "animation" then
@@ -37,11 +37,11 @@ function RenderableSystem:update( dt )
 
 		--Update children
 		for i, gid in ipairs(self.targetCollection:getChildren(root.uid)) do
-			updateHeirarchy(self.registry:get(gid), dt)
+			updateHeirarchy(gid, dt)
 		end
 	end
 
-	updateHeirarchy(self.registry:get(self.targetCollection:getRoot()), dt)
+	updateHeirarchy(self.targetCollection:getRoot(), dt)
 
 end
 
@@ -135,7 +135,7 @@ function RenderableSystem:getScreenWidthOffsets(renderable)
 	return math.ceil(tx/ self.planet_width)
 end
 
-function RenderableSystem:drawHeirarchy ( root, big_list )
+function RenderableSystem:getRenderSet (root, big_list)
 	--Pop the coordinate system
 	local delta
 	if self.registry:get(root, "Transform") then
@@ -148,67 +148,34 @@ function RenderableSystem:drawHeirarchy ( root, big_list )
 			love.graphics.translate(delta.x, delta.y)
 		end
 	end
-
-	--Do draw
-	--Renderable
+	--Add self to render set
 	local renderable = self.registry:get(root, 'Renderable')
-	if renderable ~= nil then
-		if renderable.render ~= nil then
-			if renderable.render.rtype == "sprite" then
-				love.graphics.draw(renderable.render.img, renderable.render.quad)
-			elseif renderable.render.rtype == "animation" then
-				renderable.render.ani:draw(renderable.render.sprite)
-			end
-		elseif renderable.polygon ~= nil then
-			local r, g, b, a = love.graphics.getColor()
-			love.graphics.setColor(renderable.backgroundcolor)
-			love.graphics.setLineWidth(3)
-			local tris = love.math.triangulate(renderable.polygon.vertices)
-			for i, v in ipairs(tris) do
-				love.graphics.polygon('fill', v)
-			end
-			love.graphics.setColor({r,g,b,a})
-		end
-		if renderable.text ~= nil then
-			if renderable.polygon then
-				love.graphics.printf(renderable.text,
-					renderable.polygon.vertices[1], 
-					renderable.polygon.vertices[2], 
-					renderable.polygon.vertices[3],'center')
-			else
-				love.graphics.print(renderable.text)
-			end
-		end
+	if renderable then
+		table.insert(big_list, renderable )
 	end
-
-	table.insert(big_list, renderable )
-
-	--Draw children
+	--Add children to render set
 	for i, gid in ipairs(self.targetCollection:getChildren(root)) do
-		self:drawHeirarchy(gid, big_list)
+		self:getRenderSet(gid, big_list)
 	end
-
 	--Unpop the coordinate system
 	if delta ~= nil then 
 		love.graphics.pop() 
 		table.insert(big_list, {r = "PLZ_POP", t = "PLOXPOPIT"})
 	end
 
-
 	return big_list
 end
 
 function RenderableSystem:draw ()
-	--if self.cache == nil or self.dirty > 3 then
-		--self.cache = 
-		self:drawHeirarchy(self.targetCollection:getRoot(), {})
-	--	self.dirty = 0
-	--end
+	if self.cache == nil or self.dirty > 3 then
+		self.cache = self:getRenderSet(self.targetCollection:getRoot(),{})
+		self.dirty = 0
+	end
 
-	--for i = 1, #self.cache do
-	--	self:renderComponent(self.cache[i])
-	--end
-	--self.dirty = self.dirty + 1
+	for i = 1, #self.cache do
+		self:renderComponent(self.cache[i])
+	end
+	self.dirty = self.dirty + 1
 end
 
 return RenderableSystem

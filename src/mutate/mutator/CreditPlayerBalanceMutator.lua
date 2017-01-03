@@ -16,8 +16,8 @@ end
 function CreditPlayerBalanceMutator:apply ( registry )
 
 	--Update gsPlayer objects: set only the new player to 'current'
-	local player = registry:findComponent("GameInfo",{gs_type="player", player_name=self.player})
-	for i, player in ipairs(registry:findComponents("GameInfo", {gs_type="player"})) do
+	local player = registry:find("GameInfo",{gs_type="player", player_name=self.player})
+	for i, player in ipairs(registry:findAll("GameInfo", {gs_type="player"})) do
 		player.cash_balance = player.cash_balance + self.credit
 	end
 
@@ -27,8 +27,8 @@ end
 
 function CreditPlayerBalanceMutator:rollback ( registry )
 	--Update gsPlayer objects: set only the new player to 'current'
-	local player = registry:findComponent("GameInfo",{gs_type="player", player_name=self.player})
-	for i, player in ipairs(registry:findComponents("GameInfo", {gs_type="player"})) do
+	local player = registry:find("GameInfo",{gs_type="player", player_name=self.player})
+	for i, player in ipairs(registry:findAll("GameInfo", {gs_type="player"})) do
 		player.cash_balance = player.cash_balance - self.credit
 	end
 

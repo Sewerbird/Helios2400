@@ -20,7 +20,7 @@ function CityMapViewIcon:init(registry, scenegraph, map, gamestate)
 	City_Touch_Delegate:setHandler('onTouch', function(this, x, y)
 		registry:publish("selectCity",{
 			uid = this.component.gid, 
-			address = registry:get(registry:get(this.component.gid, 'Stateful').ref, "GameInfo").address, 
+			address = registry:get(this.component.gid, 'Stateful.ref.GameInfo.address'), 
 			map = map, 
 			gamestate = gamestate, 
 			icon_type = 'city'})	

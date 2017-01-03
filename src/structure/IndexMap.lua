@@ -34,11 +34,11 @@ function IndexMap:load(registry, map)
 	self.map_name = map
 	
 	for id, tgt in ipairs(registry:findAll("GameInfo")) do
-		if tgt.description == "gsHex" and tgt.map == map then
+		if tgt.gs_type == "tile" and tgt.map == map then
 			table.insert(hexes, tgt)
-		elseif tgt.description == "gsCity" and tgt.map == map then
+		elseif tgt.gs_type == "city" and tgt.map == map then
 			table.insert(cities, tgt)
-		elseif tgt.description == "gsArmy" and tgt.map == map then
+		elseif tgt.gs_type == "army" and tgt.map == map then
 			table.insert(armies, tgt)
 		end
 	end
@@ -61,7 +61,10 @@ function IndexMap:load(registry, map)
 end
 
 function IndexMap:getNeighbors(addressId)
-	if self.addressbook[addressId] then return self.addressbook[addressId].neighbors end
+	if self.addressbook[addressId] then return self.addressbook[addressId].neighbors 
+		else
+			print('No neighbors found for ' .. addressId)
+		end
 end	
 
 function IndexMap:getTerrainInfo(addressId)
@@ -78,6 +81,7 @@ function IndexMap:addNeighborsRelation(addressA, addressB)
 end
 
 function IndexMap:addAddress(address, neighborAddresses, terrainInfo, placeableIds)
+	print(address .. " has neighbors " .. inspect(neighborAddresses))
 	self.addressbook[address] = Location:new(address, neighborAddresses, terrainInfo, placeableIds)
 	if placeableIds ~= nil then
 		for i = 1, #placeableIds do
@@ -127,6 +131,7 @@ end
 
 function IndexMap:findPath(fromId, toId, moveType)
 	local path, total_cost, costs = self.as:findPath(fromId, toId, moveType)
+	print("Found path from " .. fromId .. " to " .. toId .. " via " .. inspect(path) .. inspect(costs))
 	return path, total_cost, costs
 end
 

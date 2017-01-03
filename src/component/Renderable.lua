@@ -18,7 +18,7 @@ end
 
 function Renderable:onFinalized(this, registry)
 	if self.render and self.render.rtype == "animation" then
-		self.gob.registry:subscribe("tick", function(this, msg)
+		registry:subscribe("tick", function(this, msg)
 			self.render.ani:update(msg.dt)
 		end)
 	end

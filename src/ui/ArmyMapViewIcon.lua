@@ -22,14 +22,14 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
 					registry:publish("selectIcon",
             {
               uid = this.component.gid, 
-              address = registry:get(registry:get(this.component.gid,'Stateful').ref, 'GameInfo').address, 
+              address = registry:get(this.component.gid,'Stateful.ref.address'), 
               gamestate = gamestate, 
               icon_type = 'army'})
 
           registry:publish("selectArmy",
             {
               uid = this.component.gid, 
-              address = registry:get(registry:get(this.component.gid,'Stateful').ref, 'GameInfo').address, 
+              address = registry:get(this.component.gid,'Stateful.ref.address'),
               gamestate = gamestate, 
               icon_type = 'army'})
 					return true

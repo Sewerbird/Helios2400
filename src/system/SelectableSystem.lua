@@ -63,7 +63,7 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 				end)
 			end,
 			onenterunitSelected = function(this, event, from, to, msg) 
-				print("Selecting unit (" .. msg.uid .. ") at " .. inspect(msg.address.address) .. " and my path is " .. inspect(self.path))
+				print("Selecting unit (" .. msg.uid .. ") at " .. inspect(msg.address) .. " and my path is " .. inspect(self.path))
 				self:select(self.current_selection)
 				self:clearPathOverlay()
 				self.path = nil
@@ -74,11 +74,11 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 			onleaveunitPathing = function(this, event, from, to, msg)
 			end,
 			onclickedOtherHex = function(this, event, from, to, msg) 
-				local fromAddress = self.registry:get(self.registry:get(self.current_selection):getComponent("Stateful").ref):getComponent("GameInfo").address
-				local toAddress = self.registry:get(self.registry:get(msg.uid):getComponent("Stateful").ref):getComponent("GameInfo").address
+				local fromAddress = self.registry:get(self.current_selection, 'Stateful.ref.GameInfo.address')
+				local toAddress = self.registry:get(msg.uid, 'Stateful.ref.GameInfo.address')
 
-				self:pathTo(fromAddress, toAddress, self.registry:getStructure("Earth"))
-				local budget = self.registry:get(self.registry:get(self.current_selection):getComponent("Stateful").ref):getComponent("GameInfo").curr_move
+				self:pathTo(fromAddress, toAddress, self.registry:view("Earth"))
+				local budget = self.registry:get(self.current_selection, 'Stateful.ref.GameInfo.curr_move')
 				self:displayPathOverlay(msg.map, budget)
 			end,
 			onreclickedOtherHex = function(this, event, from, to, msg)
@@ -88,19 +88,19 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 						local cost = self.path_costs[j] - (self.path_costs[j + 1] or 0)
 						print('So going to ' .. tostring(self.path[i]) .. ' takes ' .. tostring(cost))
 						local cs = self.registry:get(self.current_selection)
-						local army = self.registry:get(cs:getComponent("Stateful").ref)
+						local army = self.registry:get(self.current_selection,'Stateful.ref.GameInfo')
 						self:moveArmyFromTo(army, self.path[i], self.path[i-1], cost)
 					end
 				end
 				self.fsm:movingDoneReady(msg)
 			end,
 			onmovingDoneAborted = function(this, event, from, to, msg)
-				local budget = self.registry:getComponent(self.registry:getComponent(self.current_selection,"Stateful").ref, "GameInfo").curr_move
+				local budget = self.registry:get(self.current_selection,"Stateful.ref.GameInfo.curr_move")
 				self:displayPathOverlay(msg.map, budget)
 			end,
 			onmovingDoneReady = function(this, event, from, to, msg) 
 				self.path = nil 
-				if self.registry:getComponent(self.registry:getComponent(self.current_selection,"Stateful").ref,"GameInfo").curr_move == 0 then
+				if self.registry:get(self.current_selection,"Stateful.ref.GameInfo.curr_move") == 0 then
 					self.fsm:reset()
 				end
 			end,
@@ -134,12 +134,11 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 end
 
 function SelectableSystem:targetIsMineToClickOn ( uid )
-	local tgt = self.registry:get(uid)
-	if tgt:hasComponent("Stateful") then
-		local info = self.registry:get(tgt:getComponent("Stateful").ref):getComponent("GameInfo")
-		return self.registry:findComponent("GameInfo", {gs_type="player", is_current=true}).player_name == info.owner
-	end
-	return false
+	print("XXX")
+	print(inspect(self.registry:get(uid,'Stateful.ref.GameInfo.owner')))
+	print("xxx")
+	return self.registry:get(uid,'Stateful') 
+		and self.registry:find('GameInfo', {gs_type="player", is_current=true}).player_name == self.registry:get(uid,'Stateful.ref.GameInfo.owner')
 end
 
 function SelectableSystem:select ( gameObjectId )
@@ -153,7 +152,7 @@ function SelectableSystem:select ( gameObjectId )
 		self:resetCursor()
 		local tgtObj = self.registry:get(self.current_selection)
 		self.targetCollection:attach(self.selected_unit_cursor_object, self.current_selection)
-		self:centerCursor(tgtObj)
+		self:centerCursor(self.current_selection)
 	end
 end
 
@@ -167,16 +166,15 @@ function SelectableSystem:deselect ()
 end
 
 function SelectableSystem:resetCursor ()
-	self.registry:get(self.selected_unit_cursor_object):getComponent('Transform'):teleport(0,0)
+	self.registry:get(self.selected_unit_cursor_object, 'Transform'):teleport(0,0)
 	self:clearPathOverlay()
 end
 
 function SelectableSystem:centerCursor ( gameObject )
-	local tgtRenderable = gameObject:getComponent('Renderable')
-	if tgtRenderable ~= nil then
-		local cursor = self.registry:get(self.selected_unit_cursor_object)
-		local cursorpoly = cursor:getComponent('Renderable').polygon
-		cursor:getComponent('Transform'):translate( tgtRenderable.polygon.w/2 - cursorpoly.w/2 ,  tgtRenderable.polygon.h/2 - cursorpoly.h/2)
+	local tgtRenderable = self.registry:get(gameObject, 'Renderable')
+	if tgtRenderable then
+		local cursorpoly = self.registry:get(self.selected_unit_cursor_object, 'Renderable').polygon
+		self.registry:get(self.selected_unit_cursor_object, 'Transform'):translate( tgtRenderable.polygon.w/2 - cursorpoly.w/2 ,  tgtRenderable.polygon.h/2 - cursorpoly.h/2)
 	end
 end
 
@@ -184,11 +182,12 @@ function SelectableSystem:displayPathOverlay (map, selection_budget)
 	if not self.path then return end
 	self:clearPathOverlay()
 
+	--[[
 	for i, address in ipairs(self.path) do
-		local t_ref = self.registry:findComponent("GameInfo",{gs_type = "tile", address = address}).gid
-		local s = self.registry:findComponent("Stateful", {ref = t_ref})
+		local t_ref = self.registry:find("GameInfo",{gs_type = "tile", address = address}).gid
+		local s = self.registry:find("Stateful", {ref = t_ref})
 		if s ~= nil then
-			local tileTransform = s:getSiblingComponent("Transform")
+			local tileTransform = self.registry:get(s.gid, "Transform")
 			local cursor = nil
 			for j, addressIDX in ipairs(self.path) do
 				if cursor == nil and addressIDX == address then
@@ -199,17 +198,19 @@ function SelectableSystem:displayPathOverlay (map, selection_budget)
 					end
 				end
 			end
-			local overlay = self.registry:add(GameObject:new('Cursor',{
+			local overlay = self.registry:make('Cursor',{
 				Transform:new(0,0),
 			    Renderable:new(
 			      Polygon:new({ 20,0 , 63,0 , 84,37 , 63,73 , 20,73 , 0,37 }),
 			      Global.Assets:getAsset(cursor)
 			      )
-			}))
+			})
 			table.insert(self.path_overlays, overlay)
 			self.targetCollection:attach(overlay,s.gid)
 		end
 	end
+	]]--
+	print("TODO: show path overlay")
 end
 
 function SelectableSystem:clearPathOverlay ()
@@ -231,18 +232,17 @@ function SelectableSystem:pathTo(fromAddress, toAddress, map)
 	print("Path: " .. inspect(self.path) .. "\nTotal Cost: " .. inspect(self.path_cost) .. "\nPiecewise Costs: " .. inspect(self.path_costs))
 end
 
-function SelectableSystem:moveArmyFromTo (army, fromAddress, tgtAddress, cost)
-	local armyInfo = army:getComponent('GameInfo')
+function SelectableSystem:moveArmyFromTo (armyInfo, fromAddress, tgtAddress, cost)
 	if armyInfo and tgtAddress ~= armyInfo.address then --something might be moveable
 		print("Issuing moveArmyTo to go from " .. tostring(fromAddress) .. "to" .. tostring(tgtAddress) .." with " .. armyInfo.curr_move .. " against cost " .. cost)
 			
 		local mutMove = MoveArmyMutator:new(
-			army.uid,
+			armyInfo.gid,
 			fromAddress, 
 			tgtAddress, 
 			cost)
 
-		if mutMove:isValid(self.registry) and not army.is_destroyed then
+		if mutMove:isValid(self.registry) and not armyInfo.is_destroyed then
 			return mutMove:apply(self.registry)
 		end
 	elseif armyInfo then

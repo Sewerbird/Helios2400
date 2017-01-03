@@ -37,7 +37,8 @@ function DebugScenarioGenerator:debugGenerateEarthMap (debug_gamestate, assets)
   local joffset = 0
   local num_rows = 12
   local num_cols = 24
-  local players = debug_gamestate:findAll("PlayerInfo")
+  local players = debug_gamestate:findAll("GameInfo")
+  print(":::PLAYERS:" .. #players)
 
   for i = 1 , num_cols do --x
     for j = 1 , num_rows do
@@ -48,7 +49,6 @@ function DebugScenarioGenerator:debugGenerateEarthMap (debug_gamestate, assets)
       local army = (math.random() < 0.05) and "SPEC_UNIT_INFANTRY_1" or (math.random() < 0.5 and "SPEC_UNIT_ARTILLERY_1" or "SPEC_UNIT_MECH_1")
       local player = math.random(1,#players)
       local playerInfo = players[player]
-      print("The playerInfo is " .. inspect(playerInfo))
 
       local hex_info = {
         gs_type = "tile",
@@ -206,7 +206,7 @@ function DebugScenarioGenerator:debugGenerateMap ( assets)
   local debug_gamestate = Registry:new()
 
   debug_gamestate:make('gsPlayer',{
-    PlayerInfo:new({
+    GameInfo:new({
       gs_type = 'player',
       is_current = true,
       is_alive = true,
@@ -218,7 +218,7 @@ function DebugScenarioGenerator:debugGenerateMap ( assets)
     })
   })
   debug_gamestate:make('gsPlayer',{
-    PlayerInfo:new({
+    GameInfo:new({
       gs_type = 'player',
       is_current = false,
       is_alive = true,
@@ -230,7 +230,7 @@ function DebugScenarioGenerator:debugGenerateMap ( assets)
     })
   })
   debug_gamestate:make('gsPlayer',{
-    PlayerInfo:new({
+    GameInfo:new({
       gs_type = 'player',
       is_current = false,
       is_alive = true,

@@ -51,6 +51,7 @@ function Astar:findPath(fromAddress, toAddress, moveType)
     		end
     	end
     	local neighbors = self:getNeighbors(currentAddress)
+        print('neighbors in search are ' .. inspect(neighbors))
     	for i,neighbor in ipairs(neighbors) do
             local moveDifficulty = self:moveDifficulty(neighbor,moveType)
     		if moveDifficulty > 0 and not tableContains(closed,neighbor) then

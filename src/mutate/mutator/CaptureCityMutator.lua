@@ -15,13 +15,13 @@ function CaptureCityMutator:init ( target_city, new_player_owner, old_player_own
 end
 
 function CaptureCityMutator:apply ( registry )
-	local captured_city = registry:get(self.target_city):getComponent("GameInfo")
+	local captured_city = registry:get(self.target_city, "GameInfo")
 	captured_city.owner = self.new_player_owner
 	registry:publish(self.target_city .. '_GameInfo', captured_city)
 end
 
 function CaptureCityMutator:rollback ( registry )
-	local captured_city = registry:get(self.target_city):getComponent("GameInfo")
+	local captured_city = registry:get(self.target_city, "GameInfo")
 	captured_city.owner = self.old_player_owner
 	registry:publish(self.target_city .. '_GameInfo', captured_city)
 end

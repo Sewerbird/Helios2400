@@ -18,18 +18,17 @@ function MoveArmyMutator:init ( target, origin_address, destination_address, mov
 end
 
 function MoveArmyMutator:isValid ( registry )
-	local info = registry:get(self.target):getComponent("GameInfo")
+	local info = registry:get(self.target, "GameInfo")
 
 	return info.curr_move >= self.move_cost and info.address == self.origin_address
 end
 
 function MoveArmyMutator:apply ( registry )
-	local being_moved = registry:get(self.target)
-	local info = being_moved:getComponent("GameInfo")
-	local new_coord = registry:findComponent("GameInfo", {gs_type = "tile", address = self.destination_address})
+	local info = registry:get(self.target, "GameInfo")
+	local new_coord = registry:find("GameInfo", {gs_type = "tile", address = self.destination_address})
 
 	--Check if hex already occupied
-	local units_at_location = registry:findComponents("GameInfo",{address = self.destination_address, gs_type = "army"})
+	local units_at_location = registry:findAll("GameInfo",{address = self.destination_address, gs_type = "army"})
 	local is_foreign_occupied = false
 	local attack_target = nil
 	if #units_at_location > 0 then
@@ -47,11 +46,12 @@ function MoveArmyMutator:apply ( registry )
 		info.curr_move = info.curr_move - self.move_cost
 		registry:publish(self.target .. '_GameInfo',info)
 
-		local city_at_location = registry:findComponent("GameInfo",{address = self.destination_address, gs_type = "city"})
+		local city_at_location = registry:find("GameInfo",{address = self.destination_address, gs_type = "city"})
 		local mutCapture = nil
 		if city_at_location then
 			local newOwner = info.owner
 			local oldOwner = city_at_location.owner
+			print('City at location is : ' .. inspect(city_at_location))
 			print('Capturing city ' .. city_at_location.gid .. ' with ' .. newOwner .. ' from ' .. oldOwner)
 			CaptureCityMutator:new(city_at_location.gid, newOwner, oldOwner):apply(registry)
 		end
@@ -65,8 +65,7 @@ function MoveArmyMutator:apply ( registry )
 end
 
 function MoveArmyMutator:rollback ( registry )
-	local being_unmoved = registry:get(self.target)
-	local info = being_unmoved:getComponent("GameInfo")
+	local info = registry:get(self.target, "GameInfo")
 	info.address = self.origin_address
 	info.curr_move = info.curr_move + self.move_cost
 	registry:publish(self.target .. '_GameInfo',info)
