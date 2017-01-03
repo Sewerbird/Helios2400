@@ -61,10 +61,7 @@ function IndexMap:load(registry, map)
 end
 
 function IndexMap:getNeighbors(addressId)
-	if self.addressbook[addressId] then return self.addressbook[addressId].neighbors 
-		else
-			print('No neighbors found for ' .. addressId)
-		end
+	if self.addressbook[addressId] then return self.addressbook[addressId].neighbors end
 end	
 
 function IndexMap:getTerrainInfo(addressId)
@@ -81,7 +78,6 @@ function IndexMap:addNeighborsRelation(addressA, addressB)
 end
 
 function IndexMap:addAddress(address, neighborAddresses, terrainInfo, placeableIds)
-	print(address .. " has neighbors " .. inspect(neighborAddresses))
 	self.addressbook[address] = Location:new(address, neighborAddresses, terrainInfo, placeableIds)
 	if placeableIds ~= nil then
 		for i = 1, #placeableIds do
@@ -131,7 +127,6 @@ end
 
 function IndexMap:findPath(fromId, toId, moveType)
 	local path, total_cost, costs = self.as:findPath(fromId, toId, moveType)
-	print("Found path from " .. fromId .. " to " .. toId .. " via " .. inspect(path) .. inspect(costs))
 	return path, total_cost, costs
 end
 

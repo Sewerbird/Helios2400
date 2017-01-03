@@ -56,13 +56,11 @@ function Registry:get( gid, ctype )
 		elseif string.find(ctype, "%.") then
 			local result = self.index[gid]
 			for ele in string.gmatch(ctype, "([^%.]+)") do
-				print('looking up ' .. ele)
 				if result then
 					if type(result) ~= 'table' then
 						print("Warning: attempting to subindex a primitive in " .. gid .. "." .. ctype .. " with '" .. ele .. "' on a value " .. tostring(result))
 					else
 						result = result[ele]
-						print('yields ' .. tostring(result))
 						if result and type(result) == 'table' and result.class and result.class.name == 'Binding' then
 							result = self.index[result.target]
 						end

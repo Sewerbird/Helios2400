@@ -86,7 +86,6 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 					i = #self.path_costs - (j - 1)
 					if i > 1 then
 						local cost = self.path_costs[j] - (self.path_costs[j + 1] or 0)
-						print('So going to ' .. tostring(self.path[i]) .. ' takes ' .. tostring(cost))
 						local cs = self.registry:get(self.current_selection)
 						local army = self.registry:get(self.current_selection,'Stateful.ref.GameInfo')
 						self:moveArmyFromTo(army, self.path[i], self.path[i-1], cost)
@@ -118,8 +117,8 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 		self.current_selection = nil
 	end)
 	local unsubSelect = self.registry:subscribe("selectIcon", function (this, msg)
-		print('selecting ' .. msg.uid .. ' and current selection is ' .. inspect(self.current_selection))
 		if self.targetCollection:has(msg.uid) then
+			print('selecting ' .. inspect(msg) .. ' and current selection is ' .. inspect(self.current_selection) .. 'and a path ' .. inspect(self.path))
 			local selected = self.registry:get(msg.uid)
 			if msg.uid == self.current_selection then
 				return msg.icon_type == 'army' and self.fsm:reclickedUnit(msg) or self.fsm:reclickedOtherHex(msg)
@@ -134,9 +133,6 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 end
 
 function SelectableSystem:targetIsMineToClickOn ( uid )
-	print("XXX")
-	print(inspect(self.registry:get(uid,'Stateful.ref.GameInfo.owner')))
-	print("xxx")
 	return self.registry:get(uid,'Stateful') 
 		and self.registry:find('GameInfo', {gs_type="player", is_current=true}).player_name == self.registry:get(uid,'Stateful.ref.GameInfo.owner')
 end

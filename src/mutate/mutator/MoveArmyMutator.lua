@@ -41,6 +41,7 @@ function MoveArmyMutator:apply ( registry )
 	end
 
 	if not is_foreign_occupied then
+		print('is not foreign occupied')
 		info.worldspace_coord = { new_coord.worldspace_coord[1], new_coord.worldspace_coord[2]}
 		info.address = self.destination_address
 		info.curr_move = info.curr_move - self.move_cost
@@ -56,9 +57,11 @@ function MoveArmyMutator:apply ( registry )
 			CaptureCityMutator:new(city_at_location.gid, newOwner, oldOwner):apply(registry)
 		end
 	elseif attack_target then
+		print('there is an attack target')
 		info.curr_move = info.curr_move - self.move_cost
 		ConductBattleMutator:new(self.target, attack_target):apply(registry)
 	else
+		print('is a friendly destination')
 		--friendly space
 	end
 

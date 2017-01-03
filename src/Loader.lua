@@ -78,7 +78,6 @@ function Loader:debugLoad (save)
     local tgt = debug_gamestate:get(key,"GameInfo")
     if tgt then
       if tgt.gs_type == 'tile' then
-        print('found a hex')
         if tgt.map == 'Earth' then
           table.insert(Earth_Tiles, TileMapViewIcon:new(debug_gamestate,EarthSceneGraph,Earth_Map,key))
         elseif tgt.map == 'Space' then
