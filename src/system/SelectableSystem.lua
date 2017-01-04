@@ -133,8 +133,12 @@ function SelectableSystem:init (registry, targetCollection, cursor_sprite)
 end
 
 function SelectableSystem:targetIsMineToClickOn ( uid )
+
+	local curr_player = self.registry:find('GameInfo', {gs_type="player", is_current=true}).player_name
+	local tgt_player = self.registry:get(uid,'Stateful.ref.GameInfo.owner')
+	print("During 'mine to click on', current player is " .. tostring(curr_player) .. " and clicked on has owner " .. tostring(tgt_player))
 	return self.registry:get(uid,'Stateful') 
-		and self.registry:find('GameInfo', {gs_type="player", is_current=true}).player_name == self.registry:get(uid,'Stateful.ref.GameInfo.owner')
+		and curr_player == tgt_player
 end
 
 function SelectableSystem:select ( gameObjectId )
@@ -178,10 +182,9 @@ function SelectableSystem:displayPathOverlay (map, selection_budget)
 	if not self.path then return end
 	self:clearPathOverlay()
 
-	--[[
 	for i, address in ipairs(self.path) do
 		local t_ref = self.registry:find("GameInfo",{gs_type = "tile", address = address}).gid
-		local s = self.registry:find("Stateful", {ref = t_ref})
+		local s = self.registry:find("Stateful", {tgt = t_ref})
 		if s ~= nil then
 			local tileTransform = self.registry:get(s.gid, "Transform")
 			local cursor = nil
@@ -205,15 +208,13 @@ function SelectableSystem:displayPathOverlay (map, selection_budget)
 			self.targetCollection:attach(overlay,s.gid)
 		end
 	end
-	]]--
-	print("TODO: show path overlay")
 end
 
 function SelectableSystem:clearPathOverlay ()
 	if self.path_overlays then
 		for i, overlay in ipairs(self.path_overlays) do
 			self.targetCollection:detach(overlay)
-			self.registry:remove(overlay)
+			self.registry:destroy(overlay)
 		end
 		self.path_overlays = {}
 	end

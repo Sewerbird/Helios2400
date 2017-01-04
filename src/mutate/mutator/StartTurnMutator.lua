@@ -70,6 +70,7 @@ function StartTurnMutator:apply ( registry )
 	registry:publish("IMMEDIATE_MUTATE",mutPayment) 
 
 	--Publish events
+	print("Beginning turn for " .. inspect(new_player))
 	registry:publish("beginTurn",new_player)
 	if playerHasWonTheGame then
 		registry:publish("gameOverByzantiumWin", {player=new_player,byzantium=byzantium})

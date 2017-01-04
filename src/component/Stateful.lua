@@ -10,6 +10,8 @@ local Stateful = Component:extend('Stateful', {
 
 function Stateful:init ( referent, type )
 	self.ref = Binding:new(referent, type)
+	self.tgt = referent
+	self.type = type
 end
 
 return Stateful
