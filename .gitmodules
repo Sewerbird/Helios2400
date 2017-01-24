@@ -1,0 +1,3 @@
+[submodule "lib/LoveGUI"]
+	path = lib/LoveGUI
+	url = https://github.com/thimovss/LoveGUI
