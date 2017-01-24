@@ -1,9 +1,11 @@
 local PubSub = require 'src/PubSub'
 local Binding = require 'src/datatype/Binding'
+local Graph = require 'src/structure/Graph'
 
 local Registry = class('Registry', {})
 
 function Registry:init ( )
+	self.bind_graph = Graph:new()
 	self.structures = {}
 	self.index = {}
 	self.gid_autoincrement = 1
@@ -24,6 +26,18 @@ function Registry:make( debug_description, components )
 		component.gid = gid
 		component.uid = gid .. "." .. component.name
 		self.index[component.gid][component.name] = component
+		--Bindings: at first just lookup, not live
+		for key, datum in pairs(component) do
+			if datum and type(datum) == 'table' and datum.name == 'Binding' then
+				print('datum is ' .. tostring(datum.target) .. '->' .. tostring(datum.component))
+				if datum.functor then
+					self.index[component.gid][component.name][key] = datum.functor(self:get(datum.target, datum.component))
+				else
+					self.index[component.gid][component.name][key] = self:get(datum.target, datum.component)
+				end
+			end
+		end
+
 		if component.onFinalized then
 			component:onFinalized(self:get(component.gid, component.name),self)
 			component.onFinalized = nil
@@ -115,15 +129,15 @@ end
 
 function Registry:bind( component, source, onSourceChange, initWith)
 	--Add bound component to bind graph if missing
-	--if not self.bind_graph:hasNode(component.uid) then
-	--	self.bind_graph:addNode(component.uid)
-	--end
+	if not self.bind_graph:hasNode(component.uid) then
+		self.bind_graph:addNode(component.uid)
+	end
 	--Add source component to bind graph if missing
-	--if not self.bind_graph:hasNode(source) then
-	--	self.bind_graph:addNode(source)
-	--end
+	if not self.bind_graph:hasNode(source) then
+		self.bind_graph:addNode(source)
+	end
 	--Add bind path
-	--self.bind_graph:addEdge(source, component.uid)
+	self.bind_graph:addEdge(source, component.uid)
 	self:subscribe(source, function (cmp, msg) 
 		onSourceChange(component, component, msg)
 	end)
@@ -148,84 +162,3 @@ end
 
 return Registry
 
-
---[[
-
-Sample usages
-
-gidPlayer = registry:makeObject("Cool player dude", { --310
-	PlayerInfo:new({
-		highlight_color = {200,200,200},
-		midtone_color = {100,100,100},
-		darkened_color = {50,50,50}
-	})
-})
-gidArmy = registry:makeObject("A particular army", { --9310
-	ArmyInfo:new({
-		sprite = "FooSprite",
-		name = "FooArmy",
-		owner = Binding:new("310","PlayerInfo"),
-		address = "WesternEurope_0",
-		map = "Earth"
-	})
-})
-gidIcon = registry:makeObject("A army view icon", {
-	ArmyInfo:link("9310"),
-	Transform:link("288309", function(src, tgt) 
-		return src:copy():translate(5,5)
-	end),
-	Renderable:new([ --drawn front-to-back
-		{ --background
-			polygon = Polygon:new({w = 10, h = 10}),
-			bg_color = Binding:new("this","ArmyInfo.owner.darkened_color"), --'owner' is a link in the source to a PlayerInfo
-		},
-		{ --unit sprite
-			polygon = Polygon:new({w = 10, h = 10}),
-			render = Binding:new("this","ArmyInfo.sprite"),
-			bg_color = Binding:new("this","ArmyInfo.owner.midtone_color"), --'owner' is a link in the source to a PlayerInfo
-			text = Binding:new("this","ArmyInfo", function(src, tgt)
-				return src.name + " (" + src.owner:lookup("name") + ")"
-			end
-		},
-		{ --health bar
-			polygon = Binding:new("this","ArmyInfo", function(src, tgt)
-				return Polygon:new({x = 0, y = 9, w = (src.curr_hp / src.max_hp) * 10, h})
-			end),
-			bg_color = Binding:new("this","ArmyInfo.owner.highlight_color")
-		},
-		{ --name
-			polygon = Polygon:new({x = 0, y = 0, w = 10, h = 3}),
-			text = Binding:new("this","ArmyInfo", function(src, tgt)
-				return src.name + " (" + src.owner:lookup("name") + ")"
-			end)
-		},
-		{ --move counter
-			polygon = Polygon:new({x = 0, y = 6, w = 3, h = 3}),
-			text = Binding:new("this","ArmyInfo", function(src, tgt)
-				return src.curr_move
-			end)
-		},
-		{ --shader for when unit is 'done'
-			polygon = Binding:new("this","ArmyInfo", function(src, tgt)
-				if src.curr_move == 0 or src.sleeping then
-					return Polygon:new({w = 0, h = 0})
-				else 
-					return Polygon:new({w = 10, h = 10}) 
-				end
-			end),
-			bg_color = {0,0,0,100}
-		}
-	]),
-	Interfaceable:new({
-		polygon = Binding:new("this",{w = 10, h = 10}),
-		delegate = TouchDelegate:new(function() ... end)
-	})
-})
-registry:get("9310", "ArmyInfo") --returns the ArmyInfo component for GameObject 9310
-registry:find("ArmyInfo", {"map" = "Earth"}) --returns the ArmyInfo(s) that have `map` == "Earth"
-registry:defineStructure('z-order', Tree:new()) --defines a structure (ring, array, stack, queue, graph...) over gameobject ids
-registry:in('z-order'):attach(gidIcon, gidLayer) --attaches the view icon to a view layer in the `z-order` structure graph
-registry:remove("9310") --deletes GameObject9310, and orphaned components thereof
-registry:undefineStructure('z-order')
-
---]]

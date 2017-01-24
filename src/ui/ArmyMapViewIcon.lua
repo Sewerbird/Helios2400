@@ -1,5 +1,6 @@
 --armyMapViewIcon.lua
 local class = require 'lib/30log'
+local Binding = require 'src/datatype/Binding'
 local Renderable = require 'src/component/Renderable'
 local Interfaceable = require 'src/component/Interfaceable'
 local Transform = require 'src/component/Transform'
@@ -50,6 +51,16 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
       })
       debug_army_bg = registry:make('Army_BG', {
         Transform:new((84-50)/2, (73-50)/2),
+        Renderable:new({
+          polygon = Polygon:new({w = 50, h = 50}),
+          backgroundcolor = Binding:new(playerinfo.gid, "GameInfo.midtone_color"),
+          text = "bgbackground"
+        }),
+        Stateful:new(gamestate)
+      })
+      --[[
+      debug_army_bg = registry:make('Army_BG', {
+        Transform:new((84-50)/2, (73-50)/2),
         Renderable:new(
           Polygon:new({ w = 50, h = 50}),
           nil,
@@ -60,6 +71,7 @@ function ArmyMapViewIcon:init( registry, scenegraph, gamestate )
         end),
         Stateful:new(gamestate)
       })
+      ]]
       debug_army_bg_shadow = registry:make('Army_BGb', {
         Transform:new(0, 0),
         Renderable:new(

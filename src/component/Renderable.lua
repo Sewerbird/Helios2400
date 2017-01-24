@@ -10,10 +10,18 @@ local Renderable = Component:extend("Renderable", {
 
 function Renderable:init ( polygon, render, backgroundcolor, text)
 	Renderable.super.init(self)
-	self.polygon = polygon
-	self.render = render or nil
-	self.backgroundcolor = backgroundcolor or {math.floor(math.random() * 255),100,100,125}
-	self.text = text or nil
+
+	if polygon and polygon.polygon then --object initialization
+		self.polygon = polygon.polygon
+		self.render = polygon.render or nil
+		self.backgroundcolor = polygon.backgroundcolor or {math.floor(math.random() * 255),100,100,125}
+		self.text = polygon.text or nil
+	else
+		self.polygon = polygon
+		self.render = render or nil
+		self.backgroundcolor = backgroundcolor or {math.floor(math.random() * 255),100,100,125}
+		self.text = text or nil
+	end
 end
 
 function Renderable:onFinalized(this, registry)
