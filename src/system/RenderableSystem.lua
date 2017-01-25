@@ -8,6 +8,8 @@
 
 local System = require 'src/System'
 local Stack = require 'src/structure/Stack'
+local UIStack = require 'lib/LoveGUI/addon/stack'
+local Container = require 'lib/LoveGUI/core/container'
 
 local RenderableSystem = System:extend("RenderableSystem",{
 	renderable_cache = nil,
@@ -21,6 +23,28 @@ function RenderableSystem:init ( registry, targetCollection )
 	RenderableSystem.super.init(self, registry, targetCollection)
 	self.renderable_cache = {translation = {x = Stack:new(),y = Stack:new()}}
 	--love.graphics.setNewFont("assets/InputSansNarrow-Light.ttf",12)
+
+	self.uiStack = UIStack.new()
+	local screenCover = Container.new('SCREEN_COVER',{
+		alignment = 'center', 
+		visible = false,
+		ori = 'hor'
+	})
+	self.uiStack:push(screenCover)
+
+	local centering_container = Container.new('MENU_CENTERING_CONTAINER',{
+		width = '50%',
+		alignment = 'center', 
+		visible = false, 
+		orientation = 'ver'
+	})
+	local exit_menu = Container.new('MENU_CONTAINER',{
+		height = '80%',
+		alignment = 'top',
+		orientation = 'ver'
+	})
+	screenCover:addElement(centering_container)
+	
 end
 
 function RenderableSystem:update( dt )
@@ -208,6 +232,8 @@ function RenderableSystem:draw ()
 		self:renderComponent(self.cache[i])
 	end
 	self.dirty = self.dirty + 1
+
+	self.uiStack:drawWireFrame()
 end
 
 return RenderableSystem

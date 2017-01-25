@@ -25,7 +25,6 @@ local DebugGameGenerator = require 'src/DebugGameGenerator'
 
 local Loader = class("Loader", {
   loadContext = nil
-	
 })
 
 function Loader:init(context)
