@@ -11,6 +11,7 @@ local GameObject = require 'src/GameObject'
 local ElementWrapper = require 'src/component/ElementWrapper'
 local UIStack = require 'lib/LoveGUI/addon/stack'
 local Container = require 'lib/LoveGUI/core/container'
+local Element = require 'lib/LoveGUI/core/element'
 local MainMenu = require 'src/ui/MainMenu'
 
 local Viewer = class("Viewer", {
@@ -32,14 +33,23 @@ function Viewer:init ( registry, mapScenes )
 		local menuViewObject = GameObject:new('MAIN_MENU',{
 			ElementWrapper:new(MainMenu)
 		},Global.Registry)
+		local mapPositioner = Container.new('MAP_VIEW_POSITIONER',{
+			visible = false,
+			alignment = 'right'
+		}):addElement(
+			Element.new('MAP_VIEW_ELEMENT',{
+				width = 600,
+				height = 500
+			})
+		)
 
 		local mapViewObject = GameObject:new('MAP_VIEW',{
-			ElementWrapper:new(scene)
+			ElementWrapper:new(mapViewElement)
 		},Global.Registry)
 
-		--uiStack:push(
-		--	scene
-		--)
+		uiStack:push(
+			mapPositioner
+		)
 		uiStack:push(
 			MainMenu
 		)
