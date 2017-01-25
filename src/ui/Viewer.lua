@@ -7,6 +7,12 @@ local RenderableSystem = require 'src/system/RenderableSystem'
 local SelectableSystem = require 'src/system/SelectableSystem'
 local TurnControlSystem = require 'src/system/TurnControlSystem'
 
+local GameObject = require 'src/GameObject'
+local ElementWrapper = require 'src/component/ElementWrapper'
+local UIStack = require 'lib/LoveGUI/addon/stack'
+local Container = require 'lib/LoveGUI/core/container'
+local MainMenu = require 'src/ui/MainMenu'
+
 local Viewer = class("Viewer", {
 	Registry = nil,
 	Systems = {},
@@ -21,11 +27,24 @@ function Viewer:init ( registry, mapScenes )
 
 	self.mapViews = Ring:new()
 	for i, scene in ipairs(mapScenes) do
+		local uiStack = UIStack.new()
+
+		local menuViewObject = GameObject:new('MAIN_MENU',{
+			ElementWrapper:new(MainMenu)
+		},Global.Registry)
+
+		local mapViewObject = GameObject:new('MAP_VIEW',{
+			ElementWrapper:new(scene)
+		},Global.Registry)
+
+		--uiStack:push(
+		--	scene
+		--)
+		uiStack:push(
+			MainMenu
+		)
 		local view = {
-			sceneGraph = scene,
-			render = RenderableSystem:new(self.Registry, scene),
-			interface = InterfaceableSystem:new(self.Registry, scene),
-			selection = SelectableSystem:new(self.Registry, scene, "ANIM_CURSOR_1")
+			render = uiStack
 		}
 		self.mapViews:add(view)
 	end
