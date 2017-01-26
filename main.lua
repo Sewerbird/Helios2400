@@ -60,7 +60,7 @@ end
 
 function love.draw()
   if not Global.PAUSE then
-    Global.Viewer.Systems.Render:draw()
+    Global.Viewer.Systems.UIStack:draw()
   end
 
   -- Profiling stuff

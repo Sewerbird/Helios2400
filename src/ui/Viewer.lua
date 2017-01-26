@@ -25,36 +25,48 @@ function Viewer:init ( registry, mapScenes )
 	self.Registry = registry
 
 	self.Systems.TurnControl = TurnControlSystem:new(self.Registry)
+	self.Systems.UIStack = UIStack.new()
+
+	local menuViewObject = GameObject:new('MAIN_MENU',{
+		ElementWrapper:new(MainMenu)
+	},Global.Registry)
+	local mapViewElement = Element.new('MAP_VIEW_ELEMENT',{
+			width = '75%',
+			height = '75%'
+		})
+	local mapPositioner = Container.new('MAP_VIEW_POSITIONER',{
+		visible = false,
+		alignment = 'right'
+	}):addElement(mapViewElement)
+
+	mapViewElement._draw = function(self)
+		local x,y,w,h = self:getRectangle()
+		love.graphics.stencil(function()
+			love.graphics.rectangle('fill',x + 8,y + 8,w - 16,h - 16)
+		end,'replace', 1)
+	   	love.graphics.setStencilTest("greater", 0)
+		Global.Viewer.Systems.RS:draw()
+	   	love.graphics.setStencilTest()
+	   	love.graphics.setColor(0,0,256)
+	   	love.graphics.setLineWidth(3)
+	   	love.graphics.rectangle('line',x,y,w,h)
+	end
+
+	local mapViewObject = GameObject:new('MAP_VIEW',{
+		ElementWrapper:new(mapViewElement)
+	},Global.Registry)
+
+	self.Systems.UIStack:push(
+		mapPositioner
+	)
+	self.Systems.UIStack:push(
+		MainMenu
+	)
 
 	self.mapViews = Ring:new()
 	for i, scene in ipairs(mapScenes) do
-		local uiStack = UIStack.new()
-
-		local menuViewObject = GameObject:new('MAIN_MENU',{
-			ElementWrapper:new(MainMenu)
-		},Global.Registry)
-		local mapPositioner = Container.new('MAP_VIEW_POSITIONER',{
-			visible = false,
-			alignment = 'right'
-		}):addElement(
-			Element.new('MAP_VIEW_ELEMENT',{
-				width = 600,
-				height = 500
-			})
-		)
-
-		local mapViewObject = GameObject:new('MAP_VIEW',{
-			ElementWrapper:new(mapViewElement)
-		},Global.Registry)
-
-		uiStack:push(
-			mapPositioner
-		)
-		uiStack:push(
-			MainMenu
-		)
 		local view = {
-			render = uiStack
+			RS = RenderableSystem(Global.Registry,scene)
 		}
 		self.mapViews:add(view)
 	end
@@ -73,9 +85,9 @@ function Viewer:init ( registry, mapScenes )
 end
 
 function Viewer:changeTo ()
-	self.Systems.Render = self.mapViews:current().render
-	self.Systems.Interface = self.mapViews:current().interface
-	self.Systems.Selection = self.mapViews:current().selection
+	self.Systems.RS = self.mapViews:current().RS
+	--self.Systems.Interface = self.mapViews:current().interface
+	--self.Systems.Selection = self.mapViews:current().selection
 end
 
 function Viewer:nextView ()

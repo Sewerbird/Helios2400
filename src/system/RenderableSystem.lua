@@ -209,8 +209,6 @@ function RenderableSystem:draw ()
 		self:renderComponent(self.cache[i])
 	end
 	self.dirty = self.dirty + 1
-
-	self.uiStack:drawWireFrame()
 end
 
 return RenderableSystem
