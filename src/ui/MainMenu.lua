@@ -47,4 +47,10 @@ main_menu:getElement('NEXT_VIEW_BUTTON').mousepressed = function(x, y)
 	print("pressed NEXT_VIEW_BUTTON")
 end
 
+main_menu.keypressed = function(self, key, focus)
+	if key == "escape" and focus then
+		Global.Viewer.Systems.UIStack:pop()
+	end
+end
+
 return screenCover

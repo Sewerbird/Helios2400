@@ -64,6 +64,8 @@ function Viewer:init ( registry, mapScenes )
 		self:nextView()
 	end)
 
+	self.Systems.UIStack:printTree()
+
 end
 
 function Viewer:changeTo ()
