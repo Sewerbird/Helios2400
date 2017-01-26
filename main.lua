@@ -75,7 +75,6 @@ end
 
 function love.mousepressed( x, y, button, istouch )
   Global.DRAGBEGUN = true
-  --Global.Viewer.Systems.Interface:onTouch(x,y)
   Global.Viewer.Systems.UIStack:mousepressed(x, y, button, istouch)
 end
 
@@ -92,7 +91,7 @@ function love.mousereleased( x, y, button )
 end
 
 function love.touchpressed( id, x, y, pressure )
-  --Global.Viewer.Systems.Interface:onTouch(x,y)
+  Global.Viewer.Systems.UIStack:mousepressed(x, y, button, istouch)
 end
 
 function love.touchmoved( id, x, y, dx, dy, pressure )
@@ -102,16 +101,10 @@ function love.touchmoved( id, x, y, dx, dy, pressure )
 end
 
 function love.touchreleased( id, x, y, pressure )
-  --Global.Viewer.Systems.Interface:onUntouch(x,y)
+  Global.Viewer.Systems.UIStack:mousereleased(x, y, button, istouch)
 end
 
 function love.keypressed( key, scancode, isrepeat )
-  --[[if key == 'n' then
-    Global.Viewer:nextView()
-  elseif key == 'q' then
-    Global.Viewer.Registry:publish("endTurn")
-  end
-  Global.Viewer.Systems.Interface:onKeypress(key)]]
   Global.Viewer.Systems.UIStack:keypressed(key, scancode, isrepeat)
 end
 

@@ -11,7 +11,6 @@ local GameObject = require 'src/GameObject'
 local ElementWrapper = require 'src/component/ElementWrapper'
 local UIStack = require 'lib/LoveGUI/addon/stack'
 local Container = require 'lib/LoveGUI/core/container'
-local MainMenu = require 'src/ui/MainMenu'
 local MapViewElement = require 'src/ui/mapViewElement'
 
 local Viewer = class("Viewer", {
@@ -27,13 +26,10 @@ function Viewer:init ( registry, mapScenes )
 	self.Systems.TurnControl = TurnControlSystem:new(self.Registry)
 	self.Systems.UIStack = UIStack.new()
 
-	local menuViewObject = GameObject:new('MAIN_MENU',{
-		ElementWrapper:new(MainMenu)
-	},Global.Registry)
 	local mapPositioner = Container.new('MAP_VIEW_POSITIONER',{
 		visible = false,
 		alignment = 'right'
-	}):addElement(MapViewElement)
+	}):addElement(MapViewElement.new())
 	local mapViewObject = GameObject:new('MAP_VIEW',{
 		ElementWrapper:new(mapViewElement)
 	},Global.Registry)
@@ -41,14 +37,14 @@ function Viewer:init ( registry, mapScenes )
 	self.Systems.UIStack:push(
 		mapPositioner
 	)
-	self.Systems.UIStack:push(
-		MainMenu
-	)
 
 	self.mapViews = Ring:new()
 	for i, scene in ipairs(mapScenes) do
 		local view = {
-			RS = RenderableSystem(Global.Registry,scene)
+			sceneGraph = scene,
+			render = RenderableSystem(self.Registry,scene),
+			interface = InterfaceableSystem(self.Registry,scene),
+			selection = InterfaceableSystem(self.Registry,scene, "ANIM_CURSOR_1")
 		}
 		self.mapViews:add(view)
 	end
@@ -69,9 +65,9 @@ function Viewer:init ( registry, mapScenes )
 end
 
 function Viewer:changeTo ()
-	self.Systems.RS = self.mapViews:current().RS
-	--self.Systems.Interface = self.mapViews:current().interface
-	--self.Systems.Selection = self.mapViews:current().selection
+	self.Systems.Render = self.mapViews:current().render
+	self.Systems.Interface = self.mapViews:current().interface
+	self.Systems.Selection = self.mapViews:current().selection
 end
 
 function Viewer:nextView ()
