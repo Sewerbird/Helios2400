@@ -73,34 +73,35 @@ function love.draw()
   objGraph:draw()
 end
 
-function love.mousepressed( x, y, button )
+function love.mousepressed( x, y, button, istouch )
   Global.DRAGBEGUN = true
-  Global.Viewer.Systems.Interface:onTouch(x,y)
+  --Global.Viewer.Systems.Interface:onTouch(x,y)
+  Global.Viewer.Systems.UIStack:mousepressed(x, y, button, istouch)
 end
 
 function love.mousemoved( x, y, dx, dy, istouch )
   if Global.DRAGBEGUN then
-    Global.Viewer.Systems.Interface:onDrag(x,y,dx,dy)
+    --Global.Viewer.Systems.Interface:onDrag(x,y,dx,dy)
   end
 end
 
 function love.mousereleased( x, y, button )
   Global.DRAGBEGUN = false
-  Global.Viewer.Systems.Interface:onUntouch(x,y)
+  --Global.Viewer.Systems.Interface:onUntouch(x,y)
 end
 
 function love.touchpressed( id, x, y, pressure )
-  Global.Viewer.Systems.Interface:onTouch(x,y)
+  --Global.Viewer.Systems.Interface:onTouch(x,y)
 end
 
 function love.touchmoved( id, x, y, dx, dy, pressure )
   if Global.DRAGBEGUN then
-    Global.Viewer.Systems.Interface:onDrag(x,y,dx,dy)
+    --Global.Viewer.Systems.Interface:onDrag(x,y,dx,dy)
   end
 end
 
 function love.touchreleased( id, x, y, pressure )
-  Global.Viewer.Systems.Interface:onUntouch(x,y)
+  --Global.Viewer.Systems.Interface:onUntouch(x,y)
 end
 
 function love.keypressed( key )

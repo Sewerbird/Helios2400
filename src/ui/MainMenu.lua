@@ -43,4 +43,8 @@ main_menu:getElement('VIEW_CONTAINER'):addElements({
 	Button.new('NEXT_VIEW_BUTTON'):setText('Next View'):setMargins(15)
 })
 
+main_menu:getElement('NEXT_VIEW_BUTTON').mousepressed = function(x, y)
+	print("pressed NEXT_VIEW_BUTTON")
+end
+
 return screenCover
