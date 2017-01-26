@@ -11,8 +11,8 @@ local GameObject = require 'src/GameObject'
 local ElementWrapper = require 'src/component/ElementWrapper'
 local UIStack = require 'lib/LoveGUI/addon/stack'
 local Container = require 'lib/LoveGUI/core/container'
-local Element = require 'lib/LoveGUI/core/element'
 local MainMenu = require 'src/ui/MainMenu'
+local MapViewElement = require 'src/ui/mapViewElement'
 
 local Viewer = class("Viewer", {
 	Registry = nil,
@@ -30,28 +30,10 @@ function Viewer:init ( registry, mapScenes )
 	local menuViewObject = GameObject:new('MAIN_MENU',{
 		ElementWrapper:new(MainMenu)
 	},Global.Registry)
-	local mapViewElement = Element.new('MAP_VIEW_ELEMENT',{
-			width = '75%',
-			height = '75%'
-		})
 	local mapPositioner = Container.new('MAP_VIEW_POSITIONER',{
 		visible = false,
 		alignment = 'right'
-	}):addElement(mapViewElement)
-
-	mapViewElement._draw = function(self)
-		local x,y,w,h = self:getRectangle()
-		love.graphics.stencil(function()
-			love.graphics.rectangle('fill',x + 8,y + 8,w - 16,h - 16)
-		end,'replace', 1)
-	   	love.graphics.setStencilTest("greater", 0)
-		Global.Viewer.Systems.RS:draw()
-	   	love.graphics.setStencilTest()
-	   	love.graphics.setColor(0,0,256)
-	   	love.graphics.setLineWidth(3)
-	   	love.graphics.rectangle('line',x,y,w,h)
-	end
-
+	}):addElement(MapViewElement)
 	local mapViewObject = GameObject:new('MAP_VIEW',{
 		ElementWrapper:new(mapViewElement)
 	},Global.Registry)
