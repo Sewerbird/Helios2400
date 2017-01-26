@@ -50,6 +50,10 @@ function mapView.new()
 		Global.Viewer.Systems.Interface:onKeypress(key)
 	end
 
+	mapViewElement.mousedragged = function(self, x,y,dx,dy)
+    	Global.Viewer.Systems.Interface:onDrag(x,y,dx,dy)
+    end
+    
 	return mapViewElement
 end
 

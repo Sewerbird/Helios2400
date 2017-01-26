@@ -80,7 +80,7 @@ end
 
 function love.mousemoved( x, y, dx, dy, istouch )
   if Global.DRAGBEGUN then
-    --Global.Viewer.Systems.Interface:onDrag(x,y,dx,dy)
+    Global.Viewer.Systems.UIStack:mousedragged(x, y, dx, dy, istouch )
   end
 end
 
@@ -96,7 +96,7 @@ end
 
 function love.touchmoved( id, x, y, dx, dy, pressure )
   if Global.DRAGBEGUN then
-    --Global.Viewer.Systems.Interface:onDrag(x,y,dx,dy)
+    Global.Viewer.Systems.UIStack:mousedragged(x, y, dx, dy, istouch )
   end
 end
 
