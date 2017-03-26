@@ -29,7 +29,7 @@ There are a few places to consider consulting in order to begin collaborating on
 - The [Issue Page](https://github.com/Sewerbird/Helios2400/issues) is full of stuff that can be worked on. Please submit an issue if you found a problem that has not been noted already. Suggestion issues are welcome too, but please tag them as such.
 - The [Github Wiki](https://github.com/Sewerbird/Helios2400/wiki) serves as a container for general documentation, although (as tends to be the case), the source-code is the base truth.
 - Feel free to stop by [my blog](https://sewerbird.github.io) to get recent State of the Game announcements. There should be a section dedicated to Helios 2400, or conspicuous postings.
-- The [Game Design Document](https://github.com/Sewerbird/Helios2400/blob/master/Helios_GDDvB.md) tries to thoroughly document everything, from the perspectives of Gameplay, User Interface, and Implementation.
+- The [Game Design Document](https://github.com/Sewerbird/Helios2400/blob/master/docs/gdd) tries to thoroughly document everything, from the perspectives of Gameplay, User Interface, and Implementation.
 
 ## Pull Request Process
 
