@@ -12,6 +12,7 @@ Helios2400 is spirtually inspired by the diplomatic gameplay of the 1996 Holisti
 ## Installation
 
 - Download & Install [LÖVE2D](https://love2d.org/) for your platform.
+- Download & Install NODE.js for your platform
 - Checkout this repository with [Git](https://git-scm.com/downloads).
 - Run with `love .` in the repository root. You may have to set up an alias in your terminal.
 - run_dev.sh (included in the repo) will run tests and then the game, assuming love.app is installed in your applications folder (**Mac only script**)
