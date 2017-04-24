@@ -20,7 +20,7 @@ If there are 5 players, 2 provinces start with no Citizens. Otherwise, provinces
 
 ## The Units
 
-There are 4 kinds of player units in HELIOS, and 1 kind of computer unit. Units cost Build Points to place on the map, and players get 1 Build Point for each territory they control.
+There are 4 kinds of player units in HELIOS, and 1 kind of computer unit. Units cost Build Points to place on the map, and players get 1 Build Point for each territory they control. You may Build in any territory that doesn't have a Terran Army on it, even if you don't have any units there.
 
 ### Citizens
 
