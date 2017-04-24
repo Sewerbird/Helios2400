@@ -9,13 +9,18 @@ local PubSub = require 'src/PubSub'
 local Registry = require 'src/Registry'
 local MutatorBus = require 'src/mutate/MutatorBus'
 
+math.randomseed(os.time())
+CLIENT_USERNAME = math.random(10000,100000)
+
 --TODO: move this into a util lib
 function math.round(n, deci)
   deci = 10^(deci or 0)
   return math.floor(n*deci+.5)/deci
 end
 
-function love.load()
+function love.load(args)
+  CLIENT_USERNAME = args[2] or CLIENT_USERNAME
+  print("CLIENT_USERNAME: " .. CLIENT_USERNAME)
   print("Time to play!")
 
   Global = {
