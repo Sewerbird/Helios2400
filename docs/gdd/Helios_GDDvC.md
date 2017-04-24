@@ -20,9 +20,11 @@ If there are 5 players, 2 provinces start with no Citizens. Otherwise, provinces
 
 ## The Units
 
-There are 4 kinds of player units in HELIOS, and 1 kind of computer unit.
+There are 4 kinds of player units in HELIOS, and 1 kind of computer unit. Units cost Build Points to place on the map, and players get 1 Build Point for each territory they control.
 
 ### Citizens
+
+*X Build Points*
 
 Citizens are the most important and numerous unit in HELIOS, since they are used to assert electoral control over a Martian territory: whoever has the most citizens on a territory secure the territory's votes in elections. If you have citizens in a territory, you can use the 'Organize Protest' action.
 
@@ -32,6 +34,8 @@ Citizen action. This announces a public protest in the territory the Citizen is 
 
 ### Militia
 
+*X Build Points*
+
 Militia are hyper-partisan, and are willing to engage in violence against members of non-party units. Militia can attack militia of other parties and fight Police. If you have militias in a territory, you can use the 'Persecute Enemies' action.
 
 #### Special Action: Persecute Enemies
@@ -40,13 +44,17 @@ Militia action. This occurs on the turn that it is announced, and attacks a spec
 
 ### Terrorists
 
+*X Build Points*
+
 Terrorists are secretly-placed units that grow stronger each turn they remain hidden. When a terrorist attacks, a devastating attack is unleashed, but the terrorist is used up. If you have a terrorist in a territory, you can use the 'Commit Terror Attack' action.
 
 #### Special Action: Commit Terror Attack
 
-Terrorist action. This occurs on the turn that it is announced, and attacks all factions. If there are Police conducting Counterterrorism, a combat occurs: if the police win, the terrorist is removed with no further consequence. If the police lose, are none are present, then the terror attack succeeds, and inflicts damage against all enemy units in the territory. If a Protest is happening in the territory this turn, then the attack is much more deadly. There is a 15% chance of the terrorist's identity/party being revealed. If a Terran Army is present, the attack is instead directed solely at the Terran Army unit.
+Terrorist action. This occurs on the turn that it is announced, and attacks all factions. If there are Police conducting Counterterrorism, a combat occurs: if the police win, the terrorist is removed with no further consequence. If the police lose, or none are present, then the terror attack succeeds, and inflicts damage against all enemy units in the territory. If a Protest is happening in the territory this turn, then the attack is much more deadly. There is a 15% chance of the terrorist's identity/party being revealed. If a Terran Army is present, the attack is instead directed solely at the Terran Army unit.
 
 ### Police
+
+*X Build Points*
 
 Police belong to whoever won the last election, and are very powerful units. Police are the only unit that can move from one territory to another. If you have a police in a territory, you can use the 'Martial Law' and 'Remobilize' actions.
 
