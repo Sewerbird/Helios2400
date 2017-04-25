@@ -12,11 +12,11 @@ TitleScreen:addElement(
 
 TitleScreen:getElement('MENU_OPTIONS'):addElements({
     Text.new('TITLE_TEXT',{textLoc = 'center',text = 'Helios 2400', height = 50}),
-    Button.new('JOIN_GAME',{margins = 20, height = '8%', text = 'Join Game', onRelease = function(self)
+    Button.new('JOIN_GAME',{margins = 20, height = '8%', text = 'Join a Game', onRelease = function(self)
         Global.Viewer.Systems.UIStack:pop()
         Global.Viewer.Systems.UIStack:push(Global.Viewer.game.GameWrapper)
     end}),
-    Button.new('EXIT_GAME',{margins = 20, height = '8%', text = 'Exit Game', onRelease = function(self)
+    Button.new('EXIT_GAME',{margins = 20, height = '8%', text = 'Exit Helios', onRelease = function(self)
         love.event.quit()
     end})
 })
