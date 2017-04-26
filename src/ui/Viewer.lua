@@ -13,6 +13,8 @@ local UIStack = require 'lib/LoveGUI/addon/stack'
 local Container = require 'lib/LoveGUI/core/container'
 local MapViewElement = require 'src/ui/mapViewElement'
 
+local HeliosUITheme = require 'src/ui/HeliosUITheme'
+
 local Viewer = class("Viewer", {
 	Registry = nil,
 	Systems = {},
@@ -30,9 +32,8 @@ function Viewer:init ( registry, mapScenes )
 		visible = false,
 		alignment = 'right'
 	}):addElement(MapViewElement.new())
-	local mapViewObject = GameObject:new('MAP_VIEW',{
-		ElementWrapper:new(mapViewElement)
-	},Global.Registry)
+
+	mapPositioner:setTheme(HeliosUITheme)
 
 	self.Systems.UIStack:push(
 		mapPositioner

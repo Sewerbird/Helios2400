@@ -2,6 +2,8 @@ local Container = require 'lib/LoveGUI/core/container'
 local Text = require 'lib/LoveGUI/core/text'
 local Button = require 'lib/LoveGUI/core/button'
 
+local HeliosUITheme = require 'src/ui/HeliosUITheme'
+
 local mainMenu = {}
 
 function mainMenu.new()
@@ -10,6 +12,8 @@ function mainMenu.new()
 		visible = false,
 		ori = 'hor'
 	})
+
+	screenCover:setTheme(HeliosUITheme)
 
 	local centering_container = Container.new('MENU_CENTERING_CONTAINER',{
 		width = '50%',
@@ -46,10 +50,16 @@ function mainMenu.new()
 		Button.new('NEXT_VIEW_BUTTON'):setText('Next View'):setMargins(15)
 	})
 
-	main_menu:getElement('NEXT_VIEW_BUTTON').mousepressed = function(x, y)
-		print("pressed NEXT_VIEW_BUTTON")
+	main_menu:getElement('SAVE_GAME_BUTTON').mousepressed = function(x, y)	
 	end
-
+	main_menu:getElement('LOAD_GAME_BUTTON').mousepressed = function(x, y)	
+	end
+	main_menu:getElement('QUIT_GAME_BUTTON').mousepressed = function(x, y)
+		love.event.quit()
+	end
+	main_menu:getElement('RETURN_BUTTON').mousepressed = function(x, y)
+		Global.Viewer.Systems.UIStack:pop()
+	end
 	main_menu.keypressed = function(self, key, focus)
 		if key == "escape" and focus then
 			Global.Viewer.Systems.UIStack:pop()

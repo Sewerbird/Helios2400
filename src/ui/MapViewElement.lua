@@ -7,8 +7,8 @@ local mapView = {}
 
 function mapView.new()
 	local mapViewElement = Element.new('MAP_VIEW_ELEMENT',{
-		width = '75%',
-		height = '75%'
+		width = '100%',
+		height = '90%'
 	})
 	mapViewElement._draw = function(self)
 		local x,y,w,h = self:getRectangle()
