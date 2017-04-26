@@ -20,11 +20,23 @@ local Addressinput = Input.new('ADDRESS_INPUT',{default = 'localhost:50000', hei
 	self:select()
 end})
 local JoinButton = Button.new('CONNECT_BUTTON',{height = 40, text = 'Connect', onRelease = function (self)
-	print("Send server CONNECT message here")
-	self.parent:getElement('INFO_TEXT'):setText('Connecting to ' .. Addressinput:getValue())
-
-	Global.Connection = HeliosConnection.new('localhost',50000)
-
+	local infoElement = self.parent:getElement('INFO_TEXT')
+	infoElement:setText('Connecting to ' .. Addressinput:getValue())
+	local address, port = Addressinput:getValue():match("([^:]*)(.*)")
+	if not address then
+		infoElement:setText('Please provide correct address.')
+		return
+	end
+	if string.len(port) > 0 then
+		port = tonumber(port:sub(2))
+		if port == nil then
+			infoElement:setText('Incorrect port \'%s\'', port)
+			return
+		end
+	else
+		port = 50000
+	end
+	Global.Connection = HeliosConnection.new(address, port)
 end})
 local Info = Text.new('INFO_TEXT', {height = 50, text = '-'})
 local CancelButton = Button.new('CANCEL_BUTTON',{height = 40, text = 'Cancel', onRelease = function (self)
