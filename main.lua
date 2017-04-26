@@ -117,6 +117,10 @@ function love.keyreleased( key, scancode, isrepeat )
   Global.Viewer.Systems.UIStack:keyreleased(key, scancode, isrepeat)
 end
 
+function love.textinput(text)
+  Global.Viewer.Systems.UIStack:textinput(text)
+end
+
 function love.focus( f )
   if not f then
     print("LOST FOCUS")
