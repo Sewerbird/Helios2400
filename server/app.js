@@ -42,7 +42,7 @@ function onData(data) {
     var event = split[1];
     var info = split[2];
     switch(event){
-        case "CONNECT": game.addPlayer(from); return from;
+        case "CONNECT": game.addPlayer(from,broadcast); return from;
         case "SUBMIT": game.finishTurn(from,info,broadcast); return;
         default: broadcast(from + "\t" + event + "\t" + (info || ""));
     }

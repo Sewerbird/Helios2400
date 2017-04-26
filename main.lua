@@ -41,6 +41,11 @@ function love.load(args)
 end
 
 function love.update( dt )
+
+  if Global.Connection then
+    Global.Connection:update()
+  end
+  
   local gc_cnt = collectgarbage('count')
   if gc_cnt > GOAL_MEMORY then error("Using too much memory mate! \nYou didnt overflow, but you spiked past the design limit of " .. (GOAL_MEMORY/1024) .. "MB, hitting " .. (gc_cnt/1024) .. "MB") end
 

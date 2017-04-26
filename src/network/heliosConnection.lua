@@ -32,9 +32,10 @@ function HeliosConnection:submitTurn()
 end
 
 function HeliosConnection:process(from,event,info)
-	table.insert(messages,from.. ":\t" .. event .."\t" .. info)
 	if event == "TURN" then
 		locked = false
+	elseif event == "LOBBY" then
+		print("GOT LOBBY",from,event,info)
 	end
 end
 

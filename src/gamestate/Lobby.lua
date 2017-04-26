@@ -30,7 +30,7 @@ ChatContainer:addElements({ChatInput,ChatSubmit})
 
 GameInfo:addElements({PlayerList, ChatBox, ChatContainer, ReadyButton})
 
-local lcHor = Container.new('LOBBY_CENTERING_HOR',{alignment = 'center'})
+local lcHor = Container.new('LOBBY_CENTERING_HOR',{visible = false,alignment = 'center'})
 lcHor:addElement(Lobby)
 
 return lcHor
