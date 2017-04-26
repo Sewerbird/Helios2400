@@ -15,6 +15,15 @@ theme:set('container','onDraw',function(self)
 	love.graphics.rectangle('line', x, y, w, h)
 end)
 
+theme:set('element','onDraw',function(self)
+	local x,y,w,h = self:getRectangle()
+
+	love.graphics.setColor(BLUE)
+	love.graphics.rectangle('fill', x, y, w, h)
+	love.graphics.setColor(DARKER_BLUE)
+	love.graphics.rectangle('line', x, y, w, h)
+end)
+
 theme:set('text','onDraw',function(self)
 	local x,y,w,h = self:getRectangle()
 
