@@ -12,8 +12,7 @@ local ElementWrapper = require 'src/component/ElementWrapper'
 local UIStack = require 'lib/LoveGUI/addon/stack'
 local Container = require 'lib/LoveGUI/core/container'
 local MapViewElement = require 'src/ui/mapViewElement'
-
-local HeliosUITheme = require 'src/ui/HeliosUITheme'
+local TimerBar = require 'src/gamestate/TimerBar'
 
 local Viewer = class("Viewer", {
 	Registry = nil,
@@ -30,10 +29,14 @@ function Viewer:init ( registry, mapScenes )
 
 	local mapPositioner = Container.new('MAP_VIEW_POSITIONER',{
 		visible = false,
-		alignment = 'right'
-	}):addElement(MapViewElement.new())
-
-	mapPositioner:setTheme(HeliosUITheme)
+		alignment = 'right',
+		ori = 'ver',
+		paddings = 0,
+		margins = 0
+	}):addElements({
+		TimerBar.new(),
+		MapViewElement.new()
+	})
 
 	self.Systems.UIStack:push(
 		mapPositioner
