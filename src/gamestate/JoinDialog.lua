@@ -22,7 +22,10 @@ local JoinButton = Button.new('CONNECT_BUTTON',{height = 40, text = 'Connect', o
 	self.parent:getElement('INFO_TEXT'):setText('Connecting to ' .. Addressinput:getValue())
 end})
 local Info = Text.new('INFO_TEXT', {height = 50, text = '-'})
+local CancelButton = Button.new('CANCEL_BUTTON',{height = 40, text = 'Cancel', onRelease = function (self)
+	Global.Viewer.Systems.UIStack:pop()
+end})
 
-Options:addElements({AddressText, Addressinput, JoinButton, Info})
+Options:addElements({AddressText, Addressinput, JoinButton, Info, CancelButton})
 
 return GrayScreen
