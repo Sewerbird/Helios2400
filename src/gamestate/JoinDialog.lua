@@ -1,5 +1,6 @@
 local Text = require 'lib/LoveGUI/core/text'
 local Input = require 'lib/LoveGUI/core/input'
+local Button = require 'lib/LoveGUI/core/button'
 local Container = require 'lib/LoveGUI/core/container'
 
 local GrayScreen = Container.new('GRAY_SCREEN',{visible = true, ori = 'hor', alignment = 'center'})
@@ -13,11 +14,15 @@ local Options = Container.new('MENU_OPTIONS',{height = '70%',alignment = 'top', 
 CenteringContainer:addElement(Options)
 
 local AddressText = Text.new('ADDRESS_TEXT',{height = 50, text = 'Enter the address of the\n game you wish to join'})
-local Addressinput = Input.new('ADDRESS_INPUT',{default = 'localhost:50000', height = 20, selected = false})
-Addressinput:setOnRelease(function(self)
+local Addressinput = Input.new('ADDRESS_INPUT',{default = 'localhost:50000', height = 20, selected = false, onRelease = function(self)
 	self:select()
-end)
+end})
+local JoinButton = Button.new('CONNECT_BUTTON',{height = 40, text = 'Connect', onRelease = function (self)
+	print("Send server CONNECT message here")
+	self.parent:getElement('INFO_TEXT'):setText('Connecting to ' .. Addressinput:getValue())
+end})
+local Info = Text.new('INFO_TEXT', {height = 50, text = '-'})
 
-Options:addElements({AddressText, Addressinput})
+Options:addElements({AddressText, Addressinput, JoinButton, Info})
 
 return GrayScreen
