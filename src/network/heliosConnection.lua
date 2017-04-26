@@ -2,6 +2,8 @@ local Connection = require "src/network/connection"
 local HeliosConnection = {}
 HeliosConnection.__index = HeliosConnection
 
+local Lobby = require "src/gamestate/lobby"
+
 function HeliosConnection.new(address, port)
 	nHC = {}
 	setmetatable(nHC,HeliosConnection)
@@ -36,7 +38,18 @@ function HeliosConnection:process(from,event,info)
 		locked = false
 	elseif event == "LOBBY" then
 		print("GOT LOBBY",from,event,info)
+		updateLobby()
 	end
+end
+
+function updateLobby()
+	local lobby = Global.Viewer.Systems.UIStack:peek()
+	if lobby.id ~= 'LOBBY_CENTERING_HOR' then
+		Global.Viewer.Systems.UIStack:empty()
+		Global.Viewer.Systems.UIStack:push(Lobby)
+		lobby = Lobby
+	end
+	
 end
 
 return HeliosConnection
