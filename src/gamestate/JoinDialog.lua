@@ -4,6 +4,7 @@ local Button = require 'lib/LoveGUI/core/button'
 local Container = require 'lib/LoveGUI/core/container'
 
 local GrayScreen = Container.new('GRAY_SCREEN',{visible = true, ori = 'hor', alignment = 'center'})
+local Lobby = require 'src/gamestate/lobby'
 
 local DialogTheme = require('src/theme/dialog')
 GrayScreen:setTheme(DialogTheme)
@@ -20,8 +21,11 @@ end})
 local JoinButton = Button.new('CONNECT_BUTTON',{height = 40, text = 'Connect', onRelease = function (self)
 	print("Send server CONNECT message here")
 	self.parent:getElement('INFO_TEXT'):setText('Connecting to ' .. Addressinput:getValue())
+	--TODO: check if connection didn't fail!
+	Global.Viewer.Systems.UIStack:empty()
+	Global.Viewer.Systems.UIStack:push(Lobby)
 end})
-local Info = Text.new('INFO_TEXT', {height = 50, text = '-'})
+local Info = Text.new('INFO_TEXT', {height = 50, text = ''})
 local CancelButton = Button.new('CANCEL_BUTTON',{height = 40, text = 'Cancel', onRelease = function (self)
 	Global.Viewer.Systems.UIStack:pop()
 end})
