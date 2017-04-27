@@ -3,6 +3,7 @@ local HeliosConnection = {}
 HeliosConnection.__index = HeliosConnection
 
 local Lobby = require "src/gamestate/lobby"
+local json = require "lib/json"
 
 function HeliosConnection.new(address, port)
 	nHC = {}
@@ -38,18 +39,19 @@ function HeliosConnection:process(from,event,info)
 		locked = false
 	elseif event == "LOBBY" then
 		print("GOT LOBBY",from,event,info)
-		updateLobby()
+		updateLobby(info)
 	end
 end
 
-function updateLobby()
+function updateLobby(game)
 	local lobby = Global.Viewer.Systems.UIStack:peek()
 	if lobby.id ~= 'LOBBY_CENTERING_HOR' then
 		Global.Viewer.Systems.UIStack:empty()
 		Global.Viewer.Systems.UIStack:push(Lobby)
 		lobby = Lobby
 	end
-	
+	game = json.decode(game)
+	lobby:getElement('LOBBY_TITLE'):setText(game.lobbyName or "NA")
 end
 
 return HeliosConnection
