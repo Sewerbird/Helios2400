@@ -2,6 +2,8 @@ local Connection = require "src/network/connection"
 local HeliosConnection = {}
 HeliosConnection.__index = HeliosConnection
 
+local Text = require 'lib/LoveGUI/core/text'
+local Container = require 'lib/LoveGUI/core/container'
 local Lobby = require "src/gamestate/lobby"
 local json = require "lib/json"
 
@@ -38,7 +40,6 @@ function HeliosConnection:process(from,event,info)
 	if event == "TURN" then
 		locked = false
 	elseif event == "LOBBY" then
-		print("GOT LOBBY",from,event,info)
 		updateLobby(info)
 	end
 end
@@ -52,6 +53,16 @@ function updateLobby(game)
 	end
 	game = json.decode(game)
 	lobby:getElement('LOBBY_TITLE'):setText(game.lobbyName or "NA")
+	local playerList = lobby:getElement('PLAYER_LIST')
+	playerList:empty()
+	local players = game.players
+	for _,player in ipairs(players) do
+		playerList:addElement(
+			Container.new('PLAYER_' .. player.id,{height = 40}):addElements({
+				Text.new('PLAYER_NAME_' .. player.id,{text = player.id})
+			})
+		)
+	end
 end
 
 return HeliosConnection
