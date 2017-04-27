@@ -11,6 +11,17 @@ function getGameSummary(){
 	return JSON.stringify(NewGame)
 }
 
+function removePlayer(playerId, broadcast) {
+	for(var i = 0; i < NewGame.players.length ; i++){
+		if(NewGame.players[i].id != playerId){
+			continue;
+		}
+		NewGame.players.splice(i,1);
+		broadcast('SERVER\tLOBBY\t' + getGameSummary())
+		return
+	}
+}
+
 function addPlayer(playerId,broadcast) {
 	NewGame.players.push({
 		id: playerId,
@@ -33,5 +44,6 @@ function finishTurn(playerId,changes,broadcast) {
 
 module.exports = {
 	finishTurn: finishTurn,
-	addPlayer: addPlayer
+	addPlayer: addPlayer,
+	removePlayer: removePlayer
 }

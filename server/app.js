@@ -28,6 +28,7 @@ function broadcast(message) {
 
 function onClose(id, socket, hadError) {
     sockets.splice(sockets.indexOf(socket),1);
+    game.removePlayer(id,broadcast);
     broadcast(id + "\t" + "LOST_CONNECTION" + "\t" + hadError);
 }
 
