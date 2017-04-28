@@ -45,11 +45,19 @@ function HeliosConnection:process(from,event,info)
 		updateLobby(info)
 	elseif event == "CHAT" then
 		Global.Chat:add(from, info)
+		updateChat()
 	end
 end
 
 function HeliosConnection:chat(message)
 	self.connection:send("CHAT",message)
+end
+
+function updateChat()
+	local lobby = Global.Viewer.Systems.UIStack:peek()
+	local chatBox = lobby:getElement('CHAT_BOX')
+	local chat = Global.Chat:readAsString(10)
+	chatBox:setText(chat)
 end
 
 function updateLobby(game)

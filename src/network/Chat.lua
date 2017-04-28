@@ -25,7 +25,7 @@ end
 function Chat:readAsString(lastX)
 	local res = ""
 	for _,msg in ipairs(self:read(lastX)) do
-		res = res .. from .. ": " .. msg .. "\n"
+		res = res .. msg[1] .. ": " .. msg[2] .. "\n"
 	end
 	return res
 end
