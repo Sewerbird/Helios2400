@@ -6,10 +6,8 @@ local Text = require 'lib/LoveGUI/core/text'
 local Container = require 'lib/LoveGUI/core/container'
 local Lobby = require "src/gamestate/lobby"
 local json = require "lib/json"
-local Chat = require "src/network/chat"
 
 function HeliosConnection.new(address, port)
-	Global.Chat = Chat.new()
 	nHC = {}
 	setmetatable(nHC,HeliosConnection)
 	nHC.connection = Connection.new(address, port, CLIENT_USERNAME, function(datagram) 
@@ -56,6 +54,7 @@ end
 function updateChat()
 	local lobby = Global.Viewer.Systems.UIStack:peek()
 	local chatBox = lobby:getElement('CHAT_BOX')
+	if not chatBox then return end
 	local chat = Global.Chat:readAsString(10)
 	chatBox:setText(chat)
 end

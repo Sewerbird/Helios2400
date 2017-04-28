@@ -9,6 +9,8 @@ local PubSub = require 'src/PubSub'
 local Registry = require 'src/Registry'
 local MutatorBus = require 'src/mutate/MutatorBus'
 
+local Chat = require "src/network/chat"
+
 math.randomseed(os.time())
 CLIENT_USERNAME = math.random(10000,100000)
 
@@ -29,6 +31,7 @@ function love.load(args)
     TickAccumulator = 0,
     TickRate = 0.01,
   }
+  Global.Chat = Chat.new()
   Global.Loader = Loader:new(Global)
   Global.Loader:debugLoad()
 
@@ -129,7 +132,7 @@ end
 function love.focus( f )
   if not f then
     print("LOST FOCUS")
-    Global.PAUSE = true
+    --Global.PAUSE = true
   else
     print("GAINED FOCUS")
     Global.PAUSE = false

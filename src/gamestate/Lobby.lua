@@ -18,7 +18,7 @@ local LobbySettings = Container.new('LOBBY_SETTINGS',{width = '35%'})
 LobbyContainer:addElements({GameInfo,LobbySettings})
 
 local PlayerList = Container.new('PLAYER_LIST',{ori = 'ver'})
-local ChatBox = Text.new('CHAT_BOX',{textLoc = 'topleft'})
+local ChatBox = Text.new('CHAT_BOX',{textLoc = 'bottomleft'})
 local ChatContainer = Container.new('CHAT_CONTAINER', {height = 35})
 local ReadyButton = Button.new('READY_BUTTON',{text = 'I\'m Ready!', width = 120, height = 40, font = love.graphics.newFont(18)})
 

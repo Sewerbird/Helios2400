@@ -17,7 +17,8 @@ function removePlayer(playerId, broadcast) {
 			continue;
 		}
 		NewGame.players.splice(i,1);
-		broadcast('SERVER\tLOBBY\t' + getGameSummary())
+		broadcast('SERVER\tCHAT\t ' + playerId + ' left the game!');
+		broadcast('SERVER\tLOBBY\t' + getGameSummary());
 		return
 	}
 }
@@ -29,6 +30,7 @@ function addPlayer(playerId,broadcast) {
 		color: {r: 255,g: 0,b: 0},
 		team: 'RED'
 	})
+	broadcast('SERVER\tCHAT\t ' + playerId + ' joined the game!')
 	broadcast('SERVER\tLOBBY\t' + getGameSummary())
 }
 
