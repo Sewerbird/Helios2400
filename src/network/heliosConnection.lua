@@ -78,6 +78,7 @@ function updateLobby(game)
 			})
 		)
 	end
+	updateChat()
 end
 
 return HeliosConnection
