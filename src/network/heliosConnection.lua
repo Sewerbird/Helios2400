@@ -6,8 +6,10 @@ local Text = require 'lib/LoveGUI/core/text'
 local Container = require 'lib/LoveGUI/core/container'
 local Lobby = require "src/gamestate/lobby"
 local json = require "lib/json"
+local Chat = require "src/network/chat"
 
 function HeliosConnection.new(address, port)
+	Global.Chat = Chat.new()
 	nHC = {}
 	setmetatable(nHC,HeliosConnection)
 	nHC.connection = Connection.new(address, port, CLIENT_USERNAME, function(datagram) 
@@ -41,6 +43,8 @@ function HeliosConnection:process(from,event,info)
 		locked = false
 	elseif event == "LOBBY" then
 		updateLobby(info)
+	elseif event == "CHAT" then
+		Global.Chat:add(from, info)
 	end
 end
 

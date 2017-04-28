@@ -45,6 +45,7 @@ function onData(data) {
     switch(event){
         case "CONNECT": game.addPlayer(from,broadcast); return from;
         case "SUBMIT": game.finishTurn(from,info,broadcast); return;
+        case "CHAT": broadcast(data); return;
         default: broadcast(from + "\t" + event + "\t" + (info || ""));
     }
 }
