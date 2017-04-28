@@ -43,6 +43,7 @@ function onData(data) {
     var event = split[1];
     var info = split[2];
     switch(event){
+        case "READY": game.ready(from,info,broadcast); return;
         case "CONNECT": game.addPlayer(from,broadcast); return from;
         case "SUBMIT": game.finishTurn(from,info,broadcast); return;
         case "CHAT": broadcast(data); return;

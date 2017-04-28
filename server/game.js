@@ -44,8 +44,36 @@ function finishTurn(playerId,changes,broadcast) {
 	}
 }
 
+function getPlayer(playerId) {
+	for(var i = 0; i < NewGame.players.length ; i++){
+		if(NewGame.players[i].id != playerId){
+			continue;
+		}
+		return NewGame.players[i]
+	}
+}
+
+function everyoneReady() {
+	for(var i = 0; i < NewGame.players.length ; i++){
+		if(!NewGame.players[i].ready){
+			return false
+		}
+	}
+	return true
+}
+
+function ready(playerId, info, broadcast) {
+	getPlayer(playerId).ready = info == "true"
+	if(everyoneReady()){
+		console.log("ALL PLAYERS READY!")
+		//TODO: start the game
+	}
+	broadcast('SERVER\tLOBBY\t' + getGameSummary())
+}
+
 module.exports = {
 	finishTurn: finishTurn,
 	addPlayer: addPlayer,
-	removePlayer: removePlayer
+	removePlayer: removePlayer,
+	ready: ready
 }

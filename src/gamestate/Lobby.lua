@@ -20,7 +20,19 @@ LobbyContainer:addElements({GameInfo,LobbySettings})
 local PlayerList = Container.new('PLAYER_LIST',{ori = 'ver'})
 local ChatBox = Text.new('CHAT_BOX',{textLoc = 'bottomleft'})
 local ChatContainer = Container.new('CHAT_CONTAINER', {height = 35})
-local ReadyButton = Button.new('READY_BUTTON',{text = 'I\'m Ready!', width = 120, height = 40, font = love.graphics.newFont(18)})
+local ReadyButton = Button.new('READY_BUTTON',{
+	text = 'I\'m not Ready!', 
+	width = 120, 
+	height = 40, 
+	font = love.graphics.newFont(18), 
+	onRelease = function(self)
+		self.on = not self.on
+		print("TOGGLED",self.on and "true" or "false")
+		Global.Connection:ready(self.on and "true" or "false")
+		self:setText('I\'m ' .. (self.on and 'not' or '') .. ' Ready!')
+	end
+})
+ReadyButton.on = false
 
 local ChatInput = Input.new('CHAT_INPUT', {
 	selected = true,

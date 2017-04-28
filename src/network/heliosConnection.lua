@@ -32,6 +32,10 @@ function HeliosConnection:connect()
 	self.connection:send("CONNECT")
 end
 
+function HeliosConnection:ready(ready)
+	self.connection:send("READY",ready)
+end
+
 function HeliosConnection:submitTurn()
 	self.connection:send("SUBMIT","{gamestate: change_" .. (math.floor(math.random() * 10000)) .. "}")
 end
