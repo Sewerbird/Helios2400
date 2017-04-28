@@ -15,9 +15,11 @@ end
 
 function Chat:read(lastX)
 	local res = {}
-	for i=1,lastX do
+	local j = math.min(lastX,#self.messages)
+	for i=#self.messages, math.max(1,#self.messages - lastX), -1 do
 		if not self.messages[i] then return res end
-		table.insert(res,self.messages[i])
+		res[j] = self.messages[i]
+		j = j - 1
 	end
 	return res
 end
