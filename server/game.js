@@ -63,17 +63,19 @@ function everyoneReady() {
 }
 
 function ready(playerId, info, broadcast) {
+	var isReady = info == "true";
 	for(var i = 0; i < NewGame.players.length ; i++){
 		if(NewGame.players[i].id != playerId){
 			continue;
 		}
-		NewGame.players[i].ready = info == "true";
+		NewGame.players[i].ready = isReady;
 		break;
 	}
 	if(everyoneReady()){
 		console.log("ALL PLAYERS READY!")
 		//TODO: start the game
 	}
+	broadcast('SERVER\tCHAT\t ' + playerId + ' is' + (isReady ? '' : 'n\'t') + ' ready!');
 	broadcast('SERVER\tLOBBY\t' + getGameSummary())
 }
 
