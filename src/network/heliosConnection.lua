@@ -4,6 +4,8 @@ HeliosConnection.__index = HeliosConnection
 
 local Text = require 'lib/LoveGUI/core/text'
 local Container = require 'lib/LoveGUI/core/container'
+local PlayerListItem = require 'src/ui/PlayerListItem'
+
 local Lobby = require "src/gamestate/lobby"
 local json = require "lib/json"
 
@@ -77,9 +79,7 @@ function updateLobby(game)
 	local players = game.players
 	for _,player in ipairs(players) do
 		playerList:addElement(
-			Container.new('PLAYER_' .. player.id,{height = 40}):addElements({
-				Text.new('PLAYER_NAME_' .. player.id,{text = player.id})
-			})
+			PlayerListItem(player.id,player.ready,"TEST_TEAM")
 		)
 	end
 	updateChat()

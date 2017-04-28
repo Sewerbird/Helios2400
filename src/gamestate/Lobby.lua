@@ -22,14 +22,28 @@ local ChatBox = Text.new('CHAT_BOX',{textLoc = 'bottomleft'})
 local ChatContainer = Container.new('CHAT_CONTAINER', {height = 35})
 local ReadyButton = Button.new('READY_BUTTON',{
 	text = 'I\'m not Ready!', 
-	width = 120, 
+	width = 200, 
 	height = 40, 
 	font = love.graphics.newFont(18), 
 	onRelease = function(self)
 		self.on = not self.on
 		print("TOGGLED",self.on and "true" or "false")
 		Global.Connection:ready(self.on and "true" or "false")
-		self:setText('I\'m ' .. (self.on and 'not' or '') .. ' Ready!')
+		self:setText('I\'m' .. (self.on and '' or ' not') .. ' Ready!')
+	end,
+	customDraw = function(self)
+		local x,y,w,h = self:getRectangle()
+		local col1 = self.on and {0,255,0} or {255,0,0}
+		local col2 = self.on and {0,150,0} or {150,0,0}
+		love.graphics.setColor(col1)
+		love.graphics.rectangle('fill', x, y, w, h)
+		love.graphics.setColor(col2)
+		love.graphics.rectangle('line', x, y, w, h)
+		
+		love.graphics.setColor(0,0,0)
+		local tx, ty = self:getTextLocation()
+		love.graphics.setFont(self:getFont())
+		love.graphics.print(self:getText(), tx,ty)
 	end
 })
 ReadyButton.on = false

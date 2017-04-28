@@ -63,7 +63,13 @@ function everyoneReady() {
 }
 
 function ready(playerId, info, broadcast) {
-	getPlayer(playerId).ready = info == "true"
+	for(var i = 0; i < NewGame.players.length ; i++){
+		if(NewGame.players[i].id != playerId){
+			continue;
+		}
+		NewGame.players[i].ready = info == "true";
+		break;
+	}
 	if(everyoneReady()){
 		console.log("ALL PLAYERS READY!")
 		//TODO: start the game

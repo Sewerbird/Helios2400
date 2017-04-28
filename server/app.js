@@ -41,7 +41,7 @@ function onData(data) {
     var split = data.split("\t",3)
     var from = split[0];
     var event = split[1];
-    var info = split[2];
+    var info = split[2].replace('\n','');
     switch(event){
         case "READY": game.ready(from,info,broadcast); return;
         case "CONNECT": game.addPlayer(from,broadcast); return from;
