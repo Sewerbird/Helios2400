@@ -229,25 +229,25 @@ var a_sample_gamestate = {
 function processTurn ( currentTurnState ) {
 
 	//Process commands
-	var afterCommandsState = _.chain(currentTurnState.players)
-		.reduce(function(collation, x){
+	var finalState = _.chain(currentTurnState.players)
+		.reduce(function normalize_commands(collation, x){
 			var standalone_orders = _.map(x.pending_orders, function(y){
 				y.player_id = x.player_id;
 				y.stats = x.stats;
 			})
-			return collation.push(x.pending_orders);
+			return collation.push(standalone_orders);
 		}, [])
 		.flatten()
-		.sortBy(function(x){
+		.tap(function handle_protests(orders){
+			return orders
+		})
+		.tap(function handle_ai_move(orders){
+			return orders
+		})
+		.sortBy(function order_commands(x){
 			return game_commands[x.command_id].resolution_order;
 		})
-		.tap(function handle_protests(state){
-			return state
-		})
-		.tap(function handle_ai_move(state){
-			return state
-		})
-		.reduce(function(newState, x){
+		.reduce(function execute_commands(newState, x){
 			var rule = game_commands[x.command_id]
 
 			if(rule.isLegal(x, currentTurnState, newState)){
@@ -259,8 +259,10 @@ function processTurn ( currentTurnState ) {
 		.tap(function handle_vote(state){
 			return state
 		})
+		.tap(function refresh(state){
+			return state
+		})
 		.value();
-
 
 	return finalState;
 }
