@@ -44,6 +44,10 @@ function HeliosConnection:process(from,event,info)
 	end
 end
 
+function HeliosConnection:chat(message)
+	self.connection:send("CHAT",message)
+end
+
 function updateLobby(game)
 	local lobby = Global.Viewer.Systems.UIStack:peek()
 	if lobby.id ~= 'LOBBY_CENTERING_HOR' then

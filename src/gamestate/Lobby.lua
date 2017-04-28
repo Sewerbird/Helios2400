@@ -22,10 +22,24 @@ local ChatBox = Element.new('CHAT_BOX')
 local ChatContainer = Container.new('CHAT_CONTAINER', {height = 35})
 local ReadyButton = Button.new('READY_BUTTON',{text = 'I\'m Ready!', width = 120, height = 40, font = love.graphics.newFont(18)})
 
-local ChatInput = Input.new('CHAT_INPUT', {selected = true,onRelease = function(self)
-	self:select()
+local ChatInput = Input.new('CHAT_INPUT', {
+	selected = true,
+	onRelease = function(self)
+		self:select()
+	end, 
+	onDone = function(self)
+		submitChat()
+	end}
+)
+
+function submitChat(message)
+	Global.Connection:chat(ChatInput:getValue())
+	ChatInput:setValue('')
+end
+
+local ChatSubmit = Button.new('CHAT_SUBMIT',{ width = 60, text = 'submit', onRelease = function (self)
+	submitChat()
 end})
-local ChatSubmit = Button.new('CHAT_SUBMIT',{ width = 60, text = 'submit'})
 ChatContainer:addElements({ChatInput,ChatSubmit})
 
 GameInfo:addElements({PlayerList, ChatBox, ChatContainer, ReadyButton})
