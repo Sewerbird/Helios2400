@@ -14,8 +14,13 @@ local LobbyContainer = Container.new('LOBBY_CONTAINER')
 Lobby:addElements({LobbyTitle,LobbyContainer})
 
 local GameInfo = Container.new('GAME_INFO',{ori = 'ver'})
-local LobbySettings = Container.new('LOBBY_SETTINGS',{width = '35%'})
+local LobbySettings = Container.new('LOBBY_SETTINGS',{width = '35%', ori = 'ver'})
 LobbyContainer:addElements({GameInfo,LobbySettings})
+
+LobbySettings:addElements({
+	Text.new('INFO_ADDRESS', {text = '-', height = 'wrap',textLoc = 'centerleft'}),
+	Text.new('INFO_PORT', {text = '-', height = 'wrap',textLoc = 'centerleft'})
+})
 
 local PlayerList = Container.new('PLAYER_LIST',{ori = 'ver'})
 local ChatBox = Text.new('CHAT_BOX',{textLoc = 'bottomleft'})

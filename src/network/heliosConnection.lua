@@ -82,6 +82,10 @@ function updateLobby(game)
 			PlayerListItem(player.id,player.ready,"TEST_TEAM")
 		)
 	end
+	local address,port = Global.Connection.connection:getInfo()
+	lobby:getElement('INFO_ADDRESS'):setText('Address: ' .. address)
+	lobby:getElement('INFO_PORT'):setText('Port: ' .. port)
+
 	updateChat()
 end
 

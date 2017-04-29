@@ -31,4 +31,9 @@ function Connection.onReceive(datagram)
 	print("no onReceive function defined.")
 end
 
+function Connection:getInfo()
+	local a,b = self.tcp:getsockname()
+	return self.tcp:getsockname()
+end
+
 return Connection
