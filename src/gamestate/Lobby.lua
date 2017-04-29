@@ -21,8 +21,7 @@ local PlayerList = Container.new('PLAYER_LIST',{ori = 'ver'})
 local ChatBox = Text.new('CHAT_BOX',{textLoc = 'bottomleft'})
 local ChatContainer = Container.new('CHAT_CONTAINER', {height = 35})
 local ReadyButton = Button.new('READY_BUTTON',{
-	text = 'I\'m not Ready!', 
-	width = 200, 
+	text = 'I\'m not Ready!',
 	height = 40, 
 	font = love.graphics.newFont(18), 
 	onRelease = function(self)
@@ -48,6 +47,15 @@ local ReadyButton = Button.new('READY_BUTTON',{
 })
 ReadyButton.on = false
 
+local LeaveButton = Button.new('LEAVE_BUTTON',{
+	text = 'Leave Lobby',
+	height = 40, 
+	font = love.graphics.newFont(18), 
+	onRelease = function(self)
+		Global.Viewer.Systems.UIStack:pop()
+	end
+})
+
 local ChatInput = Input.new('CHAT_INPUT', {
 	selected = true,
 	onRelease = function(self)
@@ -68,7 +76,19 @@ local ChatSubmit = Button.new('CHAT_SUBMIT',{ width = 60, text = 'submit', onRel
 end})
 ChatContainer:addElements({ChatInput,ChatSubmit})
 
-GameInfo:addElements({PlayerList, ChatBox, ChatContainer, ReadyButton})
+GameInfo:addElements({
+	PlayerList, 
+	ChatBox, 
+	ChatContainer,
+	Container.new('READY_AND_LEAVE_CONTAINER',{
+		height = 40,
+		visible = false,
+		paddings = 0
+	}):addElements({
+		ReadyButton,
+		LeaveButton
+	})
+})
 
 local lcHor = Container.new('LOBBY_CENTERING_HOR',{visible = false,alignment = 'center'})
 lcHor:addElement(Lobby)

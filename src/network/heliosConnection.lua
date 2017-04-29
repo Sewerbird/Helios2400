@@ -68,7 +68,7 @@ end
 function updateLobby(game)
 	local lobby = Global.Viewer.Systems.UIStack:peek()
 	if lobby.id ~= 'LOBBY_CENTERING_HOR' then
-		Global.Viewer.Systems.UIStack:empty()
+		Global.Viewer.Systems.UIStack:pop()
 		Global.Viewer.Systems.UIStack:push(Lobby)
 		lobby = Lobby
 	end
