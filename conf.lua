@@ -1,8 +1,9 @@
 function love.conf(t)
   t.title = 'Helios 2400'
-  t.window.width = 1200
-  t.window.height = 800
+  t.window.width = 800
+  t.window.height = 600
   t.window.highdpi = false
+  t.window.resizable = true
   t.fullscreen = true
   t.console = true
 

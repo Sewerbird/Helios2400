@@ -9,6 +9,8 @@ local PubSub = require 'src/PubSub'
 local Registry = require 'src/Registry'
 local MutatorBus = require 'src/mutate/MutatorBus'
 
+local Chat = require "src/network/chat"
+
 math.randomseed(os.time())
 CLIENT_USERNAME = math.random(10000,100000)
 
@@ -29,6 +31,7 @@ function love.load(args)
     TickAccumulator = 0,
     TickRate = 0.01,
   }
+  Global.Chat = Chat.new()
   Global.Loader = Loader:new(Global)
   Global.Loader:debugLoad()
 
@@ -41,6 +44,11 @@ function love.load(args)
 end
 
 function love.update( dt )
+
+  if Global.Connection then
+    Global.Connection:update()
+  end
+  
   local gc_cnt = collectgarbage('count')
   if gc_cnt > GOAL_MEMORY then error("Using too much memory mate! \nYou didnt overflow, but you spiked past the design limit of " .. (GOAL_MEMORY/1024) .. "MB, hitting " .. (gc_cnt/1024) .. "MB") end
 
@@ -65,7 +73,7 @@ end
 
 function love.draw()
   if not Global.PAUSE then
-    Global.Viewer.Systems.Render:draw()
+    Global.Viewer.Systems.UIStack:draw()
   end
 
   -- Profiling stuff
@@ -78,49 +86,53 @@ function love.draw()
   objGraph:draw()
 end
 
-function love.mousepressed( x, y, button )
+function love.mousepressed( x, y, button, istouch )
   Global.DRAGBEGUN = true
-  Global.Viewer.Systems.Interface:onTouch(x,y)
+  Global.Viewer.Systems.UIStack:mousepressed(x, y, button, istouch)
 end
 
 function love.mousemoved( x, y, dx, dy, istouch )
   if Global.DRAGBEGUN then
-    Global.Viewer.Systems.Interface:onDrag(x,y,dx,dy)
+    Global.Viewer.Systems.UIStack:mousedragged(x, y, dx, dy, istouch )
   end
 end
 
 function love.mousereleased( x, y, button )
   Global.DRAGBEGUN = false
-  Global.Viewer.Systems.Interface:onUntouch(x,y)
+  --Global.Viewer.Systems.Interface:onUntouch(x,y)
+  Global.Viewer.Systems.UIStack:mousereleased(x, y, button, istouch)
 end
 
 function love.touchpressed( id, x, y, pressure )
-  Global.Viewer.Systems.Interface:onTouch(x,y)
+  Global.Viewer.Systems.UIStack:mousepressed(x, y, button, istouch)
 end
 
 function love.touchmoved( id, x, y, dx, dy, pressure )
   if Global.DRAGBEGUN then
-    Global.Viewer.Systems.Interface:onDrag(x,y,dx,dy)
+    Global.Viewer.Systems.UIStack:mousedragged(x, y, dx, dy, istouch )
   end
 end
 
 function love.touchreleased( id, x, y, pressure )
-  Global.Viewer.Systems.Interface:onUntouch(x,y)
+  Global.Viewer.Systems.UIStack:mousereleased(x, y, button, istouch)
 end
 
-function love.keypressed( key )
-  if key == 'n' then
-    Global.Viewer:nextView()
-  elseif key == 'q' then
-    Global.Viewer.Registry:publish("endTurn")
-  end
-  Global.Viewer.Systems.Interface:onKeypress(key)
+function love.keypressed( key, scancode, isrepeat )
+  Global.Viewer.Systems.UIStack:keypressed(key, scancode, isrepeat)
+end
+
+function love.keyreleased( key, scancode, isrepeat )
+  Global.Viewer.Systems.UIStack:keyreleased(key, scancode, isrepeat)
+end
+
+function love.textinput(text)
+  Global.Viewer.Systems.UIStack:textinput(text)
 end
 
 function love.focus( f )
   if not f then
     print("LOST FOCUS")
-    Global.PAUSE = true
+    --Global.PAUSE = true
   else
     print("GAINED FOCUS")
     Global.PAUSE = false

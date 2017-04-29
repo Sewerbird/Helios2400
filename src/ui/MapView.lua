@@ -8,7 +8,6 @@ local Transform = require 'src/component/Transform'
 local TouchDelegate = require 'src/datatype/TouchDelegate'
 local GameObject = require 'src/GameObject'
 local Polygon = require 'src/datatype/Polygon'
-local MainMenuView = require 'src/ui/MainMenuView'
 local QuickCommandPanelView = require 'src/ui/QuickCommandPanelView'
 local ConfirmationDialogBoxView = require 'src/ui/ConfirmationDialogBoxView'
 local TurnStartView = require 'src/ui/TurnStartView'
@@ -34,7 +33,6 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
   local Unit_Layer = registry:add(GameObject:new('Unit_Layer',{}))
   local UI_Layer = registry:add(GameObject:new('UI_Layer',{}))
   local Turn_Start_View = TurnStartView:new(registry, scenegraph)
-  local Main_Menu_View = MainMenuView:new(registry, scenegraph)
   local Quick_Command_Panel_View = QuickCommandPanelView:new(registry, scenegraph)
   local Confirmation_Dialog_Box_View = ConfirmationDialogBoxView:new(registry, scenegraph)
   local City_Inspector_View = CityInspectorView:new(registry, scenegraph)
@@ -68,19 +66,9 @@ function MapView:init( registry, scenegraph, map, tiles, cities, units )
 
   local Map_View_Touch_Delegate = TouchDelegate:new()
   Map_View_Touch_Delegate:setHandler('onDrag', function(this, x,y,dx,dy)
-    if not Main_Menu_View.is_attached and registry:get(Map_Layer):hasComponent('Transform') then
+    if registry:get(Map_Layer):hasComponent('Transform') then
       local t = registry:get(Map_Layer):getComponent('Transform')
       t:translateWithBounds(dx,dy,nil,{-74 * 3.5,0}) -- temp fix, 3.5 needs to be 1.5
-    end
-  end)
-  Map_View_Touch_Delegate:setHandler('onKeypress', function(this, btn)
-    print('key pressed on map view: ' .. btn .. ' while showing_main_menu == ' .. tostring(Main_Menu_View.is_attached))
-    if btn == 'escape' then
-      if Main_Menu_View.is_attached then
-        Main_Menu_View:hide()
-      else
-        Main_Menu_View:show(UI_Layer)
-      end
     end
   end)
   local Map_View = registry:add(GameObject:new('Map_View',{

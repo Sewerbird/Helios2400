@@ -8,6 +8,8 @@
 
 local System = require 'src/System'
 local Stack = require 'src/structure/Stack'
+local UIStack = require 'lib/LoveGUI/addon/stack'
+local Container = require 'lib/LoveGUI/core/container'
 
 local RenderableSystem = System:extend("RenderableSystem",{
 	renderable_cache = nil,
@@ -20,7 +22,6 @@ local RenderableSystem = System:extend("RenderableSystem",{
 function RenderableSystem:init ( registry, targetCollection )
 	RenderableSystem.super.init(self, registry, targetCollection)
 	self.renderable_cache = {translation = {x = Stack:new(),y = Stack:new()}}
-	--love.graphics.setNewFont("assets/InputSansNarrow-Light.ttf",12)
 end
 
 function RenderableSystem:update( dt )

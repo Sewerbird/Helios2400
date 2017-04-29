@@ -3,3 +3,4 @@ helios2400.sublime-project
 helios2400.sublime-workspace
 *.txt
 gh-pages/
+server/node_modules/
