@@ -1,12 +1,15 @@
-local Element = require 'lib/LoveGUI/core/element'
+local Dropdown = require 'lib/LoveGUI/core/dropdown'
+local Container = require 'lib/LoveGUI/core/container'
 
 local LIGHT_BLUE = {51,204,255}
 local BLUE = {34,136,187}
 local DARK_BLUE = {17,68,119}
 
 return function(id, ready, team)
-	local elem = Element.new('PLAYER_LIST_ITEM_' .. id,{
+	local elem = Container.new('PLAYER_LIST_ITEM_' .. id,{
 		height = 40,
+		alignment = 'right',
+		ori = 'hor',
 		customDraw = function(self)
 			local x,y,w,h = self:getRectangle()
 
@@ -27,6 +30,13 @@ return function(id, ready, team)
 			love.graphics.print(id, x + 40,y + 10)
 		end}
 	)
+
+	local teamColor = Dropdown.new('TEAM_COLOR_' .. id,{
+		height = 30,
+		width = 40
+	})
+
+	elem:addElement(teamColor)
 
 	return elem
 end
